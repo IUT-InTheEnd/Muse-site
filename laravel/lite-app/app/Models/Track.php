@@ -37,13 +37,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $license_id
  * 
  * @property License|null $license
- * @property Collection|UserEcoute[] $user_ecoutes
- * @property Collection|AjouteFavori[] $ajoute_favoris
  * @property TrackEchonest|null $track_echonest
  * @property Collection|Playlist[] $playlists
  * @property Collection|TrackChanterEn[] $track_chanter_ens
  * @property Collection|Realiser[] $realisers
  * @property Collection|ContientGenre[] $contient_genres
+ * @property Collection|AjouteFavori[] $ajoute_favoris
+ * @property Collection|UserEcoute[] $user_ecoutes
  *
  * @package App\Models
  */
@@ -95,16 +95,6 @@ class Track extends Model
 		return $this->belongsTo(License::class);
 	}
 
-	public function user_ecoutes()
-	{
-		return $this->hasMany(UserEcoute::class);
-	}
-
-	public function ajoute_favoris()
-	{
-		return $this->hasMany(AjouteFavori::class);
-	}
-
 	public function track_echonest()
 	{
 		return $this->hasOne(TrackEchonest::class);
@@ -128,5 +118,15 @@ class Track extends Model
 	public function contient_genres()
 	{
 		return $this->hasMany(ContientGenre::class);
+	}
+
+	public function ajoute_favoris()
+	{
+		return $this->hasMany(AjouteFavori::class);
+	}
+
+	public function user_ecoutes()
+	{
+		return $this->hasMany(UserEcoute::class);
 	}
 }

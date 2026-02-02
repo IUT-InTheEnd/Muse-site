@@ -28,8 +28,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $album_producer
  * @property string|null $album_engineer
  * 
- * @property Collection|User[] $users
  * @property Collection|Realiser[] $realisers
+ * @property Collection|User[] $users
  *
  * @package App\Models
  */
@@ -64,13 +64,13 @@ class Album extends Model
 		'album_engineer'
 	];
 
-	public function users()
-	{
-		return $this->belongsToMany(User::class, 'user_ajoute_album_favoris');
-	}
-
 	public function realisers()
 	{
 		return $this->hasMany(Realiser::class);
+	}
+
+	public function users()
+	{
+		return $this->belongsToMany(User::class, 'user_ajoute_album_favoris');
 	}
 }

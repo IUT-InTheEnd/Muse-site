@@ -16,4 +16,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 
+Route::get('/genpasswordtest', function () {
+    return view('genpassword');
+})->name('genpasswordtest');
+
 require __DIR__.'/settings.php';

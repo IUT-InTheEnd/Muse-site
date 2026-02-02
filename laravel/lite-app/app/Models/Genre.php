@@ -19,9 +19,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $genre_color
  * @property bool|null $top_level
  * 
- * @property Collection|AjouteGenreFavori[] $ajoute_genre_favoris
- * @property Collection|Supervise[] $supervises
  * @property Collection|ContientGenre[] $contient_genres
+ * @property Collection|Supervise[] $supervises
+ * @property Collection|AjouteGenreFavori[] $ajoute_genre_favoris
  *
  * @package App\Models
  */
@@ -44,9 +44,9 @@ class Genre extends Model
 		'top_level'
 	];
 
-	public function ajoute_genre_favoris()
+	public function contient_genres()
 	{
-		return $this->hasMany(AjouteGenreFavori::class);
+		return $this->hasMany(ContientGenre::class);
 	}
 
 	public function supervises()
@@ -54,8 +54,8 @@ class Genre extends Model
 		return $this->hasMany(Supervise::class, 'child_id');
 	}
 
-	public function contient_genres()
+	public function ajoute_genre_favoris()
 	{
-		return $this->hasMany(ContientGenre::class);
+		return $this->hasMany(AjouteGenreFavori::class);
 	}
 }
