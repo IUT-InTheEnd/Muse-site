@@ -23,7 +23,7 @@ et run le `main.py`
 ```bash
 cd <repo>/laravel/lite-app
 composer install
-composer artisan optimize
+php artisan optimize
 npm i
 npm run build
 composer run dev
