@@ -20,4 +20,8 @@ Route::get('/genpasswordtest', function () {
     return view('genpassword');
 })->name('genpasswordtest');
 
+Route::get('/mentionslegales', function () {
+    return Inertia::render('mentionslegales');
+})->name('mentionslegales');
+
 require __DIR__.'/settings.php';
