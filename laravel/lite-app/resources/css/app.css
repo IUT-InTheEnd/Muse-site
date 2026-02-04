@@ -62,14 +62,14 @@
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
+    --background: #FDFDFF;
+    --foreground: oklch(0% 0 0);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
+    --primary: #5E00FF;
+    --primary-foreground: oklch(100% 0.00011 271.152);
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
     --muted: oklch(0.97 0 0);
@@ -98,14 +98,14 @@
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
+    --background: #1F2937;
+    --foreground: oklch(100% 0.00011 271.152);
     --card: oklch(0.145 0 0);
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.145 0 0);
     --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
+    --primary: #5E00FF;
+    --primary-foreground: oklch(100% 0.00011 271.152);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
     --muted: oklch(0.269 0 0);
@@ -140,4 +140,63 @@
     body {
         @apply bg-background text-foreground;
     }
+}
+
+.bouton-primary {
+    padding: 12px 16px;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bouton-secondary {
+    padding: 12px 16px;
+    background-color: transparent;
+    color: var(--primary-foreground);
+    border: 0.5px solid var(--foreground);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+a, p, span{
+    color: var(--foreground);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--foreground);
+}
+
+h1{
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+h2{
+    font-size: 1.5rem;
+    font-weight: semi-bold;
+}
+
+h3{
+    font-size: 1.25rem;
+    font-weight: semi-bold;
+}   
+
+h4{
+    font-size: 1.125rem;
+    font-weight: semi-bold;
+}
+
+h5{
+    font-size: 1rem;
+    font-weight: semi-bold;
+}
+
+h6{
+    font-size: 0.875rem;
+    font-weight: semi-bold;
 }
