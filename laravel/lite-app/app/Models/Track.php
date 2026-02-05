@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Track
- * 
+ *
  * @property int $track_id
  * @property string $track_title
  * @property int|null $track_duration
@@ -35,7 +35,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $track_file
  * @property string|null $track_image_file
  * @property int|null $license_id
- * 
  * @property License|null $license
  * @property TrackEchonest|null $track_echonest
  * @property Collection|Playlist[] $playlists
@@ -44,89 +43,89 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|ContientGenre[] $contient_genres
  * @property Collection|AjouteFavori[] $ajoute_favoris
  * @property Collection|UserEcoute[] $user_ecoutes
- *
- * @package App\Models
  */
 class Track extends Model
 {
-	protected $table = 'track';
-	protected $primaryKey = 'track_id';
-	public $timestamps = false;
+    protected $table = 'track';
 
-	protected $casts = [
-		'track_duration' => 'int',
-		'track_date_created' => 'datetime',
-		'track_date_recorded' => 'datetime',
-		'track_listens' => 'int',
-		'track_favorites' => 'int',
-		'track_comments' => 'int',
-		'track_interest' => 'int',
-		'track_explicit' => 'bool',
-		'track_instrumental' => 'bool',
-		'license_id' => 'int'
-	];
+    protected $primaryKey = 'track_id';
 
-	protected $fillable = [
-		'track_title',
-		'track_duration',
-		'track_date_created',
-		'track_date_recorded',
-		'track_composer',
-		'track_lyricist',
-		'track_publisher',
-		'track_listens',
-		'track_favorites',
-		'track_comments',
-		'track_interest',
-		'track_copyright_c',
-		'track_copyright_p',
-		'track_explicit',
-		'track_explicit_note',
-		'track_instrumental',
-		'track_language_code',
-		'track_url',
-		'track_file',
-		'track_image_file',
-		'license_id'
-	];
+    public $timestamps = false;
 
-	public function license()
-	{
-		return $this->belongsTo(License::class);
-	}
+    protected $casts = [
+        'track_duration' => 'int',
+        'track_date_created' => 'datetime',
+        'track_date_recorded' => 'datetime',
+        'track_listens' => 'int',
+        'track_favorites' => 'int',
+        'track_comments' => 'int',
+        'track_interest' => 'int',
+        'track_explicit' => 'bool',
+        'track_instrumental' => 'bool',
+        'license_id' => 'int',
+    ];
 
-	public function track_echonest()
-	{
-		return $this->hasOne(TrackEchonest::class);
-	}
+    protected $fillable = [
+        'track_title',
+        'track_duration',
+        'track_date_created',
+        'track_date_recorded',
+        'track_composer',
+        'track_lyricist',
+        'track_publisher',
+        'track_listens',
+        'track_favorites',
+        'track_comments',
+        'track_interest',
+        'track_copyright_c',
+        'track_copyright_p',
+        'track_explicit',
+        'track_explicit_note',
+        'track_instrumental',
+        'track_language_code',
+        'track_url',
+        'track_file',
+        'track_image_file',
+        'license_id',
+    ];
 
-	public function playlists()
-	{
-		return $this->belongsToMany(Playlist::class, 'playlist_contient_track');
-	}
+    public function license()
+    {
+        return $this->belongsTo(License::class);
+    }
 
-	public function track_chanter_ens()
-	{
-		return $this->hasMany(TrackChanterEn::class);
-	}
+    public function track_echonest()
+    {
+        return $this->hasOne(TrackEchonest::class);
+    }
 
-	public function realisers()
-	{
-		return $this->hasMany(Realiser::class);
-	}
+    public function playlists()
+    {
+        return $this->belongsToMany(Playlist::class, 'playlist_contient_track');
+    }
 
-	public function contient_genres()
-	{
-		return $this->hasMany(ContientGenre::class);
-	}
+    public function track_chanter_ens()
+    {
+        return $this->hasMany(TrackChanterEn::class);
+    }
 
-	public function ajoute_favoris()
-	{
-		return $this->hasMany(AjouteFavori::class);
-	}
+    public function realisers()
+    {
+        return $this->hasMany(Realiser::class, 'track_id', 'track_id');
+    }
 
-	public function user_ecoutes()
-	{
-		return $this->hasMany(UserEcoute::class);
-	}
+    public function contient_genres()
+    {
+        return $this->hasMany(ContientGenre::class);
+    }
+
+    public function ajoute_favoris()
+    {
+        return $this->hasMany(AjouteFavori::class);
+    }
+
+    public function user_ecoutes()
+    {
+        return $this->hasMany(UserEcoute::class);
+    }
 }
