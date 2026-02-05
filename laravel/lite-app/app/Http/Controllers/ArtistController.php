@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Artist;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia; 
+use Inertia\Response;
 
 class ArtistController extends Controller
 {
-    public function show(string $id): View{
-        return view('artisteprofile',['artist' => Artist::findOrFail($id) ]);
+    public function show(string $id): Response
+    {
+        $artist = Artist::findOrFail($id);
+        return Inertia::render('artist', [
+            'artist' => $artist
+        ]);
     }
 }
