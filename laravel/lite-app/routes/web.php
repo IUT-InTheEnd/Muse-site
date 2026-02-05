@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use App\Http\Controllers\ArtistController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -19,5 +20,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/genpasswordtest', function () {
     return view('genpassword');
 })->name('genpasswordtest');
+
+Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
+
 
 require __DIR__.'/settings.php';

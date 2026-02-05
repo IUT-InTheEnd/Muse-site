@@ -200,3 +200,37 @@ h6{
     font-size: 0.875rem;
     font-weight: semi-bold;
 }
+
+.image_track_info{
+    display:flex;
+    flex-direction: row;
+}
+
+.track-info{
+    display:flex;
+    flex-direction: column;
+}
+
+
+.backgroundimg-container{
+    width: 100%;
+    height: 700px;
+    position : relative;
+}
+
+.background-image{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.gradient{
+    height: 100%;
+    width: 100%;
+    background-image: linear-gradient(to top, rgb(255, 255, 255), transparent);
+    position : absolute;
+    opacity: 1;
+    top: 0;
+    left:0;
+}
