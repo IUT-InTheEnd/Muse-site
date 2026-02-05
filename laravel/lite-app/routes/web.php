@@ -24,4 +24,8 @@ Route::get('/mentionslegales', function () {
     return Inertia::render('mentionslegales');
 })->name('mentionslegales');
 
+Route::get('/support', function () {
+    return Inertia::render('support');
+})->name('support');
+
 require __DIR__.'/settings.php';
