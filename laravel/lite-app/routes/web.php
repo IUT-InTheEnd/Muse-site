@@ -17,9 +17,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 
-Route::get('/genpasswordtest', function () {
+Route::get('/genpassword', function () {
     return view('genpassword');
-})->name('genpasswordtest');
+})->name('genpassword');
+
+Route::get('/test-music-player', [App\Http\Controllers\TestMusicPlayer::class, 'playMusic'])->name('test-music-player');
+
+// Proxy pour les ressources externes (audio, images) - protégé par auth
+Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::class, 'stream'])->name('proxy');
 
 Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
 
