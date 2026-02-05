@@ -23,5 +23,8 @@ Route::get('/genpasswordtest', function () {
 
 Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
 
+Route::get('/preferences', function () {
+    return view('preferences-un');
+});
 
 require __DIR__.'/settings.php';
