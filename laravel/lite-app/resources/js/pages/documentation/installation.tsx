@@ -20,10 +20,10 @@ export default function Installation() {
             )}
 
             <div className="flex flex-col items-center lg:justify-center py-10">
-                <main className="flex flex-col w-full max-w-xl sm:max-w-xl lg:max-w-2xl xl:max-w-4xl items-start justify-center gap-6 px-6 py-10 ">
+                <main className="flex flex-col w-full max-w-xl sm:max-w-xl lg:max-w-2xl xl:max-w-4xl items-start justify-center gap-10 px-6 py-10 ">
 
                     <h1 className="text-3xl font-bold mb-6"> Installation </h1>
-                    <div className='flex flex-col gap-2 w-full'>
+                    <div className='flex flex-col gap-4 w-full'>
                         <h2>Sommaire</h2>
                         <Separator
                             orientation="horizontal"
