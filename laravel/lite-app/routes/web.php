@@ -28,5 +28,8 @@ Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::
 
 Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
 
+// Api user
+Route::middleware('auth')->patch('/user/profile', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('user.updateProfile');
+Route::middleware('auth')->patch('/user/info', [App\Http\Controllers\UserController::class, 'updateUserInfo'])->name('user.updateInfo');
 
 require __DIR__.'/settings.php';

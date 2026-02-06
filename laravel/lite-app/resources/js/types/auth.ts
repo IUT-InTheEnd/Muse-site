@@ -7,6 +7,13 @@ export type User = {
     two_factor_enabled?: boolean;
     created_at: string;
     updated_at: string;
+    // User profile information
+    user_age?: number | null;
+    user_job?: string | null;
+    user_plays_music?: string | null;
+    user_gender?: string | null;
+    user_instruments?: string | null;
+    user_music_contexts?: string | null;
     [key: string]: unknown;
 };
 
