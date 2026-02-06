@@ -1,12 +1,3 @@
-import EditUserInfoDialog from '@/components/edit-user-info-dialog';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import type { SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 import {
     Briefcase,
@@ -16,6 +7,15 @@ import {
     Music,
     User as UserIcon,
 } from 'lucide-react';
+import EditUserInfoDialog from '@/components/edit-user-info-dialog';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import type { SharedData } from '@/types';
 
 type InfoItemProps = {
     icon: React.ReactNode;
@@ -38,7 +38,7 @@ function parseArrayValue(value: string | null | undefined): string[] | null {
         return [String(parsed)];
     } catch {
         // Si ce n'est pas du JSON valide, essayer de parser le format Python-style ['item1', 'item2']
-        const pythonArrayMatch = value.match(/^\[(.+)\]$/);
+        const pythonArrayMatch = value.match(/^\[(.+)]$/);
         if (pythonArrayMatch) {
             const content = pythonArrayMatch[1];
             // Extraire les éléments entre guillemets simples ou doubles

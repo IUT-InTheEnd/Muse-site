@@ -1,3 +1,6 @@
+import { useForm } from '@inertiajs/react';
+import { Pencil } from 'lucide-react';
+import { type FormEventHandler, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -26,9 +29,6 @@ import {
     PLAYS_MUSIC_OPTIONS,
 } from '@/lib/user-options';
 import type { User } from '@/types';
-import { useForm } from '@inertiajs/react';
-import { Pencil } from 'lucide-react';
-import { type FormEventHandler, useState } from 'react';
 
 type EditUserInfoDialogProps = {
     user: User;
@@ -47,7 +47,7 @@ function parseArrayValue(value: string | null | undefined): string[] {
         }
         return [String(parsed)];
     } catch {
-        const pythonArrayMatch = value.match(/^\[(.+)\]$/);
+        const pythonArrayMatch = value.match(/^\[(.+)]$/);
         if (pythonArrayMatch) {
             const content = pythonArrayMatch[1];
             const items: string[] = [];
