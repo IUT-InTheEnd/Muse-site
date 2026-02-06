@@ -22,8 +22,10 @@ export default function Welcome({
                 />
             </Head>
             <div className="flex min-h-screen flex-col items-center lg:justify-center">
-                <header className="m-2 w-full max-w-[675px] text-sm not-has-[nav]:hidden lg:max-w-4xl">
-                    <Navbar user={auth.user} />
+                <header className="w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+                    <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl text-sm">
+                        <Navbar user={auth.user} />
+                    </div>
                 </header>
                 <div className="relative flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/guy2.jpg')" }}>
                     <div className="absolute inset-0 bg-black/70 pointer-events-none"></div>
@@ -57,8 +59,10 @@ export default function Welcome({
                     </main>
                 </div>
 
-                <footer className="w-full sm:w max-w-[675px] text-sm lg:max-w-4xl py-6">
-                    <Footer />
+                <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+                    <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl py-6 text-sm">
+                        <Footer />
+                    </div>
                 </footer>
             </div>
         </>

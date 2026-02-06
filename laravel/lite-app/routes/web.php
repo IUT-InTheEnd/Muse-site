@@ -32,4 +32,26 @@ Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
 Route::middleware('auth')->patch('/user/profile', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('user.updateProfile');
 Route::middleware('auth')->patch('/user/info', [App\Http\Controllers\UserController::class, 'updateUserInfo'])->name('user.updateInfo');
 
+// Routes pour les documentations 
+Route::prefix('documentation')->name('documentation.')->group(function () {
+    Route::get('/', function () {
+        return Inertia::render('documentation/index', [                 // route accueil docs
+            'links' => [
+                'installation' => route('documentation.installation'),  // doc installation
+                'api'          => route('documentation.api'),           // doc api
+                'utilisation'  => route('documentation.utilisation'),   // doc utilisation   
+            ],
+        ]);
+    })->name('index');
+
+    Route::get('/installation', fn () => Inertia::render('documentation/installation'))
+        ->name('installation');
+
+    Route::get('/api', fn () => Inertia::render('documentation/api'))
+        ->name('api');
+
+    Route::get('/utilisation', fn () => Inertia::render('documentation/utilisation'))
+        ->name('utilisation');
+});
+
 require __DIR__.'/settings.php';

@@ -1,11 +1,15 @@
 import React from 'react'
+import { Link } from '@inertiajs/react'
+
 
 const Footer = () => {
     return (
         <nav className='flex gap-8 p-4 flex-col sm:flex-row sm:gap-14'>
             {/* Logo */}
             <div className='flex justify-center'>
-                <img src="/logo.svg" alt="logo" className="w-auto h-8" />
+                <Link href="/">
+                    <img src="/logo.svg" alt="logo" className="w-auto h-8" />
+                </Link>
             </div>
 
             <div className='grid grid-cols-1 gap-6
@@ -23,11 +27,11 @@ const Footer = () => {
 
                 {/* docs */}
                 <div className='flex flex-col gap-2 text-center sm:text-left'>
-                    <a href="" className="font-semibold hover:underline">Documentation</a>
+                    <a href="/documentation" className="font-semibold hover:underline">Documentation</a>
                     <div className='flex flex-col text-sm'>
-                        <a href="" className="hover:underline">Installation</a>
-                        <a href="" className="hover:underline">API</a>
-                        <a href="" className="hover:underline">Utilisation</a>
+                        <a href="/documentation/installation" className="hover:underline">Installation</a>
+                        <a href="/documentation/api" className="hover:underline">API</a>
+                        <a href="/documentation/utilisation" className="hover:underline">Utilisation</a>
                         <a href="https://laravel.com/docs" target="_blank" rel="noopener noreferrer" className="hover:underline">Laravel</a>
                     </div>
                 </div>
