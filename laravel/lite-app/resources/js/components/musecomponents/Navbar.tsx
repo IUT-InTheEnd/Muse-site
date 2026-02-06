@@ -2,6 +2,7 @@ import React from 'react'
 import type { User } from '@/types'
 import { Button } from '../ui/button'
 import { Link } from '@inertiajs/react'
+import { Avatar } from '@radix-ui/react-avatar'
 
 type NavbarProps = {
   user?: User | null
@@ -12,7 +13,9 @@ const Navbar = ({ user }: NavbarProps) => {
     <nav className="flex flex-wrap items-center justify-between gap-4 p-4">
       {/* Left */}
       <div className="flex flex-wrap items-center gap-4">
-        <img src="/logo.svg" alt="logo" />
+        <Link href="/">
+          <img src="/logo.svg" alt="logo" />
+        </Link>
         {user && (
           <>
             <div className="hidden sm:block">
@@ -32,7 +35,9 @@ const Navbar = ({ user }: NavbarProps) => {
         {user ? (
           <>
             <a href="/profile" className="hover:underline">Mon profil</a>
-            <img src={user.avatar} alt="Photo de profil" width={32} height={32} className="rounded-full" />
+            <Avatar>
+              <img src={user.avatar} alt="Photo de profil" width={32} height={32} className="rounded-full" />
+            </Avatar>
           </>
         ) : (
           <>
