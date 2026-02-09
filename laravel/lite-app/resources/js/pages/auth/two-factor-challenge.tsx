@@ -1,3 +1,6 @@
+import { Form, Head } from '@inertiajs/react';
+import { REGEXP_ONLY_DIGITS } from 'input-otp';
+import { useMemo, useState } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,9 +12,6 @@ import {
 import { OTP_MAX_LENGTH } from '@/hooks/use-two-factor-auth';
 import AuthLayout from '@/layouts/auth-layout';
 import { store } from '@/routes/two-factor/login';
-import { Form, Head } from '@inertiajs/react';
-import { REGEXP_ONLY_DIGITS } from 'input-otp';
-import { useMemo, useState } from 'react';
 
 export default function TwoFactorChallenge() {
     const [showRecoveryInput, setShowRecoveryInput] = useState<boolean>(false);
@@ -24,18 +24,18 @@ export default function TwoFactorChallenge() {
     }>(() => {
         if (showRecoveryInput) {
             return {
-                title: 'Recovery Code',
+                title: 'Code de récupération',
                 description:
-                    'Please confirm access to your account by entering one of your emergency recovery codes.',
-                toggleText: 'login using an authentication code',
+                    'Merci de confirmer l’accès à votre compte en saisissant l’un de vos codes de récupération d’urgence.',
+                toggleText: 'se connecter en utilisant un code d’authentification',
             };
         }
 
         return {
-            title: 'Authentication Code',
+            title: 'Code d’authentification',
             description:
-                'Enter the authentication code provided by your authenticator application.',
-            toggleText: 'login using a recovery code',
+                'Merci de confirmer l’accès à votre compte en saisissant le code d’authentification généré par votre application d’authentification.',
+            toggleText: 'se connecter en utilisant un code de récupération',
         };
     }, [showRecoveryInput]);
 
@@ -66,7 +66,8 @@ export default function TwoFactorChallenge() {
                                     <Input
                                         name="recovery_code"
                                         type="text"
-                                        placeholder="Enter recovery code"
+                                        placeholder="Veuillez saisir votre code de récupération"
+                                        className={'bg-white text-black'}
                                         autoFocus={showRecoveryInput}
                                         required
                                     />
@@ -90,6 +91,9 @@ export default function TwoFactorChallenge() {
                                                     { length: OTP_MAX_LENGTH },
                                                     (_, index) => (
                                                         <InputOTPSlot
+                                                            className={
+                                                                'bg-white text-black'
+                                                            }
                                                             key={index}
                                                             index={index}
                                                         />
@@ -111,7 +115,7 @@ export default function TwoFactorChallenge() {
                             </Button>
 
                             <div className="text-center text-sm text-muted-foreground">
-                                <span>or you can </span>
+                                <span>ou </span>
                                 <button
                                     type="button"
                                     className="cursor-pointer text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"

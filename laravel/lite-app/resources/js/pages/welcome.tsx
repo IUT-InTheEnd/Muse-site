@@ -22,42 +22,50 @@ export default function Welcome({
                 />
             </Head>
             <div className="flex min-h-screen flex-col items-center lg:justify-center">
-                <header className="m-2 w-full max-w-[335px] text-sm not-has-[nav]:hidden lg:max-w-4xl">
-                    <Navbar user={auth.user} />
+                <header className="w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+                    <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl text-sm">
+                        <Navbar user={auth.user} />
+                    </div>
                 </header>
                 <div className="relative flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/guy2.jpg')" }}>
-                    <div className="absolute inset-0 bg-black/60 pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-black/70 pointer-events-none"></div>
 
-                    <main className="relative z-10 flex flex-col max-w-[700px] items-center justify-center gap-6 text-center px-4">
+                    <main className="relative z-10 flex flex-col max-w-md sm:max-w-lg lg:max-w-xl items-center justify-center gap-6 text-center px-6 py-10">
                         <div className="flex flex-col gap-2">
-                            <h1 style={{ color: 'white' }}>Bienvenue sur Lite !</h1>
-                            <h2 style={{ color: 'white' }}>La plateforme de streaming musical n°1 des Côtes d'Armor</h2>
+                            <h1 className="text-white text-2xl sm:text-3xl font-bold">
+                                Bienvenue sur Lite !
+                            </h1>
+                            <h2 className="text-white text-lg sm:text-xl font-semibold">
+                                La plateforme de streaming musical n°1 des Côtes d'Armor
+                            </h2>
                         </div>
 
-                        <p style={{ color: 'white' }}>
-                            Avant de pouvoir accéder à des millions de titres pensez à vous créer
-                            un compte ou à vous connecter si vous en avez déjà un.
+                        <p className="text-white text-sm sm:text-base max-w-md">
+                            Avant de pouvoir accéder à des millions de titres pensez à vous créer un compte ou à vous connecter si vous en avez déjà un.
                         </p>
 
-                        <div className="grid grid-cols-2 gap-2 w-full max-w-md">
-                            <Button className='w-full'>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md">
+                            <Button className="w-full">
                                 <Link href={register()}>
                                     Je me crée un compte
                                 </Link>
                             </Button>
-                            <Button className='w-full border-white' variant={"secondary"}>
-                                <Link href={login()} className='text-white'>
+                            <Button className="w-full border-white" variant={"secondary"}>
+                                <Link href={login()} className="text-white">
                                     Je me connecte
                                 </Link>
-                            </Button>   
+                            </Button>
                         </div>
                     </main>
                 </div>
-                
-                <footer className="w-full max-w-[335px] text-sm lg:max-w-4xl py-6">
-                    <Footer />
+
+                <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+                    <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl py-6 text-sm">
+                        <Footer />
+                    </div>
                 </footer>
             </div>
         </>
     );
 }
+

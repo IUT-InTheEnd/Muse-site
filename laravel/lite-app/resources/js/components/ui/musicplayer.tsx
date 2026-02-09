@@ -119,7 +119,7 @@ export default function MusicPlayer({ visible = true }: MusicPlayerProps) {
     if (!visible) return null; // n'affiche rien si pas visible
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-[#0b1220] text-white border-t border-white/10 px-8 py-4">
+        <div className="fixed bottom-0 left-0 right-0 bg-neutral-100 dark:bg-[#0b1220] text-neutral-900 dark:text-white border-t border-neutral-200 dark:border-white/10 px-8 py-4">
             <div className="flex items-center gap-8">
                 {/* LEFT – Track info */}
                 <div className="flex items-center gap-5 flex-1 min-w-0">
@@ -127,17 +127,17 @@ export default function MusicPlayer({ visible = true }: MusicPlayerProps) {
                         <img
                             src={track.artwork}
                             alt={track.title}
-                            className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                            className="w-20 h-20 rounded-lg object-cover shrink-0"
                         />
                     ) : (
-                        <div className="w-20 h-20 bg-white/10 rounded-lg flex-shrink-0" />
+                        <div className="w-20 h-20 bg-neutral-200 dark:bg-white/10 rounded-lg shrink-0" />
                     )}
 
                     <div className="overflow-hidden">
                         <div className="text-lg font-semibold truncate">
                             {track?.title || "No track"}
                         </div>
-                        <div className="text-base text-white/60 truncate">
+                        <div className="text-base text-neutral-500 dark:text-white/60 truncate">
                             {track?.artist || "—"}
                         </div>
                     </div>
@@ -150,20 +150,20 @@ export default function MusicPlayer({ visible = true }: MusicPlayerProps) {
                         <button onClick={() => setShuffle((v) => !v)}>
                             <ShuffleIcon
                                 size={28}
-                                className={shuffle ? "text-purple-400" : "text-white/70"}
+                                className={shuffle ? "text-purple-500 dark:text-purple-400" : "text-neutral-500 dark:text-white/70"}
                             />
                         </button>
 
-                        <SkipBackIcon size={32} className="text-white/80" />
+                        <SkipBackIcon size={32} className="text-neutral-600 dark:text-white/80" />
 
                         <button
                             onClick={togglePlay}
-                            className="w-14 h-14 flex items-center justify-center rounded-full bg-white text-black"
+                            className="w-14 h-14 flex items-center justify-center rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black"
                         >
                             {playing ? <PauseIcon size={28} /> : <PlayIcon size={28} />}
                         </button>
 
-                        <SkipForwardIcon size={32} className="text-white/80" />
+                        <SkipForwardIcon size={32} className="text-neutral-600 dark:text-white/80" />
 
                         <button
                             onClick={() =>
@@ -173,12 +173,12 @@ export default function MusicPlayer({ visible = true }: MusicPlayerProps) {
                             }
                         >
                             {repeatMode === "one" ? (
-                                <Repeat1Icon size={28} className="text-purple-400" />
+                                <Repeat1Icon size={28} className="text-purple-500 dark:text-purple-400" />
                             ) : (
                                 <RepeatIcon
                                     size={28}
                                     className={
-                                        repeatMode === "all" ? "text-purple-400" : "text-white/70"
+                                        repeatMode === "all" ? "text-purple-500 dark:text-purple-400" : "text-neutral-500 dark:text-white/70"
                                     }
                                 />
                             )}
@@ -187,7 +187,7 @@ export default function MusicPlayer({ visible = true }: MusicPlayerProps) {
 
                     {/* Progress bar */}
                     <div className="flex items-center gap-3 w-full">
-                        <span className="text-sm text-white/50 w-10 text-right">
+                        <span className="text-sm text-neutral-400 dark:text-white/50 w-10 text-right">
                             {formatTime(currentTime)}
                         </span>
                         <input
@@ -198,7 +198,7 @@ export default function MusicPlayer({ visible = true }: MusicPlayerProps) {
                             onChange={(e) => seek(Number(e.target.value))}
                             className="flex-1 h-1.5 accent-purple-500"
                         />
-                        <span className="text-sm text-white/50 w-10">
+                        <span className="text-sm text-neutral-400 dark:text-white/50 w-10">
                             {formatTime(duration)}
                         </span>
                     </div>
@@ -208,13 +208,13 @@ export default function MusicPlayer({ visible = true }: MusicPlayerProps) {
                 <div className="flex items-center gap-3 flex-1 justify-end">
                     <button onClick={toggleMute} className="cursor-pointer">
                         {volume === 0 ? (
-                            <VolumeXIcon size={28} className="text-white/70" />
+                            <VolumeXIcon size={28} className="text-neutral-500 dark:text-white/70" />
                         ) : volume < 0.33 ? (
-                            <VolumeIcon size={28} className="text-white/70" />
+                            <VolumeIcon size={28} className="text-neutral-500 dark:text-white/70" />
                         ) : volume < 0.66 ? (
-                            <Volume1Icon size={28} className="text-white/70" />
+                            <Volume1Icon size={28} className="text-neutral-500 dark:text-white/70" />
                         ) : (
-                            <Volume2Icon size={28} className="text-white/70" />
+                            <Volume2Icon size={28} className="text-neutral-500 dark:text-white/70" />
                         )}
                     </button>
                     <input
