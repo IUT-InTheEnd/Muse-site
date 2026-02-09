@@ -1,24 +1,13 @@
 import { Head } from '@inertiajs/react';
 import { Music } from 'lucide-react';
 import { useState } from 'react';
+import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
 import MusicPlayer from '@/components/ui/musicplayer';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
-
-
-// Proxy les URLs externes pour éviter les problèmes CORS
-function proxyUrl(url: string | null | undefined): string | undefined {
-    if (!url) return undefined;
-    // Si c'est déjà une URL locale, ne pas proxifier
-    if (url.startsWith('/') || url.startsWith(window.location.origin)) {
-        return url;
-    }
-    // Proxifier les URLs externes
-    return `/proxy?url=${encodeURIComponent(url)}`;
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
