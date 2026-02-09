@@ -33,7 +33,7 @@ class ArtistController extends Controller
         });
 
         $albumIds = Realiser::where('artist_id', $id)
-            ->pluck('album_id')
+                    ->pluck('album_id')
             ->unique()
             ->filter()
             ->toArray();
@@ -50,10 +50,11 @@ class ArtistController extends Controller
                 ];
             });
 
-        return Inertia::render('artist', [
+        return Inertia::render('artists/artist', [
             'artist' => $artist,
             'tracks' => $tracks, 
             'albums' => $albums
         ]);
     }
+    
 }

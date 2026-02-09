@@ -27,6 +27,7 @@ Route::get('/test-music-player', [App\Http\Controllers\TestMusicPlayer::class, '
 Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::class, 'stream'])->name('proxy');
 
 Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
+Route::get('/artiste/all/{id}' ,[ArtistController::class,"show"]);
 
 
 require __DIR__.'/settings.php';

@@ -1,7 +1,9 @@
 import Navbar from "@/components/musecomponents/Navbar";
 import { Button } from '@/components/ui/button';
+import MusicPlayer from '@/components/ui/musicplayer';
 
-export default function Artist({ artist, tracks,albums }: any) {
+
+export default function All_Song({ artist, tracks,albums }: any) {
     return (
         <div className="relative min-h-screen">
             <Navbar /> 
@@ -116,6 +118,8 @@ export default function Artist({ artist, tracks,albums }: any) {
                     </div>
                 </div>
             </div>
+            <MusicPlayer
+                        />
         </div>
     );
 }
