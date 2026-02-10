@@ -1,15 +1,21 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\FavoritesController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
+
+// Route::middleware(['auth', 'verified'])->group(function () {
+//     Route::get('/', function () {
+//         return Inertia::render('homepage');
+//     })->name('homepage');
+// });
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
@@ -35,7 +41,7 @@ Route::middleware('auth')->patch('/user/info', [App\Http\Controllers\UserControl
 // Routes pour les documentations 
 Route::prefix('documentation')->name('documentation.')->group(function () {
     Route::get('/', function () {
-        return Inertia::render('documentation/index', [                 // route accueil docs
+        return Inertia::render('documentation/index', [                 // accueil docs
             'links' => [
                 'installation' => route('documentation.installation'),  // doc installation
                 'api'          => route('documentation.api'),           // doc api
@@ -53,5 +59,11 @@ Route::prefix('documentation')->name('documentation.')->group(function () {
     Route::get('/utilisation', fn () => Inertia::render('documentation/utilisation'))
         ->name('utilisation');
 });
+
+// Favoris
+Route::get('/favoris', fn () => Inertia::render('favoris/index'))->name('favorites.index');
+
+// // Playlist 
+// Route::middleware(['auth', 'verified'])->get('/playlist/{id}', [App\Http\Controllers\PlaylistController::class, 'index'])->name('playlist.index');
 
 require __DIR__.'/settings.php';
