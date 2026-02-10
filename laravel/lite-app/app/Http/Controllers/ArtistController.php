@@ -77,9 +77,29 @@ class ArtistController extends Controller
             ];
         });
 
-        return Inertia::render('artists/all-tracks', [
+        $albumIds = Realiser::where('artist_id', $id)
+                    ->pluck('album_id')
+            ->unique()
+            ->filter()
+            ->toArray();
+
+
+        $albums = Album::whereIn('album_id', $albumIds)
+            ->get()
+            ->map(function ($album) {
+                return [
+                    'id' => $album->album_id,
+                    'title' => $album->album_title,
+                    'date' => $album->album_date_created ?? "",
+                    'type' => $album->album_type,
+                    'artwork' => $album->album_image_file 
+                ];
+            });
+
+        return Inertia::render('artists/all_tracks', [
             'artist' => $artist,
-            'tracks' => $tracks
+            'tracks' => $tracks,
+            'albums' => $albums
         ]);
     }
 }

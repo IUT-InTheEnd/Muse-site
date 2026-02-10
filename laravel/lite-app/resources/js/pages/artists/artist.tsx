@@ -3,6 +3,8 @@ import MusicPlayer from '@/components/ui/musicplayer';
 import AppLayout from '@/layouts/app-layout';
 import { proxyUrl } from '@/components/proxy';
 import { useState } from 'react';
+import { router } from '@inertiajs/react';
+import { allTracks } from '@/actions/App/Http/Controllers/ArtistController';
 
 export default function Artist({ artist, tracks, albums }: any) {
     const [showMusicPlayer, setShowMusicPlayer] = useState(false);
@@ -99,8 +101,13 @@ export default function Artist({ artist, tracks, albums }: any) {
                     </div>
                 </div>
 
-                <div className="ml-20 mt-10">
+                    <div className="ml-20 mt-10">
+                        <div className='flex items-baseline justify-between'>
                     <h2 className="text-2xl font-bold mb-6">Populaire</h2>
+                        <a className="cursor-pointer hover:underline"onClick={() => {
+                            router.visit(allTracks(artist.artist_id));
+                            }}>Voir tout</a>
+                    </div>
                     <table className="w-full text-left">
                         <thead>
                             <tr className="text-gray-400 border-b border-gray-700">
