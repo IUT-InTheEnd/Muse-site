@@ -1,10 +1,8 @@
 import { Head } from '@inertiajs/react';
-import { Music } from 'lucide-react';
-import { useState } from 'react';
 import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
-import MusicPlayer from '@/components/ui/musicplayer';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
+import { useMusicPlayer } from '@/hooks/use-music-player';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -17,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Dashboard() {
-    const [showMusicPlayer, setShowMusicPlayer] = useState(false);
+    const { playTrack } = useMusicPlayer();
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -25,19 +23,10 @@ export default function Dashboard() {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex justify-end">
                     <Button
-                        variant={showMusicPlayer ? 'default' : 'outline'}
-                        onClick={() => setShowMusicPlayer(!showMusicPlayer)}
-                    >
-                        <Music className="mr-2 h-4 w-4" />
-                        Music Player
-                    </Button>
-                    <Button
-                        className="ml-2"
                         onClick={async () => {
                             const id = prompt("Entrez l'id du morceau", '1');
                             if (!id) return;
                             try {
-                                setShowMusicPlayer(true);
                                 const res = await fetch(
                                     `/test-music-player?id=${encodeURIComponent(id)}`,
                                 );
@@ -50,11 +39,7 @@ export default function Dashboard() {
                                     artist: data.artist,
                                     artwork: proxyUrl(data.artwork),
                                 };
-                                window.dispatchEvent(
-                                    new CustomEvent('playTrack', {
-                                        detail: track,
-                                    }),
-                                );
+                                playTrack(track);
                             } catch (err) {
                                 console.error(err);
                                 void alert('Impossible de charger la musique.');
@@ -79,10 +64,6 @@ export default function Dashboard() {
                     <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                 </div>
             </div>
-            <MusicPlayer
-                visible={showMusicPlayer}
-                onClose={() => setShowMusicPlayer(false)}
-            />
         </AppLayout>
     );
 }

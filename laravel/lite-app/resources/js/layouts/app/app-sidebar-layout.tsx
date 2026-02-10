@@ -18,11 +18,8 @@ export default function AppSidebarLayout({
     
     return (
         <AppShell variant="sidebar">
-            <AppSidebar />
 
             <AppContent variant="sidebar" className="overflow-x-hidden flex flex-col min-h-screen">
-                <AppSidebarHeader breadcrumbs={breadcrumbs} />
-
                 <header className="w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
                     <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl text-sm">
                         <Navbar user={auth.user}/>
