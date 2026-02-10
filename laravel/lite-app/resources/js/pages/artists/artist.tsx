@@ -1,17 +1,40 @@
-
 import { Button } from '@/components/ui/button';
 import MusicPlayer from '@/components/ui/musicplayer';
 import AppLayout from '@/layouts/app-layout';
-import Navbar from '@/components/musecomponents/Navbar';
 import { proxyUrl } from '@/components/proxy';
-
-
-
+import { useState } from 'react';
 
 export default function Artist({ artist, tracks, albums }: any) {
+    const [showMusicPlayer, setShowMusicPlayer] = useState(false);
+
+    const playTrack = async (trackId: number) => {
+        try {
+            setShowMusicPlayer(true);
+            const res = await fetch(
+                `/test-music-player?id=${encodeURIComponent(trackId)}`,
+            );
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            const track = {
+                src: proxyUrl(data.url) ?? '',
+                title: data.title,
+                artist: data.artist,
+                artwork: proxyUrl(data.artwork),
+            };
+            window.dispatchEvent(
+                new CustomEvent('playTrack', {
+                    detail: track,
+                }),
+            );
+        } catch (err) {
+            console.error(err);
+            alert('Impossible de charger la musique.');
+        }
+    };
+
     return (
+        <AppLayout>
         <div className="flex flex-col relative min-h-screen p-36">
-            <Navbar/>
             <div className="backgroundimg-container">
                 <div className="gradient"></div>
                 <img className="background-image" src={proxyUrl(artist.artist_image_file)} alt="Cover"/>
@@ -41,7 +64,11 @@ export default function Artist({ artist, tracks, albums }: any) {
                                     : [];
                             return (
                                 <>
-                                    <img className="size-60"src={proxyUrl(sorted[0]?.artwork)}/>
+                                    <img 
+                                        className="size-60 cursor-pointer"
+                                        src={proxyUrl(sorted[0]?.artwork)}
+                                        onClick={() => playTrack(sorted[0]?.id)}
+                                    />
                                 <h3 className='line-clamp-2 w-3xs'>{sorted[0]?.title.toUpperCase()}</h3>
                                 <div className="flex">
                                         <div>{sorted[0]?.type}</div>
@@ -60,6 +87,7 @@ export default function Artist({ artist, tracks, albums }: any) {
                             return (
                                 <>
                                     <img className="size-60" src={proxyUrl(sorted[0]?.artwork)} />
+                                    
                                 <h3 className='line-clamp-2 w-3xs'>{sorted[0]?.title.toUpperCase()}</h3>
                                 <div className="flex gap-2">
                                     <div>{sorted[0]?.type}</div>
@@ -92,6 +120,7 @@ export default function Artist({ artist, tracks, albums }: any) {
                                 <tr 
                                     key={track.id} 
                                     className="hover:bg-white/10 cursor-pointer transition group"
+                                    onClick={() => playTrack(track.id)}
                                 >
                                     <td className="p-3 rounded-l-lg">{index + 1}</td>
                                     <td className="p-3 flex items-center gap-3">
@@ -138,7 +167,11 @@ export default function Artist({ artist, tracks, albums }: any) {
                     </div>
                 </div>
             </div>
-            <MusicPlayer/>
+            <MusicPlayer
+                visible={showMusicPlayer}
+                onClose={() => setShowMusicPlayer(false)}
+            />
             </div>
+            </AppLayout>
     );
 }

@@ -27,7 +27,7 @@ class ArtistController extends Controller
                 'artwork'  => $track->track_image_file, 
                 'duration' => $track->track_duration,
                 'listens' => $track->track_listens,
-                'date' => $track->track_date_created
+                'date' => $track->track_date_created ?? ""
             ];
         });
 
@@ -43,7 +43,7 @@ class ArtistController extends Controller
                 return [
                     'id' => $album->album_id,
                     'title' => $album->album_title,
-                    'date' => $album->album_date_created,
+                    'date' => $album->album_date_created ?? "",
                     'type' => $album->album_type,
                     'artwork' => $album->album_image_file 
                 ];
@@ -73,7 +73,7 @@ class ArtistController extends Controller
                 'artwork'  => $track->track_image_file, 
                 'duration' => $track->track_duration,
                 'listens' => $track->track_listens,
-                'date' => $track->track_date_created
+                'date' => $track->track_date_created ?? ""
             ];
         });
 
