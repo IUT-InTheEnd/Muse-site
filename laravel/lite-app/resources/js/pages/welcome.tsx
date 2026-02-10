@@ -4,6 +4,9 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import Navbar from '@/components/musecomponents/Navbar';
 import Footer from '@/components/musecomponents/Footer';
 import { Button } from '@/components/ui/button';
+import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
+import { CardCover, CardTitle, CardContent, CardSubtitle} from '@/components/musecomponents/cards/Card';
+import { MusicSlider } from '@/components/musecomponents/sliders/MusicSlider';
 
 export default function Welcome({
     canRegister = true,
@@ -55,7 +58,7 @@ export default function Welcome({
                                     Je me connecte
                                 </Link>
                             </Button>
-                        </div>
+                        </div> 
                     </main>
                 </div>
 
