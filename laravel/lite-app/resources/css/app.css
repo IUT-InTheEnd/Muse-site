@@ -146,6 +146,7 @@
 
 
 h1{
+    color: var(--foreground);
     font-size: 2rem;
     font-weight: bold;
 }

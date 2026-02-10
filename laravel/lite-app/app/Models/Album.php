@@ -27,9 +27,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $album_tracks
  * @property string|null $album_producer
  * @property string|null $album_engineer
+ * @property string|null $album_image_file
  * 
- * @property Collection|Realiser[] $realisers
  * @property Collection|User[] $users
+ * @property Collection|Realiser[] $realisers
  *
  * @package App\Models
  */
@@ -61,16 +62,17 @@ class Album extends Model
 		'album_information',
 		'album_tracks',
 		'album_producer',
-		'album_engineer'
+		'album_engineer',
+		'album_image_file'
 	];
-
-	public function realisers()
-	{
-		return $this->hasMany(Realiser::class);
-	}
 
 	public function users()
 	{
 		return $this->belongsToMany(User::class, 'user_ajoute_album_favoris');
+	}
+
+	public function realisers()
+	{
+		return $this->hasMany(Realiser::class);
 	}
 }

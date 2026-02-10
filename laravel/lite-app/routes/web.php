@@ -26,8 +26,8 @@ Route::get('/test-music-player', [App\Http\Controllers\TestMusicPlayer::class, '
 // Proxy pour les ressources externes (audio, images) - protégé par auth
 Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::class, 'stream'])->name('proxy');
 
-Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
-Route::get('/artiste/all/{id}' ,[ArtistController::class,"show"]);
+Route::get('/artiste/{id}' ,[ArtistController::class,"show"])->name('artist');
+Route::get('/artiste/all/{id}' ,[ArtistController::class,"show"])->name('artist/all_song');
 
 // Api user
 Route::middleware('auth')->patch('/user/profile', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('user.updateProfile');
