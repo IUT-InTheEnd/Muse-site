@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import AppHeaderLayout from '@/layouts/app/app-header-layout';
 import MusicPlayer from '@/components/ui/musicplayer';
 import { proxyUrl } from '@/components/proxy';
 import {PlayIcon,PauseIcon} from "lucide-react";
 import React from 'react';
+import { router } from '@inertiajs/react';
+import { show } from '@/actions/App/Http/Controllers/ArtistController';
 
 export default function AllTracks({ artist, tracks, albums }: any) {
     const [playing, setPlaying] = React.useState(false);
@@ -36,7 +38,7 @@ export default function AllTracks({ artist, tracks, albums }: any) {
     return (
         <AppHeaderLayout>
             <div className="relative min-h-screen p-10">
-            <h1 className="text-4xl font-bold mb-6">{artist.artist_name}</h1>
+                <h1 onClick={()=>router.visit(show(artist.artist_id))} className="hover:underline cursor-pointer text-4xl font-bold mb-6">{artist.artist_name}</h1>
             {(() => {
                 const sorted = Array.isArray(albums)
                     ? [...albums].sort((a, b) => (b.date.substring(0, 4) ?? 0) - (a.date.substring(0, 4) ?? 0))
