@@ -17,6 +17,7 @@ export type MusicPlayerState = {
     volume: number;
     shuffle: boolean;
     repeatMode: RepeatMode;
+    minimized: boolean;
 };
 
 export type MusicPlayerActions = {
@@ -31,6 +32,7 @@ export type MusicPlayerActions = {
     cycleRepeatMode: () => void;
     skipForward: () => void;
     skipBack: () => void;
+    toggleMinimized: () => void;
 };
 
 export type MusicPlayerContextType = MusicPlayerState & MusicPlayerActions;
@@ -46,6 +48,7 @@ type PersistedState = {
     shuffle: boolean;
     repeatMode: RepeatMode;
     track: Track | null;
+    minimized: boolean;
 };
 
 function loadPersistedState(): Partial<PersistedState> {
@@ -56,7 +59,7 @@ function loadPersistedState(): Partial<PersistedState> {
             return JSON.parse(stored);
         }
     } catch {
-        // Ignore parse errors
+        // Ignorer les erreurs de parsing
     }
     return {};
 }
@@ -66,7 +69,7 @@ function savePersistedState(state: PersistedState): void {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {
-        // Ignore storage errors
+        // Ignorer les erreurs de stockage
     }
 }
 
@@ -78,7 +81,7 @@ export function MusicPlayerProvider({
     const audioRef = React.useRef<HTMLAudioElement | null>(null);
     const previousVolumeRef = React.useRef<number>(1);
 
-    // Load persisted state on mount
+    // Charger l'état persisté au montage
     const persistedState = React.useMemo(() => loadPersistedState(), []);
 
     const [track, setTrack] = React.useState<Track | null>(
@@ -94,14 +97,17 @@ export function MusicPlayerProvider({
     const [repeatMode, setRepeatModeState] = React.useState<RepeatMode>(
         persistedState.repeatMode ?? 'off',
     );
+    const [minimized, setMinimized] = React.useState(
+        persistedState.minimized ?? false,
+    );
 
-    // Initialize audio element once
+    // Initialiser l'élément audio une seule fois
     React.useEffect(() => {
         const audio = new Audio();
         audioRef.current = audio;
         audio.volume = volume;
 
-        // If we have a persisted track, set it as src (but don't autoplay)
+        // Si on a une piste persistée, la définir comme source (sans lecture automatique)
         if (track?.src) {
             audio.src = track.src;
         }
@@ -114,7 +120,7 @@ export function MusicPlayerProvider({
                 audio.play();
             } else {
                 setPlaying(false);
-                // Future: playlist logic for shuffle/repeat all
+                // À venir : logique de playlist pour lecture aléatoire/répétition totale
             }
         };
         const onPlay = () => setPlaying(true);
@@ -138,7 +144,7 @@ export function MusicPlayerProvider({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Update repeat mode behavior when it changes
+    // Mettre à jour le comportement du mode répétition quand il change
     React.useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -156,17 +162,17 @@ export function MusicPlayerProvider({
         return () => audio.removeEventListener('ended', onEnded);
     }, [repeatMode]);
 
-    // Sync volume to audio element
+    // Synchroniser le volume avec l'élément audio
     React.useEffect(() => {
         if (audioRef.current) {
             audioRef.current.volume = volume;
         }
     }, [volume]);
 
-    // Persist state changes
+    // Persister les changements d'état
     React.useEffect(() => {
-        savePersistedState({ volume, shuffle, repeatMode, track });
-    }, [volume, shuffle, repeatMode, track]);
+        savePersistedState({ volume, shuffle, repeatMode, track, minimized });
+    }, [volume, shuffle, repeatMode, track, minimized]);
 
     // Actions
     const playTrack = React.useCallback((newTrack: Track) => {
@@ -241,18 +247,22 @@ export function MusicPlayerProvider({
     }, []);
 
     const skipForward = React.useCallback(() => {
-        // Future: playlist support
+        // À venir : support des playlists
         console.log('Skip forward - playlist support coming soon');
     }, []);
 
     const skipBack = React.useCallback(() => {
-        // Future: playlist support
-        // For now, restart current track if past 3 seconds
+        // À venir : support des playlists
+        // Pour l'instant, redémarrer la piste actuelle si on dépasse 3 secondes
         const audio = audioRef.current;
         if (!audio) return;
         if (audio.currentTime > 3) {
             audio.currentTime = 0;
         }
+    }, []);
+
+    const toggleMinimized = React.useCallback(() => {
+        setMinimized((v) => !v);
     }, []);
 
     const value = React.useMemo<MusicPlayerContextType>(
@@ -264,6 +274,7 @@ export function MusicPlayerProvider({
             volume,
             shuffle,
             repeatMode,
+            minimized,
             playTrack,
             play,
             pause,
@@ -275,6 +286,7 @@ export function MusicPlayerProvider({
             cycleRepeatMode,
             skipForward,
             skipBack,
+            toggleMinimized,
         }),
         [
             track,
@@ -284,6 +296,7 @@ export function MusicPlayerProvider({
             volume,
             shuffle,
             repeatMode,
+            minimized,
             playTrack,
             play,
             pause,
@@ -295,6 +308,7 @@ export function MusicPlayerProvider({
             cycleRepeatMode,
             skipForward,
             skipBack,
+            toggleMinimized,
         ],
     );
 
