@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $album_tracks
  * @property string|null $album_producer
  * @property string|null $album_engineer
+ * @property string|null $album_image_file
  * 
  * @property Collection|Realiser[] $realisers
  * @property Collection|User[] $users
@@ -61,7 +62,8 @@ class Album extends Model
 		'album_information',
 		'album_tracks',
 		'album_producer',
-		'album_engineer'
+		'album_engineer',
+		'album_image_file'
 	];
 
 	public function realisers()

@@ -4,6 +4,7 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\FavoritesController;
+use App\Http\Controllers\AlbumController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -65,5 +66,7 @@ Route::get('/favoris', fn () => Inertia::render('favoris/index'))->name('favorit
 
 // // Playlist 
 // Route::middleware(['auth', 'verified'])->get('/playlist/{id}', [App\Http\Controllers\PlaylistController::class, 'index'])->name('playlist.index');
+
+Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
 
 require __DIR__.'/settings.php';
