@@ -11,13 +11,6 @@ export default function Installation() {
     return (
         <>
             <Head title="Documentation – Installation" />
-            {!auth.user && (
-                <header className="w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
-                    <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl text-sm">
-                        <Navbar user={auth.user} />
-                    </div>
-                </header>
-            )}
 
             <div className="flex flex-col items-center lg:justify-center py-10">
                 <main className="flex flex-col w-full max-w-xl sm:max-w-xl lg:max-w-2xl xl:max-w-4xl items-start justify-center gap-10 px-6 py-10 ">
@@ -62,14 +55,6 @@ export default function Installation() {
                     </article>
                 </main>
             </div>
-
-            {!auth.user && (
-                <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
-                    <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl py-6 text-sm">
-                        <Footer />
-                    </div>
-                </footer>
-            )}
         </>
     );
 }

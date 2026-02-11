@@ -61,11 +61,11 @@ Route::prefix('documentation')->name('documentation.')->group(function () {
         ->name('utilisation');
 });
 
-// Favoris
-Route::get('/favoris', fn () => Inertia::render('favoris/index'))->name('favorites.index');
-
-// // Playlist 
-// Route::middleware(['auth', 'verified'])->get('/playlist/{id}', [App\Http\Controllers\PlaylistController::class, 'index'])->name('playlist.index');
+// favoris utilisateur
+Route::middleware(['auth'])->group(function () {
+    Route::get('/favoris', [FavoritesController::class, 'index'])
+        ->name('favorites.index');
+});
 
 Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
 

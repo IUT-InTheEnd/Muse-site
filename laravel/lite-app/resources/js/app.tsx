@@ -6,6 +6,8 @@ import '../css/app.css';
 import { AuthenticatedMusicPlayer } from './components/authenticated-music-player';
 import { MusicPlayerProvider } from './contexts/music-player-context';
 import { initializeTheme } from './hooks/use-appearance';
+import Navbar from './components/musecomponents/Navbar';
+import Footer from './components/musecomponents/Footer';
 import type { SharedData } from './types';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Lite';
@@ -20,15 +22,37 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
         const sharedData = props.initialPage.props as unknown as SharedData;
-        const initialAuth = !!sharedData?.auth?.user;
+        const auth = sharedData.auth;
+        const initialAuth = !!auth?.user;
 
         root.render(
-            <StrictMode>
-                <MusicPlayerProvider>
-                    <App {...props} />
-                    <AuthenticatedMusicPlayer initialAuth={initialAuth} />
-                </MusicPlayerProvider>
-            </StrictMode>,
+            <div className='min-h-screen'>
+                <StrictMode>
+                    <MusicPlayerProvider>
+                        {/* Header */}
+                        <header className="w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+                            <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl text-sm">
+                                <Navbar user={auth?.user} />
+                            </div>
+                        </header>
+
+                        {/* Page Content */}
+                        <App {...props} />
+
+                        {/* Footer */}
+                        {!auth?.user && (
+                            <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+                                <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl py-6 text-sm">
+                                    <Footer />
+                                </div>
+                            </footer>
+                        )}
+                        
+                        {/* Player */}
+                        <AuthenticatedMusicPlayer initialAuth={initialAuth} />
+                    </MusicPlayerProvider>
+                </StrictMode>
+            </div>,
         );
     },
     progress: {
