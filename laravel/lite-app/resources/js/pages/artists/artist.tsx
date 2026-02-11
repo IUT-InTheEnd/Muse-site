@@ -1,8 +1,6 @@
 import { Button } from '@/components/ui/button';
-import MusicPlayer from '@/components/ui/musicplayer';
 import AppLayout from '@/layouts/app-layout';
 import { proxyUrl } from '@/components/proxy';
-import { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import { allTracks } from '@/actions/App/Http/Controllers/ArtistController';
 import { AlbumSlider } from '@/components/musecomponents/sliders/AlbumSlider';
