@@ -67,7 +67,7 @@ export function Slider({
       </div>
 
       {/* Carousel */}
-      <div className="relative w-full max-w-[900px] mx-auto overflow-hidden">
+      <div className="relative w-full max-w-7xl mx-auto overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-out"
           style={{ transform: `translateX(-${index * 25}%)` }}

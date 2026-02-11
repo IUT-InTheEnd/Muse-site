@@ -3,36 +3,16 @@ import MusicPlayer from '@/components/ui/musicplayer';
 import AppLayout from '@/layouts/app-layout';
 import { proxyUrl } from '@/components/proxy';
 import { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { allTracks } from '@/actions/App/Http/Controllers/ArtistController';
+import { AlbumSlider } from '@/components/musecomponents/sliders/AlbumSlider';
+import { AlbumCard } from '@/components/musecomponents/cards/AlbumCard';
+import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
+import { CardContent, CardCover, CardSubtitle, CardTitle } from '@/components/musecomponents/cards/Card';
+
+
 
 export default function Artist({ artist, tracks, albums }: any) {
-    const [showMusicPlayer, setShowMusicPlayer] = useState(false);
-
-    const playTrack = async (trackId: number) => {
-        try {
-            setShowMusicPlayer(true);
-            const res = await fetch(
-                `/test-music-player?id=${encodeURIComponent(trackId)}`,
-            );
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            const track = {
-                src: proxyUrl(data.url) ?? '',
-                title: data.title,
-                artist: data.artist,
-                artwork: proxyUrl(data.artwork),
-            };
-            window.dispatchEvent(
-                new CustomEvent('playTrack', {
-                    detail: track,
-                }),
-            );
-        } catch (err) {
-            console.error(err);
-            alert('Impossible de charger la musique.');
-        }
-    };
 
     return (
         <AppLayout>
@@ -88,13 +68,15 @@ export default function Artist({ artist, tracks, albums }: any) {
                                     : [];
                             return (
                                 <>
-                                    <img className="size-60" src={proxyUrl(sorted[0]?.artwork)} />
-                                    
-                                <h3 className='line-clamp-2 w-3xs'>{sorted[0]?.title.toUpperCase()}</h3>
-                                <div className="flex gap-2">
-                                    <div>{sorted[0]?.type}</div>
-                                    <div>{sorted[0]?.date.substring(0,4)}</div>
-                                </div>
+                                    <MusicCard className='size-60'>
+                                        <Link href="/albums/12">
+                                            <CardCover src="/images/Crevecoeur.jpg" alt="Les étoiles vagabondes" />
+                                            <CardContent>
+                                                <CardTitle><p>jifezojfoieziofezj</p></CardTitle>
+                                                <CardSubtitle>Nekfeu</CardSubtitle>
+                                            </CardContent>
+                                        </Link>
+                                        </MusicCard> 
                               </>
                             );
                         })()}
@@ -149,8 +131,8 @@ export default function Artist({ artist, tracks, albums }: any) {
                     </table>
                 </div>
                 <div className="ml-20 mt-10">
-                    <h2 className="text-2xl font-bold">Discographie</h2>
                         <div className="flex flex-row flex-wrap gap-4 mt-6">
+                            <AlbumSlider title="Discographie">
                             {(() => {
                                 const sorted = Array.isArray(albums)
                                     ? [...albums].sort((a, b) => (b.date.substring(0, 4) ?? 0) - (a.date.substring(0, 4) ?? 0))
@@ -158,26 +140,21 @@ export default function Artist({ artist, tracks, albums }: any) {
                                 return sorted
                             })().map((album: any, index: number) => (
                                 (
-                                    <div className="flex flex-col">
-                                        <img className="size-60"  src={proxyUrl(album.artwork)} />
-                                        <div>
-                                            <h3 href="" className='line-clamp-2 w-3xs'>{album.title.toUpperCase()}</h3>
-                                            <div className="flex gap-2">
-                                                <div>{album.type}</div>
-                                                <div>{album.date.substring(0, 4)}</div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <AlbumCard  className='size-60'>
+                                        <Link href="/albums/12">
+                                            <CardCover src={proxyUrl(album.artwork)} alt="Les étoiles vagabondes" />
+                                            <CardContent>
+                                            <CardTitle>{album.title.toUpperCase()}</CardTitle>
+                                            <CardSubtitle>Nekfeu</CardSubtitle>
+                                            </CardContent>
+                                        </Link>
+                                        </AlbumCard> 
                                 )
                             ))}     
-
+                        </AlbumSlider>
                     </div>
                 </div>
             </div>
-            <MusicPlayer
-                visible={showMusicPlayer}
-                onClose={() => setShowMusicPlayer(false)}
-            />
             </div>
             </AppLayout>
     );

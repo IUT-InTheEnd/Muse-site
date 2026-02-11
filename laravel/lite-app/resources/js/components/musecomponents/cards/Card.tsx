@@ -5,7 +5,7 @@ import { cva, VariantProps } from "class-variance-authority"
 import { Slot } from "@radix-ui/react-slot"
 
 const CardVariants = cva(
-  "flex flex-col rounded-xl overflow-hidden",
+  "flex flex-col rounded-xl overflow-hidden ",
   {
     variants: {
       type: {
@@ -98,7 +98,7 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-content"
-      className={cn("px-6", className)}
+      className={cn("px-6 ", className)}
       {...props}
     />
   )
