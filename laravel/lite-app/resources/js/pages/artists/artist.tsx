@@ -7,10 +7,31 @@ import { AlbumSlider } from '@/components/musecomponents/sliders/AlbumSlider';
 import { AlbumCard } from '@/components/musecomponents/cards/AlbumCard';
 import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
 import { CardContent, CardCover, CardSubtitle, CardTitle } from '@/components/musecomponents/cards/Card';
-
+import { useMusicPlayer } from '@/hooks/use-music-player';
 
 
 export default function Artist({ artist, tracks, albums }: any) {
+    const { playTrack } = useMusicPlayer();
+
+
+    const playTracks = async (trackId: number) => {
+        try {
+            const res = await fetch(`/test-music-player?id=${encodeURIComponent(trackId)}`,);
+                if (!res.ok)
+                    throw new Error(`HTTP ${res.status}`);
+                    const data = await res.json();
+                    const track = {
+                        src: proxyUrl(data.url) ?? '',
+                        title: data.title,
+                        artist: data.artist,
+                        artwork: proxyUrl(data.artwork),
+                    };
+                        playTrack(track);
+        } catch (err) {
+            console.error(err);
+            void alert('Impossible de charger la musique.');
+        }
+    };
 
     return (
         <AppLayout>
@@ -47,7 +68,7 @@ export default function Artist({ artist, tracks, albums }: any) {
                                     <img 
                                         className="size-60 cursor-pointer"
                                         src={proxyUrl(sorted[0]?.artwork)}
-                                        onClick={() => playTrack(sorted[0]?.id)}
+                                        onClick={() => playTracks(sorted[0]?.id)}
                                     />
                                 <h3 className='line-clamp-2 w-3xs'>{sorted[0]?.title.toUpperCase()}</h3>
                                 <div className="flex">
@@ -107,7 +128,7 @@ export default function Artist({ artist, tracks, albums }: any) {
                                 <tr 
                                     key={track.id} 
                                     className="hover:bg-white/10 cursor-pointer transition group"
-                                    onClick={() => playTrack(track.id)}
+                                    onClick={() => playTracks(track.id)}
                                 >
                                     <td className="p-3 rounded-l-lg">{index + 1}</td>
                                     <td className="p-3 flex items-center gap-3">
