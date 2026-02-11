@@ -1,4 +1,4 @@
-import { PlayIcon, PauseIcon, SkipForwardIcon, SkipBackIcon, ShuffleIcon, RepeatIcon, Repeat1Icon, VolumeIcon, Volume1Icon, Volume2Icon, VolumeXIcon, } from 'lucide-react';
+import { PlayIcon, PauseIcon, SkipForwardIcon, SkipBackIcon, ShuffleIcon, RepeatIcon, Repeat1Icon, VolumeIcon, Volume1Icon, Volume2Icon, VolumeXIcon, MusicIcon, ChevronDownIcon } from 'lucide-react';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 
 function formatTime(s: number): string {
@@ -11,12 +11,37 @@ function formatTime(s: number): string {
 }
 
 export default function MusicPlayer() {
-    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, } = useMusicPlayer();
+    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized } = useMusicPlayer();
+
+    // État minimisé : afficher un bouton flottant avec l'icône de musique
+    if (minimized) {
+        return (
+            <button
+                onClick={toggleMinimized}
+                className="fixed bottom-6 right-6 z-50 w-14 h-14 flex items-center justify-center rounded-full bg-purple-500 hover:bg-purple-600 text-white shadow-lg transition-all duration-200 hover:scale-105"
+                aria-label="Ouvrir le lecteur"
+            >
+                <MusicIcon size={28} />
+                {playing && (
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                )}
+            </button>
+        );
+    }
 
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-neutral-100 dark:bg-[#0b1220] text-neutral-900 dark:text-white border-t border-neutral-200 dark:border-white/10 px-8 py-4">
+            {/* Bouton minimiser */}
+            <button
+                onClick={toggleMinimized}
+                className="absolute top-2 right-2 p-1 rounded-full hover:bg-neutral-200 dark:hover:bg-white/10 transition-colors"
+                aria-label="Minimiser le lecteur"
+            >
+                <ChevronDownIcon size={20} className="text-neutral-500 dark:text-white/60" />
+            </button>
+
             <div className="flex items-center gap-8">
-                {/* LEFT - Track info */}
+                {/* GAUCHE - Info de la piste */}
                 <div className="flex items-center gap-5 flex-1 min-w-0">
                     {track?.artwork ? (
                         <img
@@ -38,9 +63,9 @@ export default function MusicPlayer() {
                     </div>
                 </div>
 
-                {/* CENTER - Controls + progress */}
+                {/* CENTRE - Contrôles + progression */}
                 <div className="flex flex-col flex-1 items-center gap-2">
-                    {/* Controls */}
+                    {/* Contrôles */}
                     <div className="flex items-center gap-6">
                         <button onClick={toggleShuffle}>
                             <ShuffleIcon
@@ -84,7 +109,7 @@ export default function MusicPlayer() {
                         </button>
                     </div>
 
-                    {/* Progress bar */}
+                    {/* Barre de progression */}
                     <div className="flex items-center gap-3 w-full">
                         <span className="text-sm text-neutral-400 dark:text-white/50 w-10 text-right">
                             {formatTime(currentTime)}
@@ -103,7 +128,7 @@ export default function MusicPlayer() {
                     </div>
                 </div>
 
-                {/* RIGHT - Volume */}
+                {/* DROITE - Volume */}
                 <div className="flex items-center gap-3 flex-1 justify-end">
                     <button onClick={toggleMute} className="cursor-pointer">
                         {volume === 0 ? (

@@ -29,20 +29,32 @@ class ProxyController extends Controller
         'application/json',
     ];
 
+    // Placeholders par type de contenu
+    private array $placeholders = [
+        'audio' => [
+            'path' => 'placeholders/audio-placeholder.mp3',
+            'content_type' => 'audio/mpeg',
+        ],
+        'image' => [
+            'path' => 'placeholders/image-placeholder.png',
+            'content_type' => 'image/png',
+        ],
+    ];
+
     public function stream(Request $request)
     {
         // 1. Récupérer et valider l'URL
         $url = $request->query('url');
 
         if (! $url || ! filter_var($url, FILTER_VALIDATE_URL)) {
-            abort(400, 'URL invalide ou manquante');
+            return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
         // 2. Vérifier que le domaine est autorisé
         $host = parse_url($url, PHP_URL_HOST);
 
         if (! in_array($host, $this->allowedDomains)) {
-            abort(403, 'Domaine non autorisé: '.$host);
+            return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
         // 3. Récupérer la ressource distante
@@ -51,11 +63,11 @@ class ProxyController extends Controller
                 'timeout' => 30,
             ])->get($url);
         } catch (\Exception $e) {
-            abort(502, 'Erreur lors de la connexion au serveur distant');
+            return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
         if (! $response->successful()) {
-            abort($response->status(), 'Erreur lors de la récupération de la ressource');
+            return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
         // 4. Vérifier le Content-Type
@@ -63,7 +75,7 @@ class ProxyController extends Controller
         $baseContentType = trim(explode(';', $contentType)[0]);
 
         if (! in_array($baseContentType, $this->allowedContentTypes)) {
-            abort(403, 'Type de contenu non autorisé: '.$baseContentType);
+            return $this->returnPlaceholder($this->guessTypeFromContentType($baseContentType));
         }
 
         // 5. Construire les headers de réponse
@@ -80,5 +92,52 @@ class ProxyController extends Controller
 
         // 6. Retourner la réponse
         return response($response->body(), 200, $headers);
+    }
+
+    /**
+     * Retourne le placeholder selon le type
+     */
+    private function returnPlaceholder(string $type): \Illuminate\Http\Response
+    {
+        $placeholder = $this->placeholders[$type] ?? $this->placeholders['image'];
+        $path = public_path($placeholder['path']);
+
+        if (! file_exists($path)) {
+            abort(404, 'Placeholder non trouvé');
+        }
+
+        return response(file_get_contents($path), 200, [
+            'Content-Type' => $placeholder['content_type'],
+            'Cache-Control' => 'public, max-age=3600', // Cache 1h pour les placeholders
+        ]);
+    }
+
+    /**
+     * Devine le type de ressource à partir de l'URL
+     */
+    private function guessTypeFromUrl(?string $url): string
+    {
+        if (! $url) {
+            return 'image';
+        }
+
+        $extension = strtolower(pathinfo(parse_url($url, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION));
+
+        return match ($extension) {
+            'mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac' => 'audio',
+            default => 'image',
+        };
+    }
+
+    /**
+     * Devine le type de ressource à partir du Content-Type
+     */
+    private function guessTypeFromContentType(string $contentType): string
+    {
+        if (str_starts_with($contentType, 'audio/')) {
+            return 'audio';
+        }
+
+        return 'image';
     }
 }
