@@ -23,7 +23,7 @@ export function MusicSlider({
 
 {/* <MusicSlider title="Titres populaires">
   {tracks.map(track => (
-    <MusicCard key={track.id} asChild>
+    <MusicCard key={track.id}>
       <Link href={`/musics/${track.id}`}>
         <CardCover src={track.cover} />
         <CardContent>

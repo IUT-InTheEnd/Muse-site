@@ -10,26 +10,55 @@ type SliderProps = {
   className?: string
 }
 
+
+function useVisibleCards() {
+  const [visible, setVisible] = React.useState(4)
+
+  React.useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth < 640) {
+        setVisible(1)
+      } else if (window.innerWidth < 1024) {
+        setVisible(2)
+      } else if (window.innerWidth < 1280) {
+        setVisible(3)
+      } else {
+        setVisible(4)
+      }
+    }
+
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
+  return visible
+}
+
+
 export function Slider({
   title,
   children,
   className,
 }: SliderProps) {
+  const visible = useVisibleCards()
   const [index, setIndex] = React.useState(0)
-  const total = children.length
+  const items = React.Children.toArray(children)
+  const total = items.length
+
+  const maxIndex = Math.max(0, total - visible)
 
   const prev = () =>
-    setIndex((i) => (i === 0 ? total - 1 : i - 1))
+    setIndex((i) => Math.max(i - 1, 0))
 
   const next = () =>
-    setIndex((i) => (i === total - 4 ? 0 : i + 1))
+    setIndex((i) => Math.min(i + 1, maxIndex))
 
   const isFirst = index === 0
-  const isLast = index === total - 4
+  const isLast = index === maxIndex
 
   return (
     <section className={cn("space-y-4", className)}>
-      {/* Header */}
       <div className="flex items-center justify-between px-1">
         {title && (
           <h2 className="text-lg font-semibold">
@@ -38,42 +67,24 @@ export function Slider({
         )}
 
         <div className="flex gap-2">
-          <button
-            onClick={prev}
-            disabled={isFirst}
-            className={cn(
-              "h-8 w-8 rounded-full border border-foreground flex items-center justify-center",
-              isFirst
-                ? "opacity-40 cursor-not-allowed"
-                : "hover:bg-primary"
-            )}
-          >
+          <button onClick={prev} disabled={isFirst}>
             <ChevronLeft />
           </button>
-
-          <button
-            onClick={next}
-            disabled={isLast}
-            className={cn(
-              "h-8 w-8 rounded-full border border-foreground flex items-center justify-center",
-              isLast
-                ? "opacity-40 cursor-not-allowed"
-                : "hover:bg-primary"
-            )}
-          >
+          <button onClick={next} disabled={isLast}>
             <ChevronRight />
           </button>
         </div>
       </div>
 
-      {/* Carousel */}
-      <div className="relative w-full max-w-[900px] mx-auto overflow-hidden">
+      <div className="relative w-full overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-out"
-          style={{ transform: `translateX(-${index * 25}%)` }}
+          style={{
+            transform: `translateX(-${(100 / visible) * index}%)`,
+          }}
         >
           {children.map((child, i) => (
-            <div key={i} className="w-full flex-shrink-1 px-3">
+            <div key={i} className="flex-shrink-0 px-3 w-[80%] sm:w-[45%] lg:w-[23%]">
               {child}
             </div>
           ))}
