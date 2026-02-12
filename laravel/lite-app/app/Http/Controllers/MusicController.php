@@ -6,7 +6,7 @@ use App\Models\Track;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class TestMusicPlayer extends Controller
+class MusicController extends Controller
 {
     public function playMusic(Request $request)
     {
