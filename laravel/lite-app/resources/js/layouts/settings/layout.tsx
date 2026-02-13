@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
+import { edit as editPrivacy } from '@/routes/privacy';
 import { edit } from '@/routes/profile';
 import { show as showSecurity } from '@/routes/security';
 import type { NavItem } from '@/types';
@@ -19,6 +20,11 @@ const sidebarNavItems: NavItem[] = [
     {
         title: 'Sécurité',
         href: showSecurity(),
+        icon: null,
+    },
+    {
+        title: 'Confidentialité',
+        href: editPrivacy(),
         icon: null,
     },
     {

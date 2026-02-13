@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
 
@@ -68,5 +69,35 @@ class UserController extends Controller
         }
 
         return back();
+    }
+
+    public function getUserPageInformation(Request $request)
+    {
+        // Récupère les playlists publiques de l'utilisateur
+        // Récupère les titres récemment écoutés par l'utilisateur
+        // Récupère les artistes suivis par l'utilisateur
+        // Vérifie si la page est publique ou privée et gère l'affichage en conséquence
+        $validatedData = $request->validate([
+            'user_id' => 'required|integer|exists:user,user_id',
+        ]);
+
+        if ($validatedData) {
+            $user = User::find($request->user_id);
+            if ($user & $user->public_profile_visibility) {
+                $playlists = $user->possede_playlists()->where('playlist_public', true)->get();
+                $recentTracks = $user->user_ecoutes()->latest()->take(10)->get();
+                $followedArtists = $user->artists()->get();
+
+                return response()->json([
+                    'playlists' => $playlists,
+                    'recent_tracks' => $recentTracks,
+                    'followed_artists' => $followedArtists,
+                ]);
+            }
+
+            return response()->json(['error' => 'Profile is private'], 403);
+        }
+
+        return response()->json(['error' => 'Invalid request'], 400);
     }
 }
