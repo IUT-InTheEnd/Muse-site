@@ -33,6 +33,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string|null $user_gender
  * @property string|null $user_instruments
  * @property string|null $user_music_contexts
+ * @property boolean|null $public_profile_visibility
  * @property int|null $profile_id
  * @property UserProfile|null $user_profile
  * @property UserPreferenceEchonest|null $user_preference_echonest
@@ -80,6 +81,7 @@ class User extends Authenticatable
         'user_gender',
         'user_instruments',
         'user_music_contexts',
+        'public_profile_visibility',
         'profile_id',
     ];
 
