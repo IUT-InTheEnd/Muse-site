@@ -1,10 +1,11 @@
 <?php
+
+use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\FavoritesController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use App\Http\Controllers\ArtistController;
-use App\Http\Controllers\FavoritesController;
-use App\Http\Controllers\AlbumController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -33,7 +34,7 @@ Route::get('/test-music-player', [App\Http\Controllers\MusicController::class, '
 // Proxy pour les ressources externes (audio, images) - protégé par auth
 Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::class, 'stream'])->name('proxy');
 
-Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
+Route::get('/artiste/{id}', [ArtistController::class, 'show']);
 
 // Api user
 Route::middleware('auth')->patch('/user/profile', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('user.updateProfile');
@@ -45,8 +46,8 @@ Route::prefix('documentation')->name('documentation.')->group(function () {
         return Inertia::render('documentation/index', [                 // accueil docs
             'links' => [
                 'installation' => route('documentation.installation'),  // doc installation
-                'api'          => route('documentation.api'),           // doc api
-                'utilisation'  => route('documentation.utilisation'),   // doc utilisation
+                'api' => route('documentation.api'),           // doc api
+                'utilisation' => route('documentation.utilisation'),   // doc utilisation
             ],
         ]);
     })->name('index');
@@ -68,5 +69,11 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
+
+// Images create/read/update/delete - protégé par auth
+Route::get('/image/{filename}', [App\Http\Controllers\ImageFileController::class, 'getImage'])->name('image.get');
+Route::middleware('auth')->post('/image', [App\Http\Controllers\ImageFileController::class, 'uploadImage'])->name('image.upload');
+Route::middleware('auth')->patch('/image', [App\Http\Controllers\ImageFileController::class, 'updateImage'])->name('image.update');
+Route::middleware('auth')->delete('/image', [App\Http\Controllers\ImageFileController::class, 'deleteImage'])->name('image.delete');
 
 require __DIR__.'/settings.php';
