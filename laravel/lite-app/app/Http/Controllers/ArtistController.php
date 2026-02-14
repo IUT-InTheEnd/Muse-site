@@ -7,6 +7,8 @@ use App\Models\Track;
 use App\Models\Album;
 use App\Models\Realiser;
 use Inertia\Inertia; 
+use Illuminate\Support\Facades\DB;
+
 
 class ArtistController extends Controller
 {
@@ -99,7 +101,7 @@ class ArtistController extends Controller
         return Inertia::render('artists/all_tracks', [
             'artist' => $artist,
             'tracks' => $tracks,
-            'albums' => $albums
+            'albums' => $albums,
         ]);
     }
 }

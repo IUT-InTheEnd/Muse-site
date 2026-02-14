@@ -5,9 +5,10 @@ import { show } from '@/actions/App/Http/Controllers/ArtistController';
 import {PlayIcon, PauseIcon} from 'lucide-react';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 
-export default function AllTracks({ artist, tracks, albums }: any) {
+export default function AllTracks({ artist, tracks, albums,test }: any) {
     const { playTrack } = useMusicPlayer();
     
+    console.log(test)
 
     const playTracks = async (trackId: number) => {
         try {
@@ -28,7 +29,6 @@ export default function AllTracks({ artist, tracks, albums }: any) {
         }
     };
     
-    // Grouper les tracks par album
     const groupTracksByAlbum = () => {
         const grouped: { [key: string]: any } = {};
         
@@ -52,6 +52,8 @@ export default function AllTracks({ artist, tracks, albums }: any) {
 
     const groupedData = groupTracksByAlbum();
 
+    console.log(groupedData)
+
     return (
         <AppHeaderLayout>        
             <div className="relative min-h-screen p-10">
@@ -71,7 +73,7 @@ export default function AllTracks({ artist, tracks, albums }: any) {
                                 alt={group.album.title}
                             />
                             <div>
-                                <h2 className="text-3xl font-bold mb-2">
+                                <h2 href={()=>"../album/"+group.album.id} className="hover:underline cursor-pointer text-3xl font-bold mb-2">
                                     {group.album.title.toUpperCase()}
                                 </h2>
                                 <div className="flex gap-4 mb-4">

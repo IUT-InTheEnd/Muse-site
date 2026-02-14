@@ -9,7 +9,6 @@ import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
 import { CardContent, CardCover, CardSubtitle, CardTitle } from '@/components/musecomponents/cards/Card';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 
-
 export default function Artist({ artist, tracks, albums }: any) {
     const { playTrack } = useMusicPlayer();
 
@@ -38,7 +37,7 @@ export default function Artist({ artist, tracks, albums }: any) {
         <div className="flex flex-col relative min-h-screen p-36">
             <div className="backgroundimg-container">
                 <div className="gradient"></div>
-                <img className="background-image" src={proxyUrl(artist.artist_image_file)} alt="Cover"/>
+                <img className="background-artist" src={proxyUrl(artist.artist_image_file)} alt="Cover"/>
                 </div>
                 
 
@@ -160,7 +159,7 @@ export default function Artist({ artist, tracks, albums }: any) {
                             })().map((album: any, index: number) => (
                                 (
                                     <AlbumCard  className='size-60'>
-                                        <Link href="/albums/12">
+                                        <Link href={"../album/"+album.id}>
                                             <CardCover src={proxyUrl(album.artwork)} alt="Les étoiles vagabondes" />
                                             <CardContent>
                                             <CardTitle>{album.title.toUpperCase()}</CardTitle>
