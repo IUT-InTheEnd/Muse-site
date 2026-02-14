@@ -1,10 +1,11 @@
 <?php
+
+use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\FavoritesController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use App\Http\Controllers\ArtistController;
-use App\Http\Controllers\FavoritesController;
-use App\Http\Controllers\AlbumController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -28,7 +29,7 @@ Route::get('/genpassword', function () {
     return view('genpassword');
 })->name('genpassword');
 
-Route::get('/test-music-player', [App\Http\Controllers\TestMusicPlayer::class, 'playMusic'])->name('test-music-player');
+Route::get('/test-music-player', [App\Http\Controllers\MusicController::class, 'playMusic'])->name('test-music-player');
 
 // Proxy pour les ressources externes (audio, images) - protégé par auth
 Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::class, 'stream'])->name('proxy');
@@ -40,14 +41,14 @@ Route::get('/artiste/{id}/all' ,[ArtistController::class,"allTracks"])->name('ar
 Route::middleware('auth')->patch('/user/profile', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('user.updateProfile');
 Route::middleware('auth')->patch('/user/info', [App\Http\Controllers\UserController::class, 'updateUserInfo'])->name('user.updateInfo');
 
-// Routes pour les documentations 
+// Routes pour les documentations
 Route::prefix('documentation')->name('documentation.')->group(function () {
     Route::get('/', function () {
         return Inertia::render('documentation/index', [                 // accueil docs
             'links' => [
                 'installation' => route('documentation.installation'),  // doc installation
-                'api'          => route('documentation.api'),           // doc api
-                'utilisation'  => route('documentation.utilisation'),   // doc utilisation   
+                'api' => route('documentation.api'),           // doc api
+                'utilisation' => route('documentation.utilisation'),   // doc utilisation
             ],
         ]);
     })->name('index');
@@ -62,12 +63,18 @@ Route::prefix('documentation')->name('documentation.')->group(function () {
         ->name('utilisation');
 });
 
-// Favoris
-Route::get('/favoris', fn () => Inertia::render('favoris/index'))->name('favorites.index');
-
-// // Playlist 
-// Route::middleware(['auth', 'verified'])->get('/playlist/{id}', [App\Http\Controllers\PlaylistController::class, 'index'])->name('playlist.index');
+// favoris utilisateur
+Route::middleware(['auth'])->group(function () {
+    Route::get('/favoris', [FavoritesController::class, 'index'])
+        ->name('favorites.index');
+});
 
 Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
+
+// Images create/read/update/delete - protégé par auth
+Route::get('/image/{filename}', [App\Http\Controllers\ImageFileController::class, 'getImage'])->name('image.get');
+Route::middleware('auth')->post('/image', [App\Http\Controllers\ImageFileController::class, 'uploadImage'])->name('image.upload');
+Route::middleware('auth')->patch('/image', [App\Http\Controllers\ImageFileController::class, 'updateImage'])->name('image.update');
+Route::middleware('auth')->delete('/image', [App\Http\Controllers\ImageFileController::class, 'deleteImage'])->name('image.delete');
 
 require __DIR__.'/settings.php';

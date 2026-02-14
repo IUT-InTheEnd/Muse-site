@@ -26,12 +26,14 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $two_factor_confirmed_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $user_image_file
  * @property float|null $user_age
  * @property string|null $user_job
  * @property string|null $user_plays_music
  * @property string|null $user_gender
  * @property string|null $user_instruments
  * @property string|null $user_music_contexts
+ * @property boolean|null $public_profile_visibility
  * @property int|null $profile_id
  * @property UserProfile|null $user_profile
  * @property UserPreferenceEchonest|null $user_preference_echonest
@@ -72,12 +74,14 @@ class User extends Authenticatable
         'two_factor_secret',
         'two_factor_recovery_codes',
         'two_factor_confirmed_at',
+        'user_image_file',
         'user_age',
         'user_job',
         'user_plays_music',
         'user_gender',
         'user_instruments',
         'user_music_contexts',
+        'public_profile_visibility',
         'profile_id',
     ];
 
@@ -91,9 +95,9 @@ class User extends Authenticatable
         return $this->hasOne(UserPreferenceEchonest::class);
     }
 
-    public function possede_playlists()
+    public function playlist()
     {
-        return $this->hasMany(PossedePlaylist::class);
+        return $this->hasMany(Playlist::class);
     }
 
     public function representes()

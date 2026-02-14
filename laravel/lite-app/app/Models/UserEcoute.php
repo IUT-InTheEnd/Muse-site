@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $user_id
  * @property int $track_id
  * @property int|null $nb_ecoute
+ * @property Carbon|null $last_listen
  * 
  * @property User $user
  * @property Track $track
@@ -29,11 +31,13 @@ class UserEcoute extends Model
 	protected $casts = [
 		'user_id' => 'int',
 		'track_id' => 'int',
-		'nb_ecoute' => 'int'
+		'nb_ecoute' => 'int',
+		'last_listen' => 'datetime'
 	];
 
 	protected $fillable = [
-		'nb_ecoute'
+		'nb_ecoute',
+		'last_listen'
 	];
 
 	public function user()

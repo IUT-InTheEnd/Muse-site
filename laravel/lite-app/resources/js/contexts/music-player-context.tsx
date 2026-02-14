@@ -18,6 +18,8 @@ export type MusicPlayerState = {
     shuffle: boolean;
     repeatMode: RepeatMode;
     minimized: boolean;
+    error: string | null;
+    isLoading: boolean;
 };
 
 export type MusicPlayerActions = {
@@ -33,6 +35,7 @@ export type MusicPlayerActions = {
     skipForward: () => void;
     skipBack: () => void;
     toggleMinimized: () => void;
+    clearError: () => void;
 };
 
 export type MusicPlayerContextType = MusicPlayerState & MusicPlayerActions;
@@ -100,6 +103,8 @@ export function MusicPlayerProvider({
     const [minimized, setMinimized] = React.useState(
         persistedState.minimized ?? false,
     );
+    const [error, setError] = React.useState<string | null>(null);
+    const [isLoading, setIsLoading] = React.useState(false);
 
     // Initialiser l'élément audio une seule fois
     React.useEffect(() => {
@@ -107,13 +112,16 @@ export function MusicPlayerProvider({
         audioRef.current = audio;
         audio.volume = volume;
 
-        // Si on a une piste persistée, la définir comme source (sans lecture automatique)
-        if (track?.src) {
-            audio.src = track.src;
-        }
+        // NOTE: On ne charge PAS automatiquement la piste persistée au montage
+        // pour éviter les erreurs de proxy avant que la session soit établie.
+        // L'utilisateur devra cliquer sur play pour relancer la piste.
 
         const onTimeUpdate = () => setCurrentTime(audio.currentTime);
-        const onLoaded = () => setDuration(audio.duration || 0);
+        const onLoaded = () => {
+            setDuration(audio.duration || 0);
+            setIsLoading(false);
+            setError(null);
+        };
         const onEnded = () => {
             if (repeatMode === 'one') {
                 audio.currentTime = 0;
@@ -125,12 +133,45 @@ export function MusicPlayerProvider({
         };
         const onPlay = () => setPlaying(true);
         const onPause = () => setPlaying(false);
+        const onError = () => {
+            setIsLoading(false);
+            setPlaying(false);
+            // Vérifier le type d'erreur
+            const mediaError = audio.error;
+            if (mediaError) {
+                switch (mediaError.code) {
+                    case MediaError.MEDIA_ERR_ABORTED:
+                        setError('Lecture annulée');
+                        break;
+                    case MediaError.MEDIA_ERR_NETWORK:
+                        setError('Erreur réseau lors du chargement');
+                        break;
+                    case MediaError.MEDIA_ERR_DECODE:
+                        setError('Impossible de décoder le fichier audio');
+                        break;
+                    case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                        setError('Format audio non supporté');
+                        break;
+                    default:
+                        setError('Erreur de lecture audio');
+                }
+            } else {
+                setError('Erreur de lecture audio');
+            }
+            console.error('Audio error:', mediaError);
+        };
+        const onLoadStart = () => {
+            setIsLoading(true);
+            setError(null);
+        };
 
         audio.addEventListener('timeupdate', onTimeUpdate);
         audio.addEventListener('loadedmetadata', onLoaded);
         audio.addEventListener('ended', onEnded);
         audio.addEventListener('play', onPlay);
         audio.addEventListener('pause', onPause);
+        audio.addEventListener('error', onError);
+        audio.addEventListener('loadstart', onLoadStart);
 
         return () => {
             audio.pause();
@@ -139,6 +180,8 @@ export function MusicPlayerProvider({
             audio.removeEventListener('ended', onEnded);
             audio.removeEventListener('play', onPlay);
             audio.removeEventListener('pause', onPause);
+            audio.removeEventListener('error', onError);
+            audio.removeEventListener('loadstart', onLoadStart);
             audioRef.current = null;
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -177,6 +220,7 @@ export function MusicPlayerProvider({
     // Actions
     const playTrack = React.useCallback((newTrack: Track) => {
         setTrack(newTrack);
+        setError(null);
         const audio = audioRef.current;
         if (!audio) return;
 
@@ -185,17 +229,32 @@ export function MusicPlayerProvider({
         audio
             .play()
             .then(() => setPlaying(true))
-            .catch(() => setPlaying(false));
+            .catch((err) => {
+                setPlaying(false);
+                console.error('Error playing track:', err);
+            });
     }, []);
 
     const play = React.useCallback(() => {
         const audio = audioRef.current;
-        if (!audio || !audio.src) return;
+        if (!audio) return;
+
+        // Si on a une piste persistée mais pas de source chargée, la charger
+        if (!audio.src && track?.src) {
+            audio.src = track.src;
+        }
+
+        if (!audio.src) return;
+
+        setError(null);
         audio
             .play()
             .then(() => setPlaying(true))
-            .catch(() => setPlaying(false));
-    }, []);
+            .catch((err) => {
+                setPlaying(false);
+                console.error('Error playing:', err);
+            });
+    }, [track]);
 
     const pause = React.useCallback(() => {
         const audio = audioRef.current;
@@ -206,13 +265,25 @@ export function MusicPlayerProvider({
 
     const togglePlay = React.useCallback(() => {
         const audio = audioRef.current;
-        if (!audio || !audio.src) return;
+        if (!audio) return;
+
+        // Si on a une piste persistée mais pas de source chargée, la charger
+        if (!audio.src && track?.src) {
+            audio.src = track.src;
+        }
+
+        if (!audio.src) return;
+
         if (playing) {
             audio.pause();
         } else {
-            audio.play().catch(() => setPlaying(false));
+            setError(null);
+            audio.play().catch((err) => {
+                setPlaying(false);
+                console.error('Error in togglePlay:', err);
+            });
         }
-    }, [playing]);
+    }, [playing, track]);
 
     const seek = React.useCallback((time: number) => {
         const audio = audioRef.current;
@@ -265,6 +336,10 @@ export function MusicPlayerProvider({
         setMinimized((v) => !v);
     }, []);
 
+    const clearError = React.useCallback(() => {
+        setError(null);
+    }, []);
+
     const value = React.useMemo<MusicPlayerContextType>(
         () => ({
             track,
@@ -275,6 +350,8 @@ export function MusicPlayerProvider({
             shuffle,
             repeatMode,
             minimized,
+            error,
+            isLoading,
             playTrack,
             play,
             pause,
@@ -287,6 +364,7 @@ export function MusicPlayerProvider({
             skipForward,
             skipBack,
             toggleMinimized,
+            clearError,
         }),
         [
             track,
@@ -297,6 +375,8 @@ export function MusicPlayerProvider({
             shuffle,
             repeatMode,
             minimized,
+            error,
+            isLoading,
             playTrack,
             play,
             pause,
@@ -309,6 +389,7 @@ export function MusicPlayerProvider({
             skipForward,
             skipBack,
             toggleMinimized,
+            clearError,
         ],
     );
 

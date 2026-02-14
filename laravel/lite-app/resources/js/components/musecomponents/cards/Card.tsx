@@ -20,17 +20,11 @@ const CardVariants = cva(
         artist: "bg-artist-card",
         playlist: "bg-playlist-card",
         envies: "bg-envies-card",
-      },
-      size: {
-        sm: "w-32",
-        md: "w-40",
-        lg: "w-52",
-      },
+      }
     },
     defaultVariants: {
       type: "media",
       variant: "musique",
-      size: "md",
     },
   }
 )
@@ -41,7 +35,6 @@ function Card({
   asChild = false,
   variant,
   type,
-  size,
   ...props
 }: React.ComponentProps<"div"> &
   VariantProps<typeof CardVariants> & {
@@ -54,7 +47,7 @@ function Card({
     <Comp
       data-slot="card"
       className={cn(
-        CardVariants({ variant, type, size }),
+        CardVariants({ variant, type }),
         "group transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         className
       )}

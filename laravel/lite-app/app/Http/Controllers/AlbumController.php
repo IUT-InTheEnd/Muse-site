@@ -22,14 +22,15 @@ class AlbumController extends Controller
         $listeTracks = [];
 
         for ($i=0; $i < $nombre; $i++) { 
-            $listeTracks[$i] = Track::find($toutRealiser[$i]->track_id);
+            $listeTracks[$i]['track'] = Track::find($toutRealiser[$i]->track_id);
+            $listeTracks[$i]['artist'] = Artist::find($toutRealiser[$i]->artist_id);
         }
 
-        $artiste = Artist::find($toutRealiser[0]->artist_id);
+        $artistes = Artist::find($toutRealiser->pluck('artist_id'));
 
         return Inertia::render('album', [
             'album' => $album,
-            'artiste' => $artiste,
+            'artistes' => $artistes,
             'nombreMusiques' => $nombre,
             'listeMusiques' => $listeTracks
         ]);
