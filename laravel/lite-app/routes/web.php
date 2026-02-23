@@ -36,6 +36,8 @@ Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::
 
 Route::middleware('auth')->get('/artiste/{id}' ,[ArtistController::class,"show"])->name('artist');
 Route::middleware('auth')->get('/artiste/{id}/all' ,[ArtistController::class,"allTracks"])->name('artist/all_song');
+Route::middleware('auth')->post('/artiste/{id}/follow', [ArtistController::class, 'follow'])->name('artist.follow');
+Route::middleware('auth')->delete('/artiste/{id}/follow', [ArtistController::class, 'unfollow'])->name('artist.unfollow');
 
 // Api user
 Route::middleware('auth')->patch('/user/profile', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('user.updateProfile');

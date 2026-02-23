@@ -2,25 +2,28 @@ import AppHeaderLayout from '@/layouts/app/app-header-layout';
 import { proxyUrl } from '@/components/proxy';
 import { router } from '@inertiajs/react';
 import { show } from '@/actions/App/Http/Controllers/ArtistController';
-import {PlayIcon, PauseIcon} from 'lucide-react';
+import {PlayIcon, PauseIcon, LoaderIcon,} from 'lucide-react';
 import { useMusicPlayer } from '@/hooks/use-music-player';
+import React from 'react';
 
 export default function AllTracks({ artist, albums }: any) {
-    const { playTrack } = useMusicPlayer();
+    const { playTrack, isLoading, playing } = useMusicPlayer();
+    const [currentTrackId, setCurrentTrackId] = React.useState<number | null>(null);
 
     const playTracks = async (trackId: number) => {
+        if (trackId == null) return;
+        setCurrentTrackId(trackId);
         try {
-            const res = await fetch(`/test-music-player?id=${encodeURIComponent(trackId)}`,);
-                if (!res.ok)
-                    throw new Error(`HTTP ${res.status}`);
-                    const data = await res.json();
-                    const track = {
-                        src: proxyUrl(data.url) ?? '',
-                        title: data.title,
-                        artist: data.artist,
-                        artwork: proxyUrl(data.artwork),
-                    };
-                        playTrack(track);
+            const res = await fetch(`/test-music-player?id=${encodeURIComponent(trackId)}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            const track = {
+                src: proxyUrl(data.url) ?? '',
+                title: data.title,
+                artist: data.artist,
+                artwork: proxyUrl(data.artwork),
+            };
+            playTrack(track);
         } catch (err) {
             console.error(err);
             void alert('Impossible de charger la musique.');
@@ -46,17 +49,25 @@ export default function AllTracks({ artist, albums }: any) {
                                 alt={album.title}
                             />
                             <div>
-                                <h2 href={()=>"../album/"+album.id} className="hover:underline cursor-pointer text-3xl font-bold mb-2">
+                                <h2 onClick={() => router.visit(`../album/${album.id}`)} className="hover:underline cursor-pointer text-3xl font-bold mb-2">
                                     {album.title.toUpperCase()}
                                 </h2>
                                 <div className="flex gap-4 mb-4">
                                     <span className="text-gray-400">{album.type}</span>
                                     <span className="text-gray-400">{album.date.substring(0, 4)}</span>
                                 </div>
-                                <button 
-                                    className="w-14 h-14 flex items-center justify-center rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black hover:scale-110 transition"
+                                <button
                                     onClick={() => playTracks(album.tracks[0]?.id)}
+                                    disabled={isLoading}
+                                    className="w-14 h-14 cursor-pointer flex items-center justify-center rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black disabled:opacity-50"
                                 >
+                                    {isLoading ? (
+                                        <LoaderIcon size={28} className="animate-spin" />
+                                    ) : playing && currentTrackId === album.tracks[0]?.id ? (
+                                        <PauseIcon size={28} />
+                                    ) : (
+                                        <PlayIcon size={28} />
+                                    )}
                                 </button>
                             </div>
                         </div>

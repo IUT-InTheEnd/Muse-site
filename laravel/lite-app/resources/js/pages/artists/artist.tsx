@@ -2,14 +2,14 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { proxyUrl } from '@/components/proxy';
 import { Link, router } from '@inertiajs/react';
-import { allTracks } from '@/actions/App/Http/Controllers/ArtistController';
+import { show, allTracks, follow, unfollow } from '@/actions/App/Http/Controllers/ArtistController';
 import { AlbumSlider } from '@/components/musecomponents/sliders/AlbumSlider';
 import { AlbumCard } from '@/components/musecomponents/cards/AlbumCard';
 import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
 import { CardContent, CardCover, CardSubtitle, CardTitle } from '@/components/musecomponents/cards/Card';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 
-export default function Artist({ artist, tracks, albums }: any) {
+export default function Artist({ artist, tracks, albums, isFollowing }: any) {
     const { playTrack } = useMusicPlayer();
 
 
@@ -45,11 +45,22 @@ export default function Artist({ artist, tracks, albums }: any) {
                 <div className="flex flex-col">
                     <p className="text-8xl font-bold mb-4 text-shadow-lg/20">{artist.artist_name.toUpperCase()}</p>
                     <div className="flex flex-row gap-2">
-                        <Button size="lg">
+                        <Button size="lg" onClick={() => playTracks(tracks[0]?.id)}>
                             Écouter
                         </Button>
-                        <Button size="lg" variant="secondary">
-                            Suivre
+                        <Button size="lg" variant="secondary" onClick={async () => {
+                            try {
+                                if (isFollowing) {
+                                    await router.delete(unfollow({ id: artist.artist_id }).url);
+                                } else {
+                                    await router.post(follow({ id: artist.artist_id }).url);
+                                }
+                                router.visit(show(artist.artist_id));
+                            } catch (e) {
+                                console.error(e);
+                            }
+                        }}>
+                            {isFollowing ? 'Ne plus suivre' : 'Suivre'}
                         </Button>
                     </div>
                 </div>
@@ -64,16 +75,15 @@ export default function Artist({ artist, tracks, albums }: any) {
                                     : [];
                             return (
                                 <>
-                                    <img 
-                                        className="size-60 cursor-pointer"
-                                        src={proxyUrl(sorted[0]?.artwork)}
-                                        onClick={() => playTracks(sorted[0]?.id)}
-                                    />
-                                <h3 className='line-clamp-2 w-3xs'>{sorted[0]?.title.toUpperCase()}</h3>
-                                <div className="flex">
-                                        <div>{sorted[0]?.type}</div>
-                                        <div>{sorted[0]?.date.substring(0,4)}</div>
-                                </div>
+                                    <MusicCard className='size-60 overflow-visible px-0'>
+                                        <Link  onClick={() => playTracks(sorted[0]?.id)}>
+                                            <CardCover src={proxyUrl(sorted[0]?.artwork)} alt="Les étoiles vagabondes" />
+                                            <CardContent className='px-0'>
+                                                <CardTitle>{sorted[0]?.title.toUpperCase()}</CardTitle>
+                                                <CardSubtitle>{sorted[0]?.date.substring(0,4)}</CardSubtitle>
+                                            </CardContent>
+                                        </Link>
+                                    </MusicCard> 
                               </>
                             );
                         })()}
@@ -86,15 +96,15 @@ export default function Artist({ artist, tracks, albums }: any) {
                                     : [];
                             return (
                                 <>
-                                    <MusicCard className='size-60'>
-                                        <Link href="/albums/12">
-                                            <CardCover src="/images/Crevecoeur.jpg" alt="Les étoiles vagabondes" />
-                                            <CardContent>
-                                                <CardTitle><p>jifezojfoieziofezj</p></CardTitle>
-                                                <CardSubtitle>Nekfeu</CardSubtitle>
+                                    <AlbumCard className='size-60 overflow-visible px-0'>
+                                        <Link href={"../album/"+sorted[0]?.id}>
+                                            <CardCover src={proxyUrl(sorted[0]?.artwork)} alt="Les étoiles vagabondes" />
+                                            <CardContent className='px-0'>
+                                                <CardTitle>{sorted[0]?.title.toUpperCase()}</CardTitle>
+                                                <CardSubtitle>{sorted[0]?.date.substring(0,4)}</CardSubtitle>
                                             </CardContent>
                                         </Link>
-                                        </MusicCard> 
+                                    </AlbumCard > 
                               </>
                             );
                         })()}
@@ -158,12 +168,12 @@ export default function Artist({ artist, tracks, albums }: any) {
                                 return sorted
                             })().map((album: any, index: number) => (
                                 (
-                                    <AlbumCard  className='size-60'>
+                                    <AlbumCard className='size-auto'>
                                         <Link href={"../album/"+album.id}>
                                             <CardCover src={proxyUrl(album.artwork)} alt="Les étoiles vagabondes" />
-                                            <CardContent>
-                                            <CardTitle>{album.title.toUpperCase()}</CardTitle>
-                                            <CardSubtitle>Nekfeu</CardSubtitle>
+                                            <CardContent className='px-0'>
+                                                <CardTitle>{album.title.toUpperCase()}</CardTitle>
+                                                <CardSubtitle>{album.date.substring(0,4)}</CardSubtitle>
                                             </CardContent>
                                         </Link>
                                         </AlbumCard> 

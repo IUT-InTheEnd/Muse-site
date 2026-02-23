@@ -16,6 +16,16 @@ class ArtistController extends Controller
     {
         $artist = Artist::findOrFail($id);
 
+        $user = auth()->user();
+        $isFollowing = false;
+        if ($user) {
+            // qualify column to avoid ambiguity after join
+            $isFollowing = $user->artists()
+                ->where('artist.artist_id', $id)
+                ->exists();
+            // alternatively: ->wherePivot('artist_id', $id)
+        }
+
         $tracks = Track::whereHas('realisers', function ($query) use ($id) {
             $query->where('artist_id', $id);
         })
@@ -54,8 +64,27 @@ class ArtistController extends Controller
         return Inertia::render('artists/artist', [
             'artist' => $artist,
             'tracks' => $tracks, 
-            'albums' => $albums
+            'albums' => $albums,
+            'isFollowing' => $isFollowing,
         ]);
+    }
+
+    public function follow(string $id)
+    {
+        $user = auth()->user();
+        if ($user) {
+            $user->artists()->syncWithoutDetaching([$id]);
+        }
+        return response()->json(['success' => true]);
+    }
+
+    public function unfollow(string $id)
+    {
+        $user = auth()->user();
+        if ($user) {
+            $user->artists()->detach($id);
+        }
+        return response()->json(['success' => true]);
     }
 
     public function allTracks(string $id)

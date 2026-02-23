@@ -99,6 +99,6 @@ class Artist extends Model
 
 	public function users()
 	{
-		return $this->belongsToMany(User::class, 'user_prefere_artiste');
+		return $this->belongsToMany(User::class, 'user_prefere_artiste', 'artist_id', 'user_id');
 	}
 }
