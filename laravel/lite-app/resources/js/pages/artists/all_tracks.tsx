@@ -5,10 +5,8 @@ import { show } from '@/actions/App/Http/Controllers/ArtistController';
 import {PlayIcon, PauseIcon} from 'lucide-react';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 
-export default function AllTracks({ artist, tracks, albums,test }: any) {
+export default function AllTracks({ artist, albums }: any) {
     const { playTrack } = useMusicPlayer();
-    
-    console.log(test)
 
     const playTracks = async (trackId: number) => {
         try {
@@ -28,31 +26,6 @@ export default function AllTracks({ artist, tracks, albums,test }: any) {
             void alert('Impossible de charger la musique.');
         }
     };
-    
-    const groupTracksByAlbum = () => {
-        const grouped: { [key: string]: any } = {};
-        
-        albums.forEach((album: any) => {
-            grouped[album.id] = {
-                album,
-                tracks: []
-            };
-        });
-
-        tracks.forEach((track: any) => {
-            Object.keys(grouped).forEach(albumId => {
-                if (grouped[albumId].album.id) {
-                    grouped[albumId].tracks.push(track);
-                }
-            });
-        });
-
-        return Object.values(grouped).filter((g: any) => g.tracks.length > 0);
-    };
-
-    const groupedData = groupTracksByAlbum();
-
-    console.log(groupedData)
 
     return (
         <AppHeaderLayout>        
@@ -64,25 +37,25 @@ export default function AllTracks({ artist, tracks, albums,test }: any) {
                     {artist.artist_name}
                 </h1>
 
-                {groupedData.map((group: any, index: number) => (
-                    <div key={group.album.id} className="mb-20">
+                {albums.map((album: any) => (
+                    <div key={album.id} className="mb-20">
                         <div className="flex mb-8">
                             <img 
                                 className="size-60 mr-8 rounded-lg object-cover" 
-                                src={proxyUrl(group.album.artwork)} 
-                                alt={group.album.title}
+                                src={proxyUrl(album.artwork)} 
+                                alt={album.title}
                             />
                             <div>
-                                <h2 href={()=>"../album/"+group.album.id} className="hover:underline cursor-pointer text-3xl font-bold mb-2">
-                                    {group.album.title.toUpperCase()}
+                                <h2 href={()=>"../album/"+album.id} className="hover:underline cursor-pointer text-3xl font-bold mb-2">
+                                    {album.title.toUpperCase()}
                                 </h2>
                                 <div className="flex gap-4 mb-4">
-                                    <span className="text-gray-400">{group.album.type}</span>
-                                    <span className="text-gray-400">{group.album.date.substring(0, 4)}</span>
+                                    <span className="text-gray-400">{album.type}</span>
+                                    <span className="text-gray-400">{album.date.substring(0, 4)}</span>
                                 </div>
                                 <button 
                                     className="w-14 h-14 flex items-center justify-center rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black hover:scale-110 transition"
-                                    onClick={() => playTracks(group.tracks[0]?.id)}
+                                    onClick={() => playTracks(album.tracks[0]?.id)}
                                 >
                                 </button>
                             </div>
@@ -98,7 +71,7 @@ export default function AllTracks({ artist, tracks, albums,test }: any) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {group.tracks
+                                {album.tracks
                                     .sort((a: any, b: any) => (b.listens ?? 0) - (a.listens ?? 0))
                                     .map((track: any, trackIndex: number) => (
                                         <tr
