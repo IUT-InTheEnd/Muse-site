@@ -74,6 +74,9 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
 
+// route profile user publique
+Route::get('/user/{username}', [App\Http\Controllers\UserController::class, 'show'])->name('user.profile');
+
 // Images create/read/update/delete - protégé par auth
 Route::get('/image/{filename}', [App\Http\Controllers\ImageFileController::class, 'getImage'])->name('image.get');
 Route::middleware('auth')->post('/image', [App\Http\Controllers\ImageFileController::class, 'uploadImage'])->name('image.upload');

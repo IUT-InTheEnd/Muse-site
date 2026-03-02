@@ -41,11 +41,15 @@ class CreateNewUser implements CreatesNewUsers
             'avg_daily_listen_time' => 0.0,
         ]);
 
-        return User::create([
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => bcrypt($input['password']),
             'profile_id' => $userProfile->id,
         ]);
+
+        $userPrivacy = $user->user_privacy()->create();
+
+        return $user;
     }
 }

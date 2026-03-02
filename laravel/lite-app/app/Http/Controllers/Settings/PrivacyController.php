@@ -16,13 +16,13 @@ class PrivacyController extends Controller
     public function edit(Request $request)
     {
         return Inertia::render('settings/privacy', [
-            'public_profile_visibility' => $request->user()->public_profile_visibility,
+            'public_profile_visibility' => $request->user()->user_privacy->public_profile_visibility,
         ]);
     }
 
     public function update(PrivacyUpdateRequest $request): RedirectResponse
     {
-        $request->user()->update([
+        $request->user()->user_privacy->public_profile_visibility->update([
             'public_profile_visibility' => $request->public_profile_visibility,
         ]);
 

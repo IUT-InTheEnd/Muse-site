@@ -8,9 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class User
@@ -33,11 +31,11 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string|null $user_gender
  * @property string|null $user_instruments
  * @property string|null $user_music_contexts
- * @property boolean|null $public_profile_visibility
  * @property int|null $profile_id
  * @property UserProfile|null $user_profile
+ * @property UserPrivacy|null $user_privacy
  * @property UserPreferenceEchonest|null $user_preference_echonest
- * @property Collection|PossedePlaylist[] $possede_playlists
+ * @property Collection|Playlist[] $playlists
  * @property Collection|Represente[] $representes
  * @property Collection|UserParle[] $user_parles
  * @property Collection|Artist[] $artists
@@ -46,10 +44,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Collection|Album[] $albums
  * @property Collection|UserEcoute[] $user_ecoutes
  */
-class User extends Authenticatable
+class User extends Model
 {
-    use Notifiable, TwoFactorAuthenticatable;
-
     protected $table = 'user';
 
     protected $casts = [
@@ -81,7 +77,6 @@ class User extends Authenticatable
         'user_gender',
         'user_instruments',
         'user_music_contexts',
-        'public_profile_visibility',
         'profile_id',
     ];
 
@@ -90,12 +85,17 @@ class User extends Authenticatable
         return $this->belongsTo(UserProfile::class, 'profile_id');
     }
 
+    public function user_privacy()
+    {
+        return $this->hasOne(UserPrivacy::class, 'id');
+    }
+
     public function user_preference_echonest()
     {
         return $this->hasOne(UserPreferenceEchonest::class);
     }
 
-    public function playlist()
+    public function playlists()
     {
         return $this->hasMany(Playlist::class);
     }
