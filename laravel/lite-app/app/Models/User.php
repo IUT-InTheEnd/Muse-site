@@ -8,7 +8,9 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 
 /**
  * Class User
@@ -44,8 +46,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|Album[] $albums
  * @property Collection|UserEcoute[] $user_ecoutes
  */
-class User extends Model
+class User extends Authenticatable
 {
+    use Notifiable, TwoFactorAuthenticatable;
+
     protected $table = 'user';
 
     protected $casts = [
