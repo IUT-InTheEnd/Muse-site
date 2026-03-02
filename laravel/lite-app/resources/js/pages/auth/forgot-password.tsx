@@ -1,4 +1,6 @@
 // Components
+import { Form, Head } from '@inertiajs/react';
+import { LoaderCircle } from 'lucide-react';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -7,16 +9,14 @@ import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
 import { email } from '@/routes/password';
-import { Form, Head } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
 
 export default function ForgotPassword({ status }: { status?: string }) {
     return (
         <AuthLayout
-            title="Forgot password"
-            description="Enter your email to receive a password reset link"
+            title="Mot de passe oublié"
+            description="Entrer votre adresse e-mail et nous vous enverrons un lien de réinitialisation de mot de passe qui vous permettra d'en choisir un nouveau."
         >
-            <Head title="Forgot password" />
+            <Head title="Mot de passe oublié" />
 
             {status && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
@@ -29,7 +29,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     {({ processing, errors }) => (
                         <>
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">Addresse e-mail</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -51,7 +51,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                     {processing && (
                                         <LoaderCircle className="h-4 w-4 animate-spin" />
                                     )}
-                                    Email password reset link
+                                    Envoyer le lien de réinitialisation
                                 </Button>
                             </div>
                         </>

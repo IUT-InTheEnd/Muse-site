@@ -4,10 +4,10 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../css/app.css';
 import { AuthenticatedMusicPlayer } from './components/authenticated-music-player';
+import Footer from './components/musecomponents/Footer';
+import Navbar from './components/musecomponents/Navbar';
 import { MusicPlayerProvider } from './contexts/music-player-context';
 import { initializeTheme } from './hooks/use-appearance';
-import Navbar from './components/musecomponents/Navbar';
-import Footer from './components/musecomponents/Footer';
 import type { SharedData } from './types';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Lite';
@@ -47,7 +47,7 @@ createInertiaApp({
                                 </div>
                             </footer>
                         )}
-                        
+
                         {/* Player */}
                         <AuthenticatedMusicPlayer initialAuth={initialAuth} />
                     </MusicPlayerProvider>
