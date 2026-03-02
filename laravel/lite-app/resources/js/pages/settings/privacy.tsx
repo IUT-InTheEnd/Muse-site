@@ -1,10 +1,10 @@
-import { Form, Head, usePage } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit as editPrivacy } from '@/routes/privacy';
 import type { BreadcrumbItem } from '@/types';
+import { Form, Head, usePage } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -40,11 +40,16 @@ export default function Privacy() {
                     >
                         <div className="space-y-4">
                             <div className="flex items-center space-x-4">
-                                <input type="hidden" name="public_profile_visibility" value="0" />
+                                <input
+                                    type="hidden"
+                                    name="public_profile_visibility"
+                                    value="0"
+                                />
                                 <input
                                     id="public_profile_visibility"
                                     name="public_profile_visibility"
                                     type="checkbox"
+                                    value="1"
                                     defaultChecked={public_profile_visibility}
                                     className="h-4 w-4 rounded border-gray-300 text-purple-500 focus:ring-purple-400"
                                 />

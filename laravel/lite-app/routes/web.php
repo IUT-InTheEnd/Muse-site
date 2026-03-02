@@ -8,22 +8,22 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
 Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    if (auth()->check()) {
+        return Inertia::render('dashboard');
+    }
+
+    return Inertia::render('welcome');
 })->name('home');
+
+Route::middleware(['auth'])->get('/dashboard', function () {
+    return redirect('/');
+})->name('dashboard');
 
 // Route::middleware(['auth', 'verified'])->group(function () {
 //     Route::get('/', function () {
 //         return Inertia::render('homepage');
 //     })->name('homepage');
 // });
-
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
-});
 
 Route::get('/genpassword', function () {
     return view('genpassword');
@@ -73,6 +73,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
+
+// route profile user publique
+Route::get('/user/{username}', [App\Http\Controllers\UserController::class, 'show'])->name('user.profile');
 
 // Images create/read/update/delete - protégé par auth
 Route::get('/image/{filename}', [App\Http\Controllers\ImageFileController::class, 'getImage'])->name('image.get');

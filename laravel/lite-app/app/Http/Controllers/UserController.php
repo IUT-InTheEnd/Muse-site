@@ -83,7 +83,7 @@ class UserController extends Controller
 
         if ($validatedData) {
             $user = User::find($request->user_id);
-            if ($user & $user->public_profile_visibility) {
+            if ($user & $user->user_privacy->public_profile_visibility) {
                 $playlists = $user->possede_playlists()->where('playlist_public', true)->get();
                 $recentTracks = $user->user_ecoutes()->latest()->take(10)->get();
                 $followedArtists = $user->artists()->get();
