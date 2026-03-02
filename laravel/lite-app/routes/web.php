@@ -39,11 +39,6 @@ Route::middleware('auth')->get('/artiste/{id}/all' ,[ArtistController::class,"al
 Route::middleware('auth')->post('/artiste/{id}/follow', [ArtistController::class, 'follow'])->name('artist.follow');
 Route::middleware('auth')->delete('/artiste/{id}/follow', [ArtistController::class, 'unfollow'])->name('artist.unfollow');
 
-Route::prefix('api')->group(function(){
-    Route::get('/artists/{id}', [ArtistController::class, "getArtist"]);
-    Route::get('/artists/{id}/albums', [ArtistController::class, "getArtistAlbums"]);
-});
-
 
 // Api user
 Route::middleware('auth')->patch('/user/profile', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('user.updateProfile');

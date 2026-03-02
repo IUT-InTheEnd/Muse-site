@@ -86,7 +86,7 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                                         <Link  onClick={() => playTracks(sorted[0]?.id)}>
                                             <CardCover src={proxyUrl(sorted[0]?.artwork)} alt="Les étoiles vagabondes" />
                                             <CardContent className='px-0'>
-                                                <CardTitle>{sorted[0]?.title.toUpperCase()}</CardTitle>
+                                                <CardTitle className="line-clamp-2">{sorted[0]?.title.toUpperCase()}</CardTitle>
                                                 <CardSubtitle>{sorted[0]?.date.substring(0,4)}</CardSubtitle>
                                             </CardContent>
                                         </Link>
@@ -107,7 +107,7 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                                         <Link href={"../album/"+sorted[0]?.id}>
                                             <CardCover src={proxyUrl(sorted[0]?.artwork)} alt="Les étoiles vagabondes" />
                                             <CardContent className='px-0'>
-                                                <CardTitle>{sorted[0]?.title.toUpperCase()}</CardTitle>
+                                                <CardTitle className="line-clamp-2">{sorted[0]?.title.toUpperCase()}</CardTitle>
                                                 <CardSubtitle>{sorted[0]?.date.substring(0,4)}</CardSubtitle>
                                             </CardContent>
                                         </Link>
@@ -175,11 +175,11 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                                 return sorted
                             })().map((album: any, index: number) => (
                                 (
-                                    <AlbumCard className='size-auto'>
-                                        <Link href={"../album/"+album.id}>
-                                            <CardCover src={proxyUrl(album.artwork)} alt="Les étoiles vagabondes" />
+                                    <AlbumCard className="size-80 overflow-visible">
+                                        <Link className="size-60" href={"../album/"+album.id}>
+                                            <CardCover src={proxyUrl(album.artwork)} alt={album.title} />
                                             <CardContent className='px-0'>
-                                                <CardTitle>{album.title.toUpperCase()}</CardTitle>
+                                                <CardTitle className="line-clamp-2">{album.title.toUpperCase()}</CardTitle>
                                                 <CardSubtitle>{album.date.substring(0,4)}</CardSubtitle>
                                             </CardContent>
                                         </Link>
