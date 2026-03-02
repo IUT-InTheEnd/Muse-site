@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { proxyUrl } from '@/components/proxy';
-import { Link, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { show, allTracks, follow, unfollow } from '@/actions/App/Http/Controllers/ArtistController';
 import { AlbumSlider } from '@/components/musecomponents/sliders/AlbumSlider';
 import { AlbumCard } from '@/components/musecomponents/cards/AlbumCard';
@@ -33,7 +33,14 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
     };
 
     return (
-        <AppLayout>
+        <>
+            <Head title={artist.artist_name}>
+                <link rel="preconnect" href="https://fonts.bunny.net" />
+                <link
+                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
+                    rel="stylesheet"
+                />
+            </Head>
         <div className="flex flex-col relative min-h-screen p-36">
             <div className="backgroundimg-container">
                 <div className="gradient"></div>
@@ -184,6 +191,6 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                 </div>
             </div>
             </div>
-            </AppLayout>
+            </>
     );
 }

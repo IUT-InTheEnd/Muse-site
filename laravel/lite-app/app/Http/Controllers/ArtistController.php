@@ -19,11 +19,9 @@ class ArtistController extends Controller
         $user = auth()->user();
         $isFollowing = false;
         if ($user) {
-            // qualify column to avoid ambiguity after join
             $isFollowing = $user->artists()
                 ->where('artist.artist_id', $id)
                 ->exists();
-            // alternatively: ->wherePivot('artist_id', $id)
         }
 
         $tracks = Track::whereHas('realisers', function ($query) use ($id) {
@@ -43,23 +41,7 @@ class ArtistController extends Controller
             ];
         });
 
-        $albumIds = Realiser::where('artist_id', $id)
-                    ->pluck('album_id')
-            ->unique()
-            ->filter()
-            ->toArray();
-
-        $albums = Album::whereIn('album_id', $albumIds)
-            ->get()
-            ->map(function ($album) {
-                return [
-                    'id' => $album->album_id,
-                    'title' => $album->album_title,
-                    'date' => $album->album_date_created ?? "",
-                    'type' => $album->album_type,
-                    'artwork' => $album->album_image_file 
-                ];
-            });
+        $albums = $this->albumsForArtist($id);
 
         return Inertia::render('artists/artist', [
             'artist' => $artist,
@@ -68,25 +50,7 @@ class ArtistController extends Controller
             'isFollowing' => $isFollowing,
         ]);
     }
-
-    public function follow(string $id)
-    {
-        $user = auth()->user();
-        if ($user) {
-            $user->artists()->syncWithoutDetaching([$id]);
-        }
-        return response()->json(['success' => true]);
-    }
-
-    public function unfollow(string $id)
-    {
-        $user = auth()->user();
-        if ($user) {
-            $user->artists()->detach($id);
-        }
-        return response()->json(['success' => true]);
-    }
-
+    
     public function allTracks(string $id)
     {
         $artist = Artist::findOrFail($id);
@@ -142,4 +106,55 @@ class ArtistController extends Controller
             'albums' => $albums,
         ]);
     }
+
+    private function albumsForArtist(string $artistId)
+    {
+        $albumIds = Realiser::where('artist_id', $artistId)
+                    ->pluck('album_id')
+                    ->unique()
+                    ->filter()
+                    ->toArray();
+
+        return Album::whereIn('album_id', $albumIds)
+            ->orderBy('album_date_created', 'desc')
+            ->get()
+            ->map(function ($album) {
+                return [
+                    'id' => $album->album_id,
+                    'title' => $album->album_title,
+                    'date' => $album->album_date_created ? $album->album_date_created->toDateString() : null,
+                    'type' => $album->album_type,
+                    'artwork' => $album->album_image_file,
+                ];
+            });
+    }
+
+    public function follow(string $id)
+    {
+        $user = auth()->user();
+        if ($user) {
+            $user->artists()->syncWithoutDetaching([$id]);
+        }
+        return response()->json(['success' => true]);
+    }
+
+    public function getArtist($id){
+        return response()->json(Artist::find($id));
+    }
+
+    public function getArtistAlbums($id)
+    {
+        $albums = $this->albumsForArtist($id);
+        return response()->json($albums);
+    }
+
+    public function unfollow(string $id)
+    {
+        $user = auth()->user();
+        if ($user) {
+            $user->artists()->detach($id);
+        }
+        return response()->json(['success' => true]);
+    }
+
 }

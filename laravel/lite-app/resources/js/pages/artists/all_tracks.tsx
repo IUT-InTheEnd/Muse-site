@@ -1,6 +1,6 @@
 import AppHeaderLayout from '@/layouts/app/app-header-layout';
 import { proxyUrl } from '@/components/proxy';
-import { router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { show } from '@/actions/App/Http/Controllers/ArtistController';
 import {PlayIcon, PauseIcon, LoaderIcon,} from 'lucide-react';
 import { useMusicPlayer } from '@/hooks/use-music-player';
@@ -31,7 +31,14 @@ export default function AllTracks({ artist, albums }: any) {
     };
 
     return (
-        <AppHeaderLayout>        
+        <>        
+            <Head title={artist.artist_name}>
+                <link rel="preconnect" href="https://fonts.bunny.net" />
+                <link
+                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
+                    rel="stylesheet"
+                />
+            </Head>
             <div className="relative min-h-screen p-10">
                 <h1 
                     onClick={() => router.visit(show(artist.artist_id))} 
@@ -116,6 +123,6 @@ export default function AllTracks({ artist, albums }: any) {
                 ))}
 
             </div>
-        </AppHeaderLayout>
+        </>
     );
 }
