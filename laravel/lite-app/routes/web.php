@@ -9,25 +9,21 @@ use Laravel\Fortify\Features;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect()->route('dashboard');
+        return Inertia::render('dashboard');
     }
 
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    return Inertia::render('welcome');
 })->name('home');
+
+Route::middleware(['auth'])->get('/dashboard', function () {
+    return redirect('/');
+})->name('dashboard');
 
 // Route::middleware(['auth', 'verified'])->group(function () {
 //     Route::get('/', function () {
 //         return Inertia::render('homepage');
 //     })->name('homepage');
 // });
-
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
-});
 
 Route::get('/genpassword', function () {
     return view('genpassword');

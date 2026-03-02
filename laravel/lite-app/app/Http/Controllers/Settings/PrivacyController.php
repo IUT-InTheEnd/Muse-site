@@ -22,7 +22,7 @@ class PrivacyController extends Controller
 
     public function update(PrivacyUpdateRequest $request): RedirectResponse
     {
-        $request->user()->user_privacy->public_profile_visibility->update([
+        $request->user()->user_privacy->update([
             'public_profile_visibility' => $request->public_profile_visibility,
         ]);
 

@@ -1,6 +1,3 @@
-import { Link } from '@inertiajs/react';
-import { ChevronsUpDown, Menu, Search, X } from 'lucide-react';
-import { useState } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -9,6 +6,9 @@ import {
 import { UserInfo } from '@/components/user-info';
 import { UserMenuContent } from '@/components/user-menu-content';
 import type { User } from '@/types';
+import { Link } from '@inertiajs/react';
+import { ChevronsUpDown, Menu, Search, X } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '../ui/button';
 
 type NavbarProps = {
@@ -62,7 +62,7 @@ const Navbar = ({ user }: NavbarProps) => {
                         <div className="hidden items-center gap-4 sm:flex">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-100 focus:outline-none">
+                                    <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-100 focus:outline-none dark:hover:bg-muted">
                                         <UserInfo user={user} />
                                         <ChevronsUpDown className="size-4 text-gray-500" />
                                     </button>
@@ -120,7 +120,7 @@ const Navbar = ({ user }: NavbarProps) => {
                             </a>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-100 focus:outline-none">
+                                    <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-100 focus:outline-none dark:hover:bg-muted">
                                         <UserInfo user={user} />
                                         <ChevronsUpDown className="size-4 text-gray-500" />
                                     </button>
