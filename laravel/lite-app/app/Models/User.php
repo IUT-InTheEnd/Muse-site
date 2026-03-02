@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * Class User
@@ -48,7 +49,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  */
 class User extends Authenticatable
 {
-    use Notifiable, TwoFactorAuthenticatable;
+    use HasApiTokens, Notifiable, TwoFactorAuthenticatable;
 
     protected $table = 'user';
 
