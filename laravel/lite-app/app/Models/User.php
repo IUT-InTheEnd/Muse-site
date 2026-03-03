@@ -139,4 +139,34 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserEcoute::class);
     }
+
+    public function getFavoritesPlaylist(): Playlist
+    {
+        $playlist = $this->playlists()
+            ->where('playlist_deletable', false)
+            ->where('playlist_name', 'Favoris')
+            ->first();
+
+        if (! $playlist) {
+            $playlist = Playlist::create([
+                'user_id' => $this->id,
+                'playlist_name' => 'Favoris',
+                'playlist_description' => 'Vos titres favoris',
+                'playlist_date_created' => now(),
+                'playlist_date_updated' => now(),
+                'playlist_public' => false,
+                'playlist_deletable' => false,
+            ]);
+        }
+
+        return $playlist;
+    }
+
+    public function getFavoriteTrackIds(): array
+    {
+        return $this->getFavoritesPlaylist()
+            ->tracks()
+            ->pluck('track.track_id')
+            ->toArray();
+    }
 }

@@ -5,9 +5,38 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
+    public function show(string $username)
+    {
+        $user = User::where('name', $username)->firstOrFail();
+
+        // Vérifie si le profil est public
+        if ($user->user_privacy && ! $user->user_privacy->public_profile_visibility && auth()->id() !== $user->id) {
+            abort(403, 'Profile is private');
+        }
+
+        $playlists = $user->playlists()->where('playlist_public', true)->get();
+        $recentTracks = $user->user_ecoutes()->with('track.realisers.artist')->latest('last_listen')->take(10)->get();
+        $followedArtists = $user->artists()->get();
+
+        // Récupère les IDs des pistes favorites de l'utilisateur connecté (on veut montrer les favoris du de l'utilisateur qui visite la page, pas du propriétaire du profil)
+        $authUser = auth()->user();
+        $favoriteTrackIds = $authUser ? $authUser->getFavoriteTrackIds() : [];
+        $userPlaylists = $authUser ? $authUser->playlists()->get(['playlist_id', 'playlist_name', 'playlist_image_file']) : [];
+
+        return Inertia::render('user/profile', [
+            'user' => $user,
+            'playlists' => $playlists,
+            'recent_tracks' => $recentTracks,
+            'followed_artists' => $followedArtists,
+            'favorite_track_ids' => $favoriteTrackIds,
+            'user_playlists' => $userPlaylists,
+        ]);
+    }
+
     public function updateUserInfo(Request $request)
     {
         $user = auth()->user();
@@ -69,35 +98,5 @@ class UserController extends Controller
         }
 
         return back();
-    }
-
-    public function getUserPageInformation(Request $request)
-    {
-        // Récupère les playlists publiques de l'utilisateur
-        // Récupère les titres récemment écoutés par l'utilisateur
-        // Récupère les artistes suivis par l'utilisateur
-        // Vérifie si la page est publique ou privée et gère l'affichage en conséquence
-        $validatedData = $request->validate([
-            'user_id' => 'required|integer|exists:user,user_id',
-        ]);
-
-        if ($validatedData) {
-            $user = User::find($request->user_id);
-            if ($user & $user->user_privacy->public_profile_visibility) {
-                $playlists = $user->possede_playlists()->where('playlist_public', true)->get();
-                $recentTracks = $user->user_ecoutes()->latest()->take(10)->get();
-                $followedArtists = $user->artists()->get();
-
-                return response()->json([
-                    'playlists' => $playlists,
-                    'recent_tracks' => $recentTracks,
-                    'followed_artists' => $followedArtists,
-                ]);
-            }
-
-            return response()->json(['error' => 'Profile is private'], 403);
-        }
-
-        return response()->json(['error' => 'Invalid request'], 400);
     }
 }

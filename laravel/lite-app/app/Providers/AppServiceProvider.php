@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Observers\UserObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        // Observe le modèle User pour créer automatiquement une playlist "Favoris" lors de la création d'un nouvel utilisateur
+        User::observe(UserObserver::class);
     }
 
     protected function configureDefaults(): void

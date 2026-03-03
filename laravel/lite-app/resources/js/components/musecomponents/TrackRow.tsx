@@ -1,0 +1,486 @@
+import { proxyUrl } from '@/components/proxy';
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { useMusicPlayer } from '@/contexts/music-player-context';
+import { cn } from '@/lib/utils';
+import { router } from '@inertiajs/react';
+import {
+    Heart,
+    ListPlus,
+    Loader2,
+    Music,
+    Pause,
+    Play,
+    Plus,
+} from 'lucide-react';
+import * as React from 'react';
+
+export type TrackData = {
+    track_id: number;
+    track_title: string;
+    track_image_file?: string;
+    track_duration?: number;
+    track_listens?: number;
+};
+
+export type ArtistData = {
+    artist_id: number;
+    artist_name: string;
+};
+
+export type PlaylistData = {
+    playlist_id: number;
+    playlist_name: string;
+    playlist_image_file?: string;
+};
+
+type TrackRowProps = {
+    track: TrackData;
+    artist?: ArtistData;
+    index?: number;
+    showIndex?: boolean;
+    isFavorite?: boolean;
+    playlists?: PlaylistData[];
+    className?: string;
+    onFavoriteChange?: (trackId: number, isFavorite: boolean) => void;
+    onAddToPlaylist?: (trackId: number, playlistId: number) => void;
+    onCreatePlaylist?: (name: string, trackId: number) => void;
+};
+
+export function TrackRow({
+    track,
+    artist,
+    index,
+    showIndex = true,
+    isFavorite = false,
+    playlists = [],
+    className,
+    onFavoriteChange,
+    onAddToPlaylist,
+    onCreatePlaylist,
+}: TrackRowProps) {
+    const {
+        track: currentTrack,
+        playing,
+        playTrack,
+        togglePlay,
+    } = useMusicPlayer();
+
+    const [isAddingFavorite, setIsAddingFavorite] = React.useState(false);
+    const [localIsFavorite, setLocalIsFavorite] = React.useState(isFavorite);
+    const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] =
+        React.useState(false);
+    const [isCreatingPlaylist, setIsCreatingPlaylist] = React.useState(false);
+    const [newPlaylistName, setNewPlaylistName] = React.useState('');
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+    // Determiner si cette piste est en cours de lecture
+    const isCurrentTrack = currentTrack?.title === track.track_title;
+    const isPlaying = isCurrentTrack && playing;
+
+    // Formater la duree
+    const formatDuration = (seconds?: number) => {
+        if (!seconds) return '--:--';
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        if (h > 0) {
+            return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    };
+
+    // Jouer ou mettre en pause la piste
+    const handlePlayPause = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+
+        if (isCurrentTrack) {
+            togglePlay();
+        } else {
+            try {
+                const res = await fetch(
+                    `/test-music-player?id=${encodeURIComponent(track.track_id)}`,
+                );
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                const trackData = {
+                    src: proxyUrl(data.url) ?? '',
+                    title: data.title,
+                    artist: data.artist,
+                    artwork: proxyUrl(data.artwork),
+                };
+                playTrack(trackData);
+            } catch (err) {
+                console.error(err);
+                alert('Impossible de charger la musique.');
+            }
+        }
+    };
+
+    // Toggle favoris
+    const handleToggleFavorite = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsAddingFavorite(true);
+
+        try {
+            const response = await fetch('/favorites/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute('content') ?? '',
+                },
+                body: JSON.stringify({ track_id: track.track_id }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setLocalIsFavorite(data.is_favorite);
+                onFavoriteChange?.(track.track_id, data.is_favorite);
+            }
+        } catch (err) {
+            console.error('Erreur favoris:', err);
+        } finally {
+            setIsAddingFavorite(false);
+        }
+    };
+
+    // Ajouter a une playlist existante
+    const handleAddToPlaylist = async (playlistId: number) => {
+        try {
+            const response = await fetch('/playlists/add-track', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute('content') ?? '',
+                },
+                body: JSON.stringify({
+                    playlist_id: playlistId,
+                    track_id: track.track_id,
+                }),
+            });
+
+            if (response.ok) {
+                onAddToPlaylist?.(track.track_id, playlistId);
+                setIsPlaylistDialogOpen(false);
+            }
+        } catch (err) {
+            console.error('Erreur ajout playlist:', err);
+        }
+    };
+
+    // Creer une nouvelle playlist et y ajouter la piste
+    const handleCreatePlaylist = async () => {
+        if (!newPlaylistName.trim()) return;
+
+        setIsSubmitting(true);
+        try {
+            const response = await fetch('/playlists/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute('content') ?? '',
+                },
+                body: JSON.stringify({
+                    name: newPlaylistName.trim(),
+                    track_id: track.track_id,
+                }),
+            });
+
+            if (response.ok) {
+                onCreatePlaylist?.(newPlaylistName.trim(), track.track_id);
+                setNewPlaylistName('');
+                setIsCreatingPlaylist(false);
+                setIsPlaylistDialogOpen(false);
+                router.reload({ only: ['playlists'] });
+            }
+        } catch (err) {
+            console.error('Erreur creation playlist:', err);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <>
+            <div
+                className={cn(
+                    'group flex cursor-pointer items-center gap-4 rounded-md p-3 transition-colors hover:bg-accent/50',
+                    isCurrentTrack && 'bg-accent/30',
+                    className,
+                )}
+                onClick={handlePlayPause}
+            >
+                {/* Index / Play-Pause */}
+                <div className="flex w-8 items-center justify-center">
+                    {showIndex && !isCurrentTrack && (
+                        <span className="text-sm text-muted-foreground group-hover:hidden">
+                            {index !== undefined ? index + 1 : ''}
+                        </span>
+                    )}
+                    {isPlaying ? (
+                        <Pause
+                            className={cn(
+                                'h-4 w-4 text-primary',
+                                !isCurrentTrack && 'hidden group-hover:block',
+                            )}
+                        />
+                    ) : (
+                        <Play
+                            className={cn(
+                                'h-4 w-4',
+                                isCurrentTrack
+                                    ? 'text-primary'
+                                    : 'hidden group-hover:block',
+                            )}
+                        />
+                    )}
+                </div>
+
+                {/* Cover */}
+                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded">
+                    {track.track_image_file ? (
+                        <img
+                            src={proxyUrl(track.track_image_file)}
+                            alt={track.track_title}
+                            className="h-full w-full object-cover"
+                        />
+                    ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-muted">
+                            <Music className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                    )}
+                    {/* Indicateur de lecture */}
+                    {isPlaying && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                            <div className="flex gap-0.5">
+                                <span
+                                    className="h-3 w-1 animate-pulse bg-primary"
+                                    style={{ animationDelay: '0ms' }}
+                                />
+                                <span
+                                    className="h-4 w-1 animate-pulse bg-primary"
+                                    style={{ animationDelay: '150ms' }}
+                                />
+                                <span
+                                    className="h-2 w-1 animate-pulse bg-primary"
+                                    style={{ animationDelay: '300ms' }}
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Titre et Artiste */}
+                <div className="flex min-w-0 flex-1 flex-col">
+                    <span
+                        className={cn(
+                            'line-clamp-1 font-medium',
+                            isCurrentTrack && 'text-primary',
+                        )}
+                    >
+                        {track.track_title}
+                    </span>
+                    {artist && (
+                        <span className="line-clamp-1 text-sm text-muted-foreground">
+                            {artist.artist_name}
+                        </span>
+                    )}
+                </div>
+
+                {/* Nombre de lectures */}
+                {track.track_listens !== undefined && (
+                    <span className="hidden font-mono text-sm text-muted-foreground md:block">
+                        {track.track_listens.toLocaleString('fr-FR')}
+                    </span>
+                )}
+
+                {/* Duree */}
+                <span className="w-14 text-right font-mono text-sm text-muted-foreground">
+                    {formatDuration(track.track_duration)}
+                </span>
+
+                {/* Actions */}
+                <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                    {/* Bouton Favoris */}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={handleToggleFavorite}
+                        disabled={isAddingFavorite}
+                    >
+                        {isAddingFavorite ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Heart
+                                className={cn(
+                                    'h-4 w-4',
+                                    localIsFavorite &&
+                                        'fill-red-500 text-red-500',
+                                )}
+                            />
+                        )}
+                    </Button>
+
+                    {/* Menu Playlist */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <ListPlus className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            align="end"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    setIsCreatingPlaylist(true);
+                                    setIsPlaylistDialogOpen(true);
+                                }}
+                            >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Nouvelle playlist
+                            </DropdownMenuItem>
+                            {playlists.length > 0 && (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    {playlists.map((playlist) => (
+                                        <DropdownMenuItem
+                                            key={playlist.playlist_id}
+                                            onClick={() =>
+                                                handleAddToPlaylist(
+                                                    playlist.playlist_id,
+                                                )
+                                            }
+                                        >
+                                            {playlist.playlist_name}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </div>
+
+            {/* Dialog Creation Playlist */}
+            <Dialog
+                open={isPlaylistDialogOpen}
+                onOpenChange={setIsPlaylistDialogOpen}
+            >
+                <DialogContent onClick={(e) => e.stopPropagation()}>
+                    <DialogHeader>
+                        <DialogTitle>
+                            {isCreatingPlaylist
+                                ? 'Nouvelle playlist'
+                                : 'Ajouter a une playlist'}
+                        </DialogTitle>
+                        <DialogDescription>
+                            {isCreatingPlaylist
+                                ? 'Creez une nouvelle playlist et ajoutez-y ce titre.'
+                                : 'Choisissez une playlist existante ou creez-en une nouvelle.'}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {isCreatingPlaylist ? (
+                        <div className="space-y-4 py-4">
+                            <Input
+                                placeholder="Nom de la playlist"
+                                value={newPlaylistName}
+                                onChange={(e) =>
+                                    setNewPlaylistName(e.target.value)
+                                }
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter')
+                                        handleCreatePlaylist();
+                                }}
+                            />
+                        </div>
+                    ) : (
+                        <div className="max-h-64 space-y-2 overflow-y-auto py-4">
+                            <Button
+                                variant="outline"
+                                className="w-full justify-start"
+                                onClick={() => setIsCreatingPlaylist(true)}
+                            >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Nouvelle playlist
+                            </Button>
+                            {playlists.map((playlist) => (
+                                <Button
+                                    key={playlist.playlist_id}
+                                    variant="ghost"
+                                    className="w-full justify-start"
+                                    onClick={() =>
+                                        handleAddToPlaylist(
+                                            playlist.playlist_id,
+                                        )
+                                    }
+                                >
+                                    {playlist.playlist_name}
+                                </Button>
+                            ))}
+                        </div>
+                    )}
+
+                    <DialogFooter>
+                        {isCreatingPlaylist && (
+                            <>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        setIsCreatingPlaylist(false);
+                                        setNewPlaylistName('');
+                                    }}
+                                >
+                                    Retour
+                                </Button>
+                                <Button
+                                    onClick={handleCreatePlaylist}
+                                    disabled={
+                                        !newPlaylistName.trim() || isSubmitting
+                                    }
+                                >
+                                    {isSubmitting ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : null}
+                                    Creer
+                                </Button>
+                            </>
+                        )}
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
+}
