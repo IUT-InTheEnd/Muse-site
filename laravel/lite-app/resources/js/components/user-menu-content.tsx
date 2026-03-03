@@ -24,6 +24,8 @@ export function UserMenuContent({ user }: Props) {
         router.flushAll();
     };
 
+    const lienProfile = '/user/' + user.name;
+
     return (
         <>
             <DropdownMenuLabel className="p-0 font-normal">
@@ -36,7 +38,7 @@ export function UserMenuContent({ user }: Props) {
                 <DropdownMenuItem asChild>
                     <Link
                         className="block w-full cursor-pointer"
-                        href={edit()}
+                        href={lienProfile}
                         prefetch
                         onClick={cleanup}
                     >

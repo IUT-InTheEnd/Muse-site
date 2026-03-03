@@ -1,3 +1,6 @@
+import { Link } from '@inertiajs/react';
+import { ChevronsUpDown, Menu, Search, X } from 'lucide-react';
+import { useState } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -6,9 +9,6 @@ import {
 import { UserInfo } from '@/components/user-info';
 import { UserMenuContent } from '@/components/user-menu-content';
 import type { User } from '@/types';
-import { Link } from '@inertiajs/react';
-import { ChevronsUpDown, Menu, Search, X } from 'lucide-react';
-import { useState } from 'react';
 import { Button } from '../ui/button';
 
 type NavbarProps = {

@@ -1,10 +1,10 @@
+import { Form, Head, usePage } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit as editPrivacy } from '@/routes/privacy';
 import type { BreadcrumbItem } from '@/types';
-import { Form, Head, usePage } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

@@ -117,7 +117,7 @@ class User extends Authenticatable
 
     public function artists()
     {
-        return $this->belongsToMany(Artist::class, 'user_prefere_artiste');
+        return $this->belongsToMany(Artist::class, 'user_prefere_artiste', 'user_id', 'artist_id');
     }
 
     public function ajoute_favoris()
