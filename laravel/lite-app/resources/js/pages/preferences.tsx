@@ -8,7 +8,6 @@ import { Pencil } from 'lucide-react';
 import { proxyUrl } from '@/components/proxy';
 import React, { useState, useEffect } from 'react';
 
-// Interface pour typer tes artistes proprement
 interface Artist {
     id: number;
     artist_name: string;
@@ -107,18 +106,9 @@ const PreferenceForm = () => {
                             </h1>
                             <h2 className="!text-gray-400 mt-2">Sélectionnez au moins 3 artistes</h2>
                             
-                            {/* Barre de recherche */}
-                            <div className="mt-8 relative max-w-md mx-auto">
-                            </div>
+                            <div className="mt-8 relative max-w-md mx-auto"></div>
                         </div>
-
-                        {/* Grille d'artistes limitée à 12 */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-                
-
-                        </div>
-
-                        {/* Boutons de navigation */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto"></div>
                         <div className="flex justify-center gap-4 mt-12">
                             <button onClick={prevStep} className="bouton-secondary w-40">
                                 Retour
