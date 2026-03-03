@@ -55,12 +55,6 @@ class ArtistController extends Controller
     {
         $artist = Artist::findOrFail($id);
 
-        $tracks = Track::whereHas('realisers', function ($query) use ($id) {
-            $query->where('artist_id', $id);
-        })
-        ->with('realisers') 
-        ->get();
-
         $albumIds = Realiser::where('artist_id', $id)
                     ->pluck('album_id')
             ->unique()
@@ -69,28 +63,27 @@ class ArtistController extends Controller
 
         $albums = Album::whereIn('album_id', $albumIds)
             ->get()
-            ->map(function ($album) use ($tracks) {
-                $albumTracks = [];
-                
-                foreach ($tracks as $track) {
-                    $trackInAlbum = $track->realisers
-                        ->where('album_id', $album->album_id)
-                        ->where('artist_id', $album->album_id !== null)
-                        ->first();
-                    
-                    if ($trackInAlbum) {
-                        $albumTracks[] = [
-                            'id'       => $track->track_id,
-                            'title'    => $track->track_title,
-                            'url'      => $track->track_file,
-                            'artwork'  => $track->track_image_file, 
-                            'duration' => $track->track_duration,
-                            'listens' => $track->track_listens,
-                            'date' => $track->track_date_created ?? ""
-                        ];
-                    }
-                }
-                
+            ->map(function ($album) {
+                $realisers = Realiser::where('album_id', $album->album_id)
+                    ->with('track', 'artist')
+                    ->get();
+
+                $albumTracks = $realisers->map(function ($realiser) {
+                    return [
+                        'id'       => $realiser->track->track_id,
+                        'title'    => $realiser->track->track_title,
+                        'url'      => $realiser->track->track_file,
+                        'artwork'  => $realiser->track->track_image_file, 
+                        'duration' => $realiser->track->track_duration,
+                        'listens' => $realiser->track->track_listens,
+                        'date' => $realiser->track->track_date_created ?? "",
+                        'artist' => [
+                            'id' => $realiser->artist->artist_id,
+                            'name' => $realiser->artist->artist_name,
+                        ]
+                    ];
+                })->toArray();
+
                 return [
                     'id' => $album->album_id,
                     'title' => $album->album_title,

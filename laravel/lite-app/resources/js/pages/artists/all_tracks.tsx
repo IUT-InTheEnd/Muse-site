@@ -47,7 +47,12 @@ export default function AllTracks({ artist, albums }: any) {
                     {artist.artist_name}
                 </h1>
 
-                {albums.map((album: any) => (
+                {(() => {
+                                const sorted = Array.isArray(albums)
+                                    ? [...albums].sort((a, b) => (b.date.substring(0,4) ?? 0) - (a.date.substring(0,4)?? 0))
+                                    : [];
+                                return sorted;
+                            })().map((album: any) => (
                     <div key={album.id} className="mb-20">
                         <div className="flex mb-8">
                             <img 
@@ -56,12 +61,13 @@ export default function AllTracks({ artist, albums }: any) {
                                 alt={album.title}
                             />
                             <div>
-                                <h2 onClick={() => router.visit(`../album/${album.id}`)} className="hover:underline cursor-pointer text-3xl font-bold mb-2">
+                                <h2 onClick={() => router.visit(`/album/${album.id}`)} className="hover:underline cursor-pointer text-3xl font-bold mb-2">
                                     {album.title.toUpperCase()}
                                 </h2>
-                                <div className="flex gap-4 mb-4">
-                                    <span className="text-gray-400">{album.type}</span>
-                                    <span className="text-gray-400">{album.date.substring(0, 4)}</span>
+                                <div className="flex gap-1 mb-4">
+                                    <span className="text-gray-400">{album.type} •</span>
+                                    <span className="text-gray-400">{album.date.substring(0, 4)} •</span>
+                                    <span className="text-gray-400">{album.tracks.length} {album.tracks.length > 1 ? "titres" : "titre"}</span>
                                 </div>
                                 <button
                                     onClick={() => playTracks(album.tracks[0]?.id)}
@@ -104,9 +110,15 @@ export default function AllTracks({ artist, albums }: any) {
                                                     className="w-10 h-10 rounded object-cover bg-gray-800" 
                                                     alt={track.title}
                                                 />
-                                                <span className="font-medium group-hover:text-primary transition">
-                                                    {track.title}
-                                                </span>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">
+                                                        {track.title}
+                                                    </span>
+                                                    <span onClick={() => router.visit(`/artiste/${track.artist.id}`)} className="text-gray-500 hover:underline cursor-pointer">
+                                                        {track.artist.name}
+                                                    </span>
+                                                </div>
+                                                
                                             </td>
                                             <td className="p-3">{track.listens}</td>
                                             <td className="p-3 text-right rounded-r-lg font-mono text-sm">
