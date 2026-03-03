@@ -34,18 +34,14 @@ Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::
 
 Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
 
-// Api user
-Route::middleware('auth')->patch('/user/profile', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('user.updateProfile');
-Route::middleware('auth')->patch('/user/info', [App\Http\Controllers\UserController::class, 'updateUserInfo'])->name('user.updateInfo');
-
-// Routes pour les documentations 
+// Routes pour les documentations
 Route::prefix('documentation')->name('documentation.')->group(function () {
     Route::get('/', function () {
         return Inertia::render('documentation/index', [                 // accueil docs
             'links' => [
                 'installation' => route('documentation.installation'),  // doc installation
                 'api'          => route('documentation.api'),           // doc api
-                'utilisation'  => route('documentation.utilisation'),   // doc utilisation   
+                'utilisation'  => route('documentation.utilisation'),   // doc utilisation
             ],
         ]);
     })->name('index');
@@ -63,7 +59,7 @@ Route::prefix('documentation')->name('documentation.')->group(function () {
 // Favoris
 Route::get('/favoris', fn () => Inertia::render('favoris/index'))->name('favorites.index');
 
-// // Playlist 
+// // Playlist
 // Route::middleware(['auth', 'verified'])->get('/playlist/{id}', [App\Http\Controllers\PlaylistController::class, 'index'])->name('playlist.index');
 
 require __DIR__.'/settings.php';

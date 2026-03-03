@@ -7,6 +7,16 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    public function getUser(Request $request)
+    {
+        return $request->user();
+    }
+
+    public function getInfo(Request $request)
+    {
+        return $request->user()->user_profile;
+    }
+
     public function updateUserInfo(Request $request)
     {
         $user = auth()->user();
