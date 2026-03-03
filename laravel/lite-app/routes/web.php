@@ -79,4 +79,5 @@ Route::middleware('auth')->post('/image', [App\Http\Controllers\ImageFileControl
 Route::middleware('auth')->patch('/image', [App\Http\Controllers\ImageFileController::class, 'updateImage'])->name('image.update');
 Route::middleware('auth')->delete('/image', [App\Http\Controllers\ImageFileController::class, 'deleteImage'])->name('image.delete');
 
+
 require __DIR__.'/settings.php';
