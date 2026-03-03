@@ -6,11 +6,15 @@ import {
     CardTitle,
 } from '@/components/musecomponents/cards/Card';
 import { PlaylistCard } from '@/components/musecomponents/cards/PlaylistCard';
+import {
+    TrackRow,
+    type PlaylistData,
+} from '@/components/musecomponents/TrackRow';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem, User } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { ListMusic, Music, Play, Users } from 'lucide-react';
+import { ListMusic, Music, Users } from 'lucide-react';
 
 type Playlist = {
     playlist_id: number;
@@ -29,6 +33,8 @@ type Track = {
     track_id: number;
     track_title: string;
     track_image_file?: string;
+    track_duration?: number;
+    track_listens?: number;
 };
 
 type Realiser = {
@@ -50,6 +56,8 @@ type ProfilePageProps = {
     playlists: Playlist[];
     recent_tracks: UserEcoute[];
     followed_artists: Artist[];
+    user_playlists?: PlaylistData[];
+    favorite_track_ids?: number[];
 };
 
 export default function Profile({
@@ -57,6 +65,8 @@ export default function Profile({
     playlists,
     recent_tracks,
     followed_artists,
+    user_playlists = [],
+    favorite_track_ids = [],
 }: ProfilePageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Profil', href: '#' },
@@ -146,49 +156,40 @@ export default function Profile({
                             <div className="rounded-lg bg-card/50 backdrop-blur-sm">
                                 {recent_tracks.map((ecoute, index) => {
                                     const track = ecoute.track;
-                                    const artistName =
-                                        track?.realisers?.[0]?.artist
-                                            ?.artist_name;
+                                    const artist =
+                                        track?.realisers?.[0]?.artist;
 
-                                    console.log(track);
+                                    if (!track) return null;
 
                                     return (
-                                        <div
+                                        <TrackRow
                                             key={ecoute.track_id}
-                                            className="group flex items-center gap-4 rounded-md p-3 transition-colors hover:bg-accent/50"
-                                        >
-                                            <span className="w-6 text-center text-sm text-muted-foreground group-hover:hidden">
-                                                {index + 1}
-                                            </span>
-                                            <Play className="hidden h-4 w-4 group-hover:block" />
-
-                                            <div className="relative h-12 w-12 overflow-hidden rounded">
-                                                {track?.track_image_file ? (
-                                                    <img
-                                                        src={
-                                                            track.track_image_file
-                                                        }
-                                                        alt={track.track_title}
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="flex h-full w-full items-center justify-center bg-muted">
-                                                        <Music className="h-6 w-6 text-muted-foreground" />
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            <div className="flex flex-1 flex-col">
-                                                <span className="line-clamp-1 font-medium">
-                                                    {track?.track_title}
-                                                </span>
-                                                {artistName && (
-                                                    <span className="line-clamp-1 text-sm text-muted-foreground">
-                                                        {artistName}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
+                                            track={{
+                                                track_id: track.track_id,
+                                                track_title: track.track_title,
+                                                track_image_file:
+                                                    track.track_image_file,
+                                                track_duration:
+                                                    track.track_duration,
+                                                track_listens:
+                                                    track.track_listens,
+                                            }}
+                                            artist={
+                                                artist
+                                                    ? {
+                                                          artist_id:
+                                                              artist.artist_id,
+                                                          artist_name:
+                                                              artist.artist_name,
+                                                      }
+                                                    : undefined
+                                            }
+                                            index={index}
+                                            isFavorite={favorite_track_ids.includes(
+                                                track.track_id,
+                                            )}
+                                            playlists={user_playlists}
+                                        />
                                     );
                                 })}
                             </div>

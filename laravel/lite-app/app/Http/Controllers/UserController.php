@@ -22,11 +22,18 @@ class UserController extends Controller
         $recentTracks = $user->user_ecoutes()->with('track.realisers.artist')->latest('last_listen')->take(10)->get();
         $followedArtists = $user->artists()->get();
 
+        // Récupère les IDs des pistes favorites de l'utilisateur connecté (on veut montrer les favoris du de l'utilisateur qui visite la page, pas du propriétaire du profil)
+        $authUser = auth()->user();
+        $favoriteTrackIds = $authUser ? $authUser->getFavoriteTrackIds() : [];
+        $userPlaylists = $authUser ? $authUser->playlists()->get(['playlist_id', 'playlist_name', 'playlist_image_file']) : [];
+
         return Inertia::render('user/profile', [
             'user' => $user,
             'playlists' => $playlists,
             'recent_tracks' => $recentTracks,
             'followed_artists' => $followedArtists,
+            'favorite_track_ids' => $favoriteTrackIds,
+            'user_playlists' => $userPlaylists,
         ]);
     }
 

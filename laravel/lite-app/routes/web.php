@@ -5,7 +5,6 @@ use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\FavoritesController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -72,6 +71,26 @@ Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
 
 // route profile user publique
 Route::get('/user/{username}', [App\Http\Controllers\UserController::class, 'show'])->name('user.profile');
+
+// route playlist
+Route::get('/playlist/{id}', [App\Http\Controllers\PlaylistController::class, 'show'])->name('playlist.show');
+Route::get('/user/{username}/playlists', [App\Http\Controllers\PlaylistController::class, 'userPlaylists'])->name('user.playlists');
+Route::get('/user/playlists', [App\Http\Controllers\PlaylistController::class, 'myPlaylists'])->name('my.playlists');
+
+// API routes for favorites and playlists
+Route::middleware(['auth'])->group(function () {
+    // Favorites
+    Route::post('/favorites/toggle', [FavoritesController::class, 'toggle'])->name('favorites.toggle');
+    Route::post('/favorites/check', [FavoritesController::class, 'check'])->name('favorites.check');
+
+    // Playlists
+    Route::get('/playlists/user', [App\Http\Controllers\PlaylistController::class, 'getUserPlaylists'])->name('playlists.list');
+    Route::post('/playlists/create', [App\Http\Controllers\PlaylistController::class, 'create'])->name('playlists.create');
+    Route::post('/playlists/add-track', [App\Http\Controllers\PlaylistController::class, 'addTrack'])->name('playlists.addTrack');
+    Route::post('/playlists/remove-track', [App\Http\Controllers\PlaylistController::class, 'removeTrack'])->name('playlists.removeTrack');
+    Route::patch('/playlists/update', [App\Http\Controllers\PlaylistController::class, 'update'])->name('playlists.update');
+    Route::delete('/playlists/delete', [App\Http\Controllers\PlaylistController::class, 'delete'])->name('playlists.delete');
+});
 
 // Images create/read/update/delete - protégé par auth
 Route::get('/image/{filename}', [App\Http\Controllers\ImageFileController::class, 'getImage'])->name('image.get');
