@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserAjouteAlbumFavori;
+use App\Models\UserPrefereArtiste;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
-use App\Models\AjouteFavori;
-use App\Models\UserPrefereArtiste;
-use App\Models\UserAjouteAlbumFavori;
 
 class FavoritesController extends Controller
 {
@@ -17,9 +15,8 @@ class FavoritesController extends Controller
         $user = auth()->user();
         $favoritesPlaylist = $user->getFavoritesPlaylist();
 
-
-        $favoriteTracks = AjouteFavori::where('user_id', $user->id)
-            ->with('track')
+        $favoriteTracks = $favoritesPlaylist->tracks()
+            ->with('realisers.artist')
             ->get()
             ->map(function ($track) {
                 return [
@@ -37,11 +34,11 @@ class FavoritesController extends Controller
             ->get()
             ->pluck('album')
             ->filter()
-            ->map(function($album) {
+            ->map(function ($album) {
                 return [
                     'id' => $album->album_id,
                     'title' => $album->album_title,
-                    'cover' => $album->album_image_file
+                    'cover' => $album->album_image_file,
                 ];
             });
 
@@ -50,18 +47,18 @@ class FavoritesController extends Controller
             ->get()
             ->pluck('artist')
             ->filter()
-            ->map(function($artist) {
+            ->map(function ($artist) {
                 return [
                     'artist_id' => $artist->id,
                     'artist_name' => $artist->artist_name,
-                    'artist_image_file' => $artist->artist_image_file
+                    'artist_image_file' => $artist->artist_image_file,
                 ];
             });
 
         return Inertia::render('favoris/index', [
             'tracks' => $favoriteTracks,
             'albums' => $favoriteAlbums,
-            'artists' => $favoriteArtists
+            'artists' => $favoriteArtists,
         ]);
     }
 
