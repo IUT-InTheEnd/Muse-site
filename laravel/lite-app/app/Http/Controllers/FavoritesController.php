@@ -6,6 +6,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+use App\Models\AjouteFavori;
+use App\Models\UserPrefereArtiste;
+use App\Models\UserAjouteAlbumFavori;
+
 class FavoritesController extends Controller
 {
     public function index()
@@ -13,8 +17,9 @@ class FavoritesController extends Controller
         $user = auth()->user();
         $favoritesPlaylist = $user->getFavoritesPlaylist();
 
-        $favoriteTracks = $favoritesPlaylist->tracks()
-            ->with('realisers.artist')
+
+        $favoriteTracks = AjouteFavori::where('user_id', $user->id)
+            ->with('track')
             ->get()
             ->map(function ($track) {
                 return [
@@ -27,9 +32,36 @@ class FavoritesController extends Controller
                 ];
             });
 
+        $favoriteAlbums = UserAjouteAlbumFavori::where('user_id', $user->id)
+            ->with('album')
+            ->get()
+            ->pluck('album')
+            ->filter()
+            ->map(function($album) {
+                return [
+                    'id' => $album->album_id,
+                    'title' => $album->album_title,
+                    'cover' => $album->album_image_file
+                ];
+            });
+
+        $favoriteArtists = UserPrefereArtiste::where('user_id', $user->id)
+            ->with('artist')
+            ->get()
+            ->pluck('artist')
+            ->filter()
+            ->map(function($artist) {
+                return [
+                    'artist_id' => $artist->id,
+                    'artist_name' => $artist->artist_name,
+                    'artist_image_file' => $artist->artist_image_file
+                ];
+            });
+
         return Inertia::render('favoris/index', [
             'tracks' => $favoriteTracks,
-            'playlist' => $favoritesPlaylist,
+            'albums' => $favoriteAlbums,
+            'artists' => $favoriteArtists
         ]);
     }
 

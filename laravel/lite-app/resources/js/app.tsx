@@ -76,9 +76,37 @@ createInertiaApp({
 
         root.render(
             <StrictMode>
+<<<<<<< HEAD
                 <AppWrapper initialUser={initialUser}>
                     <App {...props} />
                 </AppWrapper>
+=======
+                <div className='min-h-screen'>
+                    <MusicPlayerProvider>
+                        {/* Header */}
+                        <header className="w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+                            <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl text-sm">
+                                <Navbar user={auth?.user} />
+                            </div>
+                        </header>
+
+                        {/* Page Content */}
+                        <App {...props} />
+
+                        {/* Footer */}
+                        {!auth?.user && (
+                            <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+                                <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl py-6 text-sm">
+                                    <Footer />
+                                </div>
+                            </footer>
+                        )}
+                        
+                        {/* Player */}
+                        <AuthenticatedMusicPlayer initialAuth={initialAuth} />
+                    </MusicPlayerProvider>
+                </div>
+>>>>>>> e778ad4 (favorites changes)
             </StrictMode>,
         );
     },
