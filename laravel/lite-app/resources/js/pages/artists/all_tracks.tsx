@@ -32,7 +32,7 @@ export default function AllTracks({ artist, albums }: any) {
 
     return (
         <>        
-            <Head title={artist.artist_name}>
+            <Head title={artist.artist_name + " - Discographie"}>
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
                     href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"

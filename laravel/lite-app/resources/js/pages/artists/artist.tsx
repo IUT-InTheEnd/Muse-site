@@ -52,10 +52,10 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                 <div className="flex flex-col">
                     <p className="text-8xl font-bold mb-4 text-shadow-lg/20">{artist.artist_name.toUpperCase()}</p>
                     <div className="flex flex-row gap-2">
-                        <Button size="lg" onClick={() => playTracks(tracks[0]?.id)}>
+                        <Button size="lg" className="cursor-pointer" onClick={() => playTracks(tracks[0]?.id)}>
                             Écouter
                         </Button>
-                        <Button size="lg" variant="secondary" onClick={async () => {
+                        <Button size="lg" className="cursor-pointer" variant="secondary" onClick={async () => {
                             try {
                                 if (isFollowing) {
                                     await router.delete(unfollow({ id: artist.artist_id }).url);
@@ -84,7 +84,7 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                                 <>
                                     <MusicCard className='size-60 overflow-visible px-0'>
                                         <Link  onClick={() => playTracks(sorted[0]?.id)}>
-                                            <CardCover src={proxyUrl(sorted[0]?.artwork)} alt="Les étoiles vagabondes" />
+                                            <CardCover src={proxyUrl(sorted[0]?.artwork)} alt={sorted[0]?.title} />
                                             <CardContent className='px-0'>
                                                 <CardTitle className="line-clamp-2">{sorted[0]?.title.toUpperCase()}</CardTitle>
                                                 <CardSubtitle>{sorted[0]?.date.substring(0,4)}</CardSubtitle>
@@ -105,7 +105,7 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                                 <>
                                     <AlbumCard className='size-60 overflow-visible px-0'>
                                         <Link href={"../album/"+sorted[0]?.id}>
-                                            <CardCover src={proxyUrl(sorted[0]?.artwork)} alt="Les étoiles vagabondes" />
+                                            <CardCover src={proxyUrl(sorted[0]?.artwork)} alt={sorted[0]?.title} />
                                             <CardContent className='px-0'>
                                                 <CardTitle className="line-clamp-2">{sorted[0]?.title.toUpperCase()}</CardTitle>
                                                 <CardSubtitle>{sorted[0]?.date.substring(0,4)}</CardSubtitle>
@@ -153,7 +153,7 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                                             {track.title}
                                         </span>
                                     </td>
-                                    <td className="p-3 rounded-l-lg">{track.listens}</td>
+                                    <td className="p-3">{track.listens}</td>
                                     <td className="p-3 text-right rounded-r-lg font-mono text-sm">
                                         {track.duration
                                             ? `${Math.floor(track.duration / 60)}:${String(Math.floor(track.duration % 60)).padStart(2, '0')}`
@@ -166,7 +166,7 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                     </table>
                 </div>
                 <div className="ml-20 mt-10">
-                        <div className="flex flex-row flex-wrap gap-4 mt-6">
+                        <div className="flex-wrap ">
                             <AlbumSlider title="Discographie">
                             {(() => {
                                 const sorted = Array.isArray(albums)
