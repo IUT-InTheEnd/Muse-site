@@ -6,6 +6,7 @@ use App\Http\Controllers\FavoritesController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use App\Http\Controllers\PreferencesController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -80,9 +81,6 @@ Route::middleware('auth')->patch('/image', [App\Http\Controllers\ImageFileContro
 Route::middleware('auth')->delete('/image', [App\Http\Controllers\ImageFileController::class, 'deleteImage'])->name('image.delete');
 
 //preferences
-
-Route::get('/preferences', function () {
-    return Inertia::render('preferences');
-});
-
+Route::get('/preferences', [PreferencesController::class, 'index'])->name('preferences.index');
+Route::post('/preferences', [PreferencesController::class, 'store'])->name('preferences.store');
 require __DIR__.'/settings.php';
