@@ -132,7 +132,7 @@ class User extends Authenticatable
 
     public function albums()
     {
-        return $this->belongsToMany(Album::class, 'user_ajoute_album_favoris');
+        return $this->belongsToMany(Album::class, 'user_ajoute_album_favoris', 'user_id', 'album_id');
     }
 
     public function user_ecoutes()

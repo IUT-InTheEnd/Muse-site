@@ -15,12 +15,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem, User } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { ListMusic, Music, Users } from 'lucide-react';
+import { ListMusic, Lock, Music, Users } from 'lucide-react';
 
 type Playlist = {
     playlist_id: number;
     playlist_name: string;
     playlist_cover?: string;
+    playlist_image_file?: string;
+    playlist_public: boolean;
+    playlist_deletable: boolean;
     tracks_count?: number;
 };
 
@@ -59,6 +62,7 @@ type ProfilePageProps = {
     followed_artists: Artist[];
     user_playlists?: PlaylistData[];
     favorite_track_ids?: number[];
+    is_owner: boolean;
 };
 
 export default function Profile({
@@ -68,6 +72,7 @@ export default function Profile({
     followed_artists,
     user_playlists = [],
     favorite_track_ids = [],
+    is_owner,
 }: ProfilePageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Profil', href: '#' },
@@ -123,9 +128,16 @@ export default function Profile({
                                     <span className="flex items-center gap-1">
                                         <ListMusic className="h-4 w-4" />
                                         {playlists.length} playlist
-                                        {playlists.length > 1 ? 's' : ''}{' '}
-                                        publique
                                         {playlists.length > 1 ? 's' : ''}
+                                        {!is_owner && (
+                                            <>
+                                                {' '}
+                                                publique
+                                                {playlists.length > 1
+                                                    ? 's'
+                                                    : ''}
+                                            </>
+                                        )}
                                     </span>
                                 )}
                                 {followed_artists.length > 0 && (
@@ -180,50 +192,73 @@ export default function Profile({
                         />
                     )}
 
-                    {/* Public Playlists Section */}
+                    {/* Playlists Section */}
                     {playlists.length > 0 && (
                         <section>
                             <div className="mb-4 flex items-center justify-between">
                                 <h2 className="text-2xl font-bold">
-                                    Playlists publiques
+                                    {is_owner
+                                        ? 'Mes playlists'
+                                        : 'Playlists publiques'}
                                 </h2>
                             </div>
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                                {playlists.map((playlist) => (
-                                    <PlaylistCard
-                                        key={playlist.playlist_id}
-                                        className="p-3 transition-colors hover:bg-accent/50"
-                                    >
-                                        <Link
-                                            href={`/playlists/${playlist.playlist_id}`}
+                                {playlists.map((playlist) => {
+                                    // Determine the image to show
+                                    const playlistImage =
+                                        playlist.playlist_image_file
+                                            ? `/image/${playlist.playlist_image_file}`
+                                            : playlist.playlist_cover
+                                              ? playlist.playlist_cover
+                                              : !playlist.playlist_deletable
+                                                ? '/images/default-fav-image.jpg'
+                                                : '/images/default-playlist.jpg';
+
+                                    return (
+                                        <PlaylistCard
+                                            key={playlist.playlist_id}
+                                            className="p-3 transition-colors hover:bg-accent/50"
                                         >
-                                            <CardCover
-                                                src={
-                                                    playlist.playlist_cover ||
-                                                    '/images/default-playlist.jpg'
-                                                }
-                                                alt={playlist.playlist_name}
-                                                className="rounded-md shadow-lg"
-                                            />
-                                            <CardContent className="mt-3 px-0">
-                                                <CardTitle className="line-clamp-1 text-sm">
-                                                    {playlist.playlist_name}
-                                                </CardTitle>
-                                                {playlist.tracks_count !==
-                                                    undefined && (
-                                                    <CardSubtitle className="text-muted-foreground">
-                                                        {playlist.tracks_count}{' '}
-                                                        titre
-                                                        {playlist.tracks_count >
-                                                        1
-                                                            ? 's'
-                                                            : ''}
-                                                    </CardSubtitle>
-                                                )}
-                                            </CardContent>
-                                        </Link>
-                                    </PlaylistCard>
-                                ))}
+                                            <Link
+                                                href={`/playlist/${playlist.playlist_id}`}
+                                            >
+                                                <div className="relative">
+                                                    <CardCover
+                                                        src={playlistImage}
+                                                        alt={
+                                                            playlist.playlist_name
+                                                        }
+                                                        className="rounded-md shadow-lg"
+                                                    />
+                                                    {is_owner &&
+                                                        !playlist.playlist_public && (
+                                                            <div className="absolute top-2 right-2 rounded-full bg-black/60 p-1.5">
+                                                                <Lock className="h-3 w-3 text-white" />
+                                                            </div>
+                                                        )}
+                                                </div>
+                                                <CardContent className="mt-3 px-0">
+                                                    <CardTitle className="line-clamp-1 text-sm">
+                                                        {playlist.playlist_name}
+                                                    </CardTitle>
+                                                    {playlist.tracks_count !==
+                                                        undefined && (
+                                                        <CardSubtitle className="text-muted-foreground">
+                                                            {
+                                                                playlist.tracks_count
+                                                            }{' '}
+                                                            titre
+                                                            {playlist.tracks_count >
+                                                            1
+                                                                ? 's'
+                                                                : ''}
+                                                        </CardSubtitle>
+                                                    )}
+                                                </CardContent>
+                                            </Link>
+                                        </PlaylistCard>
+                                    );
+                                })}
                             </div>
                         </section>
                     )}

@@ -211,6 +211,7 @@ class PlaylistController extends Controller
         $user = auth()->user();
 
         $playlists = Playlist::where('user_id', $user->id)
+            ->with('tracks:track_id')
             ->withCount('tracks')
             ->orderBy('playlist_date_updated', 'desc')
             ->get();

@@ -47,13 +47,11 @@ function AppWrapper({
                 {children}
 
                 {/* Footer */}
-                {!user && (
-                    <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
-                        <div className="mx-auto w-full max-w-[675px] py-6 text-sm lg:max-w-4xl">
-                            <Footer />
-                        </div>
-                    </footer>
-                )}
+                <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+                    <div className="mx-auto w-full max-w-[675px] py-6 text-sm lg:max-w-4xl">
+                        <Footer />
+                    </div>
+                </footer>
 
                 {/* Player */}
                 <AuthenticatedMusicPlayer initialAuth={!!user} />

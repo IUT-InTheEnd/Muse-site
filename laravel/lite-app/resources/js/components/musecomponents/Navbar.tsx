@@ -45,6 +45,9 @@ const Navbar = ({ user }: NavbarProps) => {
                                 <a href="/favoris" className="hover:underline">
                                     Favoris
                                 </a>
+                                <a href="/user/playlists" className="hover:underline">
+                                    Playlists
+                                </a>
                                 <a
                                     href="/decouverte"
                                     className="hover:underline"
@@ -114,6 +117,9 @@ const Navbar = ({ user }: NavbarProps) => {
                             </a>
                             <a href="/favoris" className="hover:underline">
                                 Favoris
+                            </a>
+                            <a href="/user/playlists" className="hover:underline">
+                                Playlists
                             </a>
                             <a href="/decouverte" className="hover:underline">
                                 Découvrir

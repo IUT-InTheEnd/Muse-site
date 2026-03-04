@@ -116,4 +116,51 @@ class FavoritesController extends Controller
             'is_favorite' => $isFavorite,
         ]);
     }
+
+    public function toggleAlbum(Request $request): JsonResponse
+    {
+        $request->validate([
+            'album_id' => 'required|integer|exists:album,album_id',
+        ]);
+
+        $user = auth()->user();
+        $albumId = $request->input('album_id');
+
+        // Check si l'album est deja dans les favoris
+        $exists = $user->albums()->where('user_ajoute_album_favoris.album_id', $albumId)->exists();
+
+        if ($exists) {
+            $user->albums()->detach($albumId);
+
+            return response()->json([
+                'success' => true,
+                'is_favorite' => false,
+                'message' => 'Album retire de la bibliotheque',
+            ]);
+        } else {
+            $user->albums()->attach($albumId);
+
+            return response()->json([
+                'success' => true,
+                'is_favorite' => true,
+                'message' => 'Album ajoute a la bibliotheque',
+            ]);
+        }
+    }
+
+    public function checkAlbum(Request $request): JsonResponse
+    {
+        $request->validate([
+            'album_id' => 'required|integer',
+        ]);
+
+        $user = auth()->user();
+        $albumId = $request->input('album_id');
+
+        $isFavorite = $user->albums()->where('user_ajoute_album_favoris.album_id', $albumId)->exists();
+
+        return response()->json([
+            'is_favorite' => $isFavorite,
+        ]);
+    }
 }

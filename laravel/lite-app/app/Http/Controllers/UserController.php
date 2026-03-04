@@ -14,11 +14,16 @@ class UserController extends Controller
         $user = User::where('name', $username)->firstOrFail();
 
         // Vérifie si le profil est public
-        if ($user->user_privacy && ! $user->user_privacy->public_profile_visibility && auth()->id() !== $user->id) {
+        $isOwner = auth()->id() === $user->id;
+        if ($user->user_privacy && ! $user->user_privacy->public_profile_visibility && ! $isOwner) {
             abort(403, 'Profile is private');
         }
 
-        $playlists = $user->playlists()->where('playlist_public', true)->get();
+        // Si c'est le propriétaire, affiche toutes les playlists, sinon seulement les publiques
+        $playlists = $isOwner
+            ? $user->playlists()->withCount('tracks')->get()
+            : $user->playlists()->where('playlist_public', true)->withCount('tracks')->get();
+
         $recentTracks = $user->user_ecoutes()->with('track.realisers.artist')->latest('last_listen')->take(10)->get();
         $followedArtists = $user->artists()->get();
 
@@ -34,6 +39,7 @@ class UserController extends Controller
             'followed_artists' => $followedArtists,
             'favorite_track_ids' => $favoriteTrackIds,
             'user_playlists' => $userPlaylists,
+            'is_owner' => $isOwner,
         ]);
     }
 

@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/contexts/music-player-context';
 import type { SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
+import { Check, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 type Props = {
     album: Record<string, any>;
@@ -22,15 +24,78 @@ type Props = {
     }[];
 };
 
-export default function album({
+export default function Album({
     album,
     artistes,
     nombreMusiques,
     listeMusiques,
 }: Props) {
     const { auth } = usePage<SharedData>().props;
+    const { playTrack, setPlaylist } = useMusicPlayer();
+    const [isInLibrary, setIsInLibrary] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const { playTrack } = useMusicPlayer();
+    // Check if album is in library on mount
+    useEffect(() => {
+        if (!auth?.user) return;
+
+        const checkLibraryStatus = async () => {
+            try {
+                const res = await fetch('/favorites/album/check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN':
+                            document
+                                .querySelector('meta[name="csrf-token"]')
+                                ?.getAttribute('content') ?? '',
+                    },
+                    body: JSON.stringify({ album_id: album.album_id }),
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setIsInLibrary(data.is_favorite);
+                }
+            } catch (err) {
+                console.error('Error checking library status:', err);
+            }
+        };
+
+        checkLibraryStatus();
+    }, [auth?.user, album.album_id]);
+
+    const handleToggleLibrary = async () => {
+        if (!auth?.user) {
+            alert(
+                'Connectez-vous pour ajouter des albums a votre bibliotheque',
+            );
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const res = await fetch('/favorites/album/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute('content') ?? '',
+                },
+                body: JSON.stringify({ album_id: album.album_id }),
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setIsInLibrary(data.is_favorite);
+            }
+        } catch (err) {
+            console.error('Error toggling library:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     let total = 0;
     listeMusiques.forEach((element) => {
@@ -88,33 +153,61 @@ export default function album({
                                 className="flex-1"
                                 onClick={async () => {
                                     try {
-                                        const res = await fetch(
-                                            `/test-music-player?id=${encodeURIComponent(listeMusiques[0].track.track_id)}`,
+                                        // Fetch all tracks in parallel
+                                        const trackPromises = listeMusiques.map(
+                                            async (element) => {
+                                                const res = await fetch(
+                                                    `/test-music-player?id=${encodeURIComponent(element.track.track_id)}`,
+                                                );
+                                                if (!res.ok)
+                                                    throw new Error(
+                                                        `HTTP ${res.status}`,
+                                                    );
+                                                const data = await res.json();
+                                                return {
+                                                    id: element.track.track_id,
+                                                    src:
+                                                        proxyUrl(data.url) ??
+                                                        '',
+                                                    title: data.title,
+                                                    artist: data.artist,
+                                                    artwork: proxyUrl(
+                                                        data.artwork,
+                                                    ),
+                                                };
+                                            },
                                         );
-                                        if (!res.ok)
-                                            throw new Error(
-                                                `HTTP ${res.status}`,
-                                            );
-                                        const data = await res.json();
-                                        const track = {
-                                            src: proxyUrl(data.url) ?? '',
-                                            title: data.title,
-                                            artist: data.artist,
-                                            artwork: proxyUrl(data.artwork),
-                                        };
-                                        playTrack(track);
+
+                                        const tracks =
+                                            await Promise.all(trackPromises);
+                                        setPlaylist(tracks, 0);
                                     } catch (err) {
                                         console.error(err);
-                                        void alert(
-                                            'Impossible de charger la musique.',
+                                        alert(
+                                            'Impossible de charger les musiques.',
                                         );
                                     }
                                 }}
                             >
                                 Écouter
                             </Button>
-                            <Button className="flex-2">
-                                Ajouter à ma bibliothèque
+                            <Button
+                                className="flex-1"
+                                variant={isInLibrary ? 'secondary' : 'default'}
+                                onClick={handleToggleLibrary}
+                                disabled={isLoading}
+                            >
+                                {isInLibrary ? (
+                                    <>
+                                        <Check className="mr-2 h-4 w-4" />
+                                        Dans ma bibliotheque
+                                    </>
+                                ) : (
+                                    <>
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Ajouter a ma bibliotheque
+                                    </>
+                                )}
                             </Button>
                         </div>
                     </main>
