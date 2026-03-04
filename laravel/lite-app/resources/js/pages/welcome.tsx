@@ -1,13 +1,8 @@
-import { dashboard, login, register } from '@/routes';
 import { Head, Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
+import { login, register } from '@/routes';
 
-export default function Welcome({
-    canRegister = true,
-}: {
-    canRegister?: boolean;
-}) {
-
+export default function Welcome() {
     return (
         <>
             <Head title="Welcome">
@@ -46,7 +41,7 @@ export default function Welcome({
                                     Je me connecte
                                 </Link>
                             </Button>
-                        </div> 
+                        </div>
                     </main>
                 </div>
             </div>

@@ -1,10 +1,11 @@
-import {
-    Card,
-    CardPlayButton,
-    CardVariants,
-} from '@/components/musecomponents/cards/Card';
 import type { VariantProps } from 'class-variance-authority';
 import type { ComponentProps } from 'react';
+import type {
+    CardVariants} from '@/components/musecomponents/cards/Card';
+import {
+    Card,
+    CardPlayButton
+} from '@/components/musecomponents/cards/Card';
 
 type CardProps = ComponentProps<'div'> &
     VariantProps<typeof CardVariants> & {
@@ -12,7 +13,9 @@ type CardProps = ComponentProps<'div'> &
     };
 
 export function MusicCard({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     variant,
     trackId,
     children,
@@ -29,7 +32,7 @@ export function MusicCard({
 // utilisation :
 
 {
-    /* 
+    /*
 <MusicCard trackId={1}>
   <Link href="/musics/1">
     <CardCover src="/images/samurai.jpg" alt="Samurai" />

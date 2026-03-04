@@ -1,3 +1,6 @@
+import { Head, usePage } from '@inertiajs/react';
+import { Check, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import {
     TrackList,
     type TrackListItem,
@@ -10,17 +13,21 @@ import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/contexts/music-player-context';
 import type { SharedData } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
-import { Check, Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 type Props = {
-    album: Record<string, any>;
-    artistes: Record<string, any>;
+    album: {
+        album_id: number;
+        album_title: string;
+        album_image_file: string;
+        album_date_created: string;
+    };
+    artistes: {
+        artist_name: string;
+    }[];
     nombreMusiques: number;
     listeMusiques: {
-        track: Record<string, any>;
-        artist: Record<string, any>;
+        track: TrackData;
+        artist: ArtistData;
     }[];
 };
 
@@ -31,7 +38,7 @@ export default function Album({
     listeMusiques,
 }: Props) {
     const { auth } = usePage<SharedData>().props;
-    const { playTrack, setPlaylist } = useMusicPlayer();
+    const { setPlaylist } = useMusicPlayer();
     const [isInLibrary, setIsInLibrary] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -99,7 +106,7 @@ export default function Album({
 
     let total = 0;
     listeMusiques.forEach((element) => {
-        total += element.track.track_duration;
+        total += element.track.track_duration ?? 0;
     });
 
     let listeArtistes = '';
@@ -107,7 +114,7 @@ export default function Album({
         listeArtistes = `${artistes[0].artist_name} & ${artistes[1].artist_name}...`;
     } else {
         listeArtistes = artistes
-            .map((artist: { artist_name: any }) => artist.artist_name)
+            .map((artist: { artist_name: string }) => artist.artist_name)
             .join(' & ');
     }
 

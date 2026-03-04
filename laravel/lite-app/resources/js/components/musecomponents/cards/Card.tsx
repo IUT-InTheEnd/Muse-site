@@ -124,6 +124,7 @@ function CardCover({
                 rounded && 'rounded-full',
                 className,
             )}
+            alt="Card Cover"
             {...props}
         />
     );

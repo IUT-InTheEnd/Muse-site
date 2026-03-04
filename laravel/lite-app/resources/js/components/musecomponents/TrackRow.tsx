@@ -1,5 +1,5 @@
-import { router } from '@inertiajs/react';
 import {
+    Check,
     Heart,
     ListMusic,
     ListPlus,
@@ -12,6 +12,7 @@ import {
 import * as React from 'react';
 import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogContent,
@@ -20,13 +21,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useMusicPlayer } from '@/contexts/music-player-context';
 import { cn } from '@/lib/utils';
@@ -48,6 +42,7 @@ export type PlaylistData = {
     playlist_id: number;
     playlist_name: string;
     playlist_image_file?: string;
+    has_track?: boolean;
 };
 
 type TrackRowProps = {
@@ -96,6 +91,16 @@ export function TrackRow({
     const [isCreatingPlaylist, setIsCreatingPlaylist] = React.useState(false);
     const [newPlaylistName, setNewPlaylistName] = React.useState('');
     const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [isLoadingPlaylists, setIsLoadingPlaylists] = React.useState(false);
+    const [playlistsWithStatus, setPlaylistsWithStatus] = React.useState<
+        PlaylistData[]
+    >([]);
+    const [selectedPlaylistIds, setSelectedPlaylistIds] = React.useState<
+        number[]
+    >([]);
+    const [initialSelectedIds, setInitialSelectedIds] = React.useState<
+        number[]
+    >([]);
 
     // Determiner si cette piste est en cours de lecture
     const isCurrentTrack = currentTrack?.title === track.track_title;
@@ -193,10 +198,57 @@ export function TrackRow({
         }
     };
 
-    // Ajouter a une playlist existante
-    const handleAddToPlaylist = async (playlistId: number) => {
+    // Ouvrir le dialog et charger les playlists avec leur statut
+    const handleOpenPlaylistDialog = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsPlaylistDialogOpen(true);
+        setIsLoadingPlaylists(true);
+        setIsCreatingPlaylist(false);
+
         try {
-            const response = await fetch('/playlists/add-track', {
+            const response = await fetch(
+                `/playlists/for-track?track_id=${track.track_id}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN':
+                            document
+                                .querySelector('meta[name="csrf-token"]')
+                                ?.getAttribute('content') ?? '',
+                    },
+                },
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                setPlaylistsWithStatus(data.playlists);
+                const selected = data.playlists
+                    .filter((p: PlaylistData) => p.has_track)
+                    .map((p: PlaylistData) => p.playlist_id);
+                setSelectedPlaylistIds(selected);
+                setInitialSelectedIds(selected);
+            }
+        } catch (err) {
+            console.error('Erreur chargement playlists:', err);
+        } finally {
+            setIsLoadingPlaylists(false);
+        }
+    };
+
+    // Toggle une playlist dans la selection
+    const handleTogglePlaylist = (playlistId: number) => {
+        setSelectedPlaylistIds((prev) =>
+            prev.includes(playlistId)
+                ? prev.filter((id) => id !== playlistId)
+                : [...prev, playlistId],
+        );
+    };
+
+    // Sauvegarder les changements de playlists
+    const handleSavePlaylistChanges = async () => {
+        setIsSubmitting(true);
+        try {
+            const response = await fetch('/playlists/sync-track', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -206,19 +258,35 @@ export function TrackRow({
                             ?.getAttribute('content') ?? '',
                 },
                 body: JSON.stringify({
-                    playlist_id: playlistId,
                     track_id: track.track_id,
+                    playlist_ids: selectedPlaylistIds,
                 }),
             });
 
             if (response.ok) {
-                onAddToPlaylist?.(track.track_id, playlistId);
                 setIsPlaylistDialogOpen(false);
+                // Notifier les changements
+                selectedPlaylistIds.forEach((playlistId) => {
+                    if (!initialSelectedIds.includes(playlistId)) {
+                        onAddToPlaylist?.(track.track_id, playlistId);
+                    }
+                });
             }
         } catch (err) {
-            console.error('Erreur ajout playlist:', err);
+            console.error('Erreur sync playlists:', err);
+        } finally {
+            setIsSubmitting(false);
         }
     };
+
+    // Verifier si des changements ont ete faits
+    const hasChanges = React.useMemo(() => {
+        if (selectedPlaylistIds.length !== initialSelectedIds.length)
+            return true;
+        return !selectedPlaylistIds.every((id) =>
+            initialSelectedIds.includes(id),
+        );
+    }, [selectedPlaylistIds, initialSelectedIds]);
 
     // Creer une nouvelle playlist et y ajouter la piste
     const handleCreatePlaylist = async () => {
@@ -242,11 +310,33 @@ export function TrackRow({
             });
 
             if (response.ok) {
+                const data = await response.json();
                 onCreatePlaylist?.(newPlaylistName.trim(), track.track_id);
                 setNewPlaylistName('');
                 setIsCreatingPlaylist(false);
-                setIsPlaylistDialogOpen(false);
-                router.reload({ only: ['playlists'] });
+
+                // Recharger les playlists pour afficher la nouvelle
+                const playlistsResponse = await fetch(
+                    `/playlists/for-track?track_id=${track.track_id}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN':
+                                document
+                                    .querySelector('meta[name="csrf-token"]')
+                                    ?.getAttribute('content') ?? '',
+                        },
+                    },
+                );
+                if (playlistsResponse.ok) {
+                    const playlistsData = await playlistsResponse.json();
+                    setPlaylistsWithStatus(playlistsData.playlists);
+                    const selected = playlistsData.playlists
+                        .filter((p: PlaylistData) => p.has_track)
+                        .map((p: PlaylistData) => p.playlist_id);
+                    setSelectedPlaylistIds(selected);
+                    setInitialSelectedIds(selected);
+                }
             }
         } catch (err) {
             console.error('Erreur creation playlist:', err);
@@ -407,53 +497,18 @@ export function TrackRow({
                     </Button>
 
                     {/* Menu Playlist */}
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <ListPlus className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            align="end"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setIsCreatingPlaylist(true);
-                                    setIsPlaylistDialogOpen(true);
-                                }}
-                            >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Nouvelle playlist
-                            </DropdownMenuItem>
-                            {playlists.length > 0 && (
-                                <>
-                                    <DropdownMenuSeparator />
-                                    {playlists.map((playlist) => (
-                                        <DropdownMenuItem
-                                            key={playlist.playlist_id}
-                                            onClick={() =>
-                                                handleAddToPlaylist(
-                                                    playlist.playlist_id,
-                                                )
-                                            }
-                                        >
-                                            {playlist.playlist_name}
-                                        </DropdownMenuItem>
-                                    ))}
-                                </>
-                            )}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={handleOpenPlaylistDialog}
+                    >
+                        <ListPlus className="h-4 w-4" />
+                    </Button>
                 </div>
             </div>
 
-            {/* Dialog Creation Playlist */}
+            {/* Dialog Gestion Playlists */}
             <Dialog
                 open={isPlaylistDialogOpen}
                 onOpenChange={setIsPlaylistDialogOpen}
@@ -463,12 +518,12 @@ export function TrackRow({
                         <DialogTitle>
                             {isCreatingPlaylist
                                 ? 'Nouvelle playlist'
-                                : 'Ajouter a une playlist'}
+                                : 'Gérer les playlists'}
                         </DialogTitle>
                         <DialogDescription>
                             {isCreatingPlaylist
-                                ? 'Creez une nouvelle playlist et ajoutez-y ce titre.'
-                                : 'Choisissez une playlist existante ou creez-en une nouvelle.'}
+                                ? 'Créez une nouvelle playlist et ajoutez-y ce titre.'
+                                : 'Cochez les playlists où vous souhaitez ajouter ce titre.'}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -487,7 +542,8 @@ export function TrackRow({
                             />
                         </div>
                     ) : (
-                        <div className="max-h-64 space-y-2 overflow-y-auto py-4">
+                        <div className="space-y-3 py-4">
+                            {/* Bouton Nouvelle playlist */}
                             <Button
                                 variant="outline"
                                 className="w-full justify-start"
@@ -496,25 +552,74 @@ export function TrackRow({
                                 <Plus className="mr-2 h-4 w-4" />
                                 Nouvelle playlist
                             </Button>
-                            {playlists.map((playlist) => (
-                                <Button
-                                    key={playlist.playlist_id}
-                                    variant="ghost"
-                                    className="w-full justify-start"
-                                    onClick={() =>
-                                        handleAddToPlaylist(
-                                            playlist.playlist_id,
-                                        )
-                                    }
-                                >
-                                    {playlist.playlist_name}
-                                </Button>
-                            ))}
+
+                            {/* Liste des playlists avec checkboxes */}
+                            {isLoadingPlaylists ? (
+                                <div className="flex items-center justify-center py-8">
+                                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                                </div>
+                            ) : playlistsWithStatus.length > 0 ? (
+                                <div className="max-h-64 space-y-1 overflow-y-auto">
+                                    {playlistsWithStatus.map((playlist) => (
+                                        <div
+                                            key={playlist.playlist_id}
+                                            className="flex cursor-pointer items-center gap-3 rounded-md p-2 hover:bg-accent/50"
+                                            onClick={() =>
+                                                handleTogglePlaylist(
+                                                    playlist.playlist_id,
+                                                )
+                                            }
+                                        >
+                                            <Checkbox
+                                                id={`playlist-${playlist.playlist_id}`}
+                                                checked={selectedPlaylistIds.includes(
+                                                    playlist.playlist_id,
+                                                )}
+                                                onCheckedChange={() =>
+                                                    handleTogglePlaylist(
+                                                        playlist.playlist_id,
+                                                    )
+                                                }
+                                            />
+                                            <label
+                                                htmlFor={`playlist-${playlist.playlist_id}`}
+                                                className="flex-1 cursor-pointer text-sm font-medium"
+                                            >
+                                                {playlist.playlist_name}
+                                            </label>
+                                            {selectedPlaylistIds.includes(
+                                                playlist.playlist_id,
+                                            ) &&
+                                                !initialSelectedIds.includes(
+                                                    playlist.playlist_id,
+                                                ) && (
+                                                    <span className="text-xs text-green-500">
+                                                        + Ajouté
+                                                    </span>
+                                                )}
+                                            {!selectedPlaylistIds.includes(
+                                                playlist.playlist_id,
+                                            ) &&
+                                                initialSelectedIds.includes(
+                                                    playlist.playlist_id,
+                                                ) && (
+                                                    <span className="text-xs text-red-500">
+                                                        - Retiré
+                                                    </span>
+                                                )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="py-4 text-center text-sm text-muted-foreground">
+                                    Aucune playlist. Créez-en une !
+                                </p>
+                            )}
                         </div>
                     )}
 
                     <DialogFooter>
-                        {isCreatingPlaylist && (
+                        {isCreatingPlaylist ? (
                             <>
                                 <Button
                                     variant="outline"
@@ -534,7 +639,29 @@ export function TrackRow({
                                     {isSubmitting ? (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                     ) : null}
-                                    Creer
+                                    Créer
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button
+                                    variant="outline"
+                                    onClick={() =>
+                                        setIsPlaylistDialogOpen(false)
+                                    }
+                                >
+                                    Annuler
+                                </Button>
+                                <Button
+                                    onClick={handleSavePlaylistChanges}
+                                    disabled={!hasChanges || isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Check className="mr-2 h-4 w-4" />
+                                    )}
+                                    Enregistrer
                                 </Button>
                             </>
                         )}

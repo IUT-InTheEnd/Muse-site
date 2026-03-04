@@ -1,14 +1,3 @@
-import {
-    TrackList,
-    type TrackListItem,
-} from '@/components/musecomponents/TrackList';
-import {
-    type ArtistData,
-    type TrackData,
-} from '@/components/musecomponents/TrackRow';
-import { proxyUrl } from '@/components/proxy';
-import { Button } from '@/components/ui/button';
-import { useMusicPlayer } from '@/contexts/music-player-context';
 import { Head, router } from '@inertiajs/react';
 import {
     CameraIcon,
@@ -21,6 +10,17 @@ import {
     XIcon,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
+import {
+    TrackList,
+    type TrackListItem,
+} from '@/components/musecomponents/TrackList';
+import {
+    type ArtistData,
+    type TrackData,
+} from '@/components/musecomponents/TrackRow';
+import { proxyUrl } from '@/components/proxy';
+import { Button } from '@/components/ui/button';
+import { useMusicPlayer } from '@/contexts/music-player-context';
 
 type Track = {
     track_id: number;

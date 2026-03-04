@@ -1,6 +1,6 @@
-import { Slider } from "./Slider"
 import type { ReactElement } from "react"
 import type { MusicCard } from "@/components/musecomponents/cards/MusicCard"
+import { Slider } from "./Slider"
 
 type MusicSliderProps = {
   title?: string

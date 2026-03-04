@@ -1,10 +1,10 @@
-import {
-    Card,
-    CardPlayButton,
-    CardVariants,
-} from '@/components/musecomponents/cards/Card';
 import type { VariantProps } from 'class-variance-authority';
 import type { ComponentProps } from 'react';
+import type { CardVariants} from '@/components/musecomponents/cards/Card';
+import {
+    Card,
+    CardPlayButton
+} from '@/components/musecomponents/cards/Card';
 
 type CardProps = ComponentProps<'div'> &
     VariantProps<typeof CardVariants> & {
@@ -30,7 +30,7 @@ export function PlaylistCard({ trackIds, children, ...props }: CardProps) {
 // utilisation :
 
 {
-    /* 
+    /*
 <PlaylistCard trackIds={[1, 2, 3]}>
   <Link href="/playlists/1">
     <CardCover src="/playlist.jpg" />
@@ -38,6 +38,6 @@ export function PlaylistCard({ trackIds, children, ...props }: CardProps) {
       <CardTitle>Road trip</CardTitle>
     </CardContent>
   </Link>
-</PlaylistCard> 
+</PlaylistCard>
 */
 }

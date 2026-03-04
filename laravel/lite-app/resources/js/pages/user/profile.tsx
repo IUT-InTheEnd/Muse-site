@@ -1,3 +1,5 @@
+import { Head, Link } from '@inertiajs/react';
+import { ListMusic, Lock, Music, Users } from 'lucide-react';
 import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard';
 import {
     CardContent,
@@ -14,8 +16,6 @@ import { type PlaylistData } from '@/components/musecomponents/TrackRow';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem, User } from '@/types';
-import { Head, Link } from '@inertiajs/react';
-import { ListMusic, Lock, Music, Users } from 'lucide-react';
 
 type Playlist = {
     playlist_id: number;

@@ -1,7 +1,7 @@
-import { Card } from "@/components/musecomponents/cards/Card"
 import type { VariantProps } from "class-variance-authority"
 import type { ComponentProps } from "react"
-import { CardVariants } from "@/components/musecomponents/cards/Card"
+import { Card } from "@/components/musecomponents/cards/Card"
+import type { CardVariants } from "@/components/musecomponents/cards/Card"
 
 type CardProps = ComponentProps<"div"> & VariantProps<typeof CardVariants>
 

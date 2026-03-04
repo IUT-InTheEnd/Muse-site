@@ -24,6 +24,74 @@ class PlaylistController extends Controller
         ]);
     }
 
+    // Récupère les playlists d'un utilisateur avec l'info si un track est dans chaque playlist
+    public function getUserPlaylistsForTrack(Request $request): JsonResponse
+    {
+        $request->validate([
+            'track_id' => 'required|integer|exists:track,track_id',
+        ]);
+
+        $user = auth()->user();
+        $trackId = $request->input('track_id');
+
+        $playlists = Playlist::where('user_id', $user->id)
+            ->where('playlist_deletable', true)
+            ->orderBy('playlist_name')
+            ->get(['playlist_id', 'playlist_name', 'playlist_image_file'])
+            ->map(function ($playlist) use ($trackId) {
+                $playlist->has_track = $playlist->tracks()
+                    ->where('track.track_id', $trackId)
+                    ->exists();
+
+                return $playlist;
+            });
+
+        return response()->json([
+            'playlists' => $playlists,
+        ]);
+    }
+
+    // Synchronise un track avec plusieurs playlists (ajoute/retire selon les checkboxes)
+    public function syncTrackPlaylists(Request $request): JsonResponse
+    {
+        $request->validate([
+            'track_id' => 'required|integer|exists:track,track_id',
+            'playlist_ids' => 'present|array',
+            'playlist_ids.*' => 'integer|exists:playlist,playlist_id',
+        ]);
+
+        $user = auth()->user();
+        $trackId = $request->input('track_id');
+        $selectedPlaylistIds = $request->input('playlist_ids', []);
+
+        // Récupérer toutes les playlists de l'utilisateur (sauf favoris)
+        $userPlaylists = Playlist::where('user_id', $user->id)
+            ->where('playlist_deletable', true)
+            ->get();
+
+        foreach ($userPlaylists as $playlist) {
+            $isSelected = in_array($playlist->playlist_id, $selectedPlaylistIds);
+            $hasTrack = $playlist->tracks()->where('track.track_id', $trackId)->exists();
+
+            if ($isSelected && ! $hasTrack) {
+                // Ajouter le track à la playlist
+                $playlist->tracks()->attach($trackId);
+                $playlist->playlist_date_updated = now();
+                $playlist->save();
+            } elseif (! $isSelected && $hasTrack) {
+                // Retirer le track de la playlist
+                $playlist->tracks()->detach($trackId);
+                $playlist->playlist_date_updated = now();
+                $playlist->save();
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Playlists mises à jour',
+        ]);
+    }
+
     // Crée une nouvelle playlist et peut ajouter un track à la création
     public function create(Request $request): JsonResponse
     {
@@ -220,6 +288,4 @@ class PlaylistController extends Controller
             'playlists' => $playlists,
         ]);
     }
-
-    public function index() {}
 }

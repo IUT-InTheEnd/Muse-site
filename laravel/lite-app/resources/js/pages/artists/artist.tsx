@@ -1,15 +1,14 @@
-import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/app-layout';
-import { proxyUrl } from '@/components/proxy';
 import { Head, Link, router } from '@inertiajs/react';
-import { show, allTracks, follow, unfollow } from '@/actions/App/Http/Controllers/ArtistController';
-import { AlbumSlider } from '@/components/musecomponents/sliders/AlbumSlider';
+import { allTracks, follow, show, unfollow } from '@/actions/App/Http/Controllers/ArtistController';
 import { AlbumCard } from '@/components/musecomponents/cards/AlbumCard';
-import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
 import { CardContent, CardCover, CardSubtitle, CardTitle } from '@/components/musecomponents/cards/Card';
+import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
+import { AlbumSlider } from '@/components/musecomponents/sliders/AlbumSlider';
+import { proxyUrl } from '@/components/proxy';
+import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 
-export default function Artist({ artist, tracks, albums, isFollowing }: any) {
+export default function Artist({ artist, tracks, albums, isFollowing }: never) {
     const { playTrack } = useMusicPlayer();
 
 
@@ -46,7 +45,7 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                 <div className="gradient"></div>
                 <img className="background-artist" src={proxyUrl(artist.artist_image_file)} alt="Cover"/>
                 </div>
-                
+
 
             <div className="flex flex-col ml-20 gap-24 pt-48 relative">
                 <div className="flex flex-col">
@@ -75,7 +74,7 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                 <div className="flex flex-row flex-wrap justify-center gap-32">
                     <div className="flex flex-col">
                         <h2>Dernière Musique</h2>
-                        
+
                         {(() => {
                                 const sorted = Array.isArray(tracks)
                                     ? [...tracks].sort((a, b) => (b.date.substring(0,4) ?? 0) - (a.date.substring(0,4)?? 0))
@@ -90,7 +89,7 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                                                 <CardSubtitle>{sorted[0]?.date.substring(0,4)}</CardSubtitle>
                                             </CardContent>
                                         </Link>
-                                    </MusicCard> 
+                                    </MusicCard>
                               </>
                             );
                         })()}
@@ -111,7 +110,7 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                                                 <CardSubtitle>{sorted[0]?.date.substring(0,4)}</CardSubtitle>
                                             </CardContent>
                                         </Link>
-                                    </AlbumCard > 
+                                    </AlbumCard >
                               </>
                             );
                         })()}
@@ -140,9 +139,9 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                                     ? [...tracks].sort((a, b) => (b.listens ?? 0) - (a.listens ?? 0))
                                     : [];
                                 return sorted.slice(0,6);
-                            })().map((track: any, index: number) => (
-                                <tr 
-                                    key={track.id} 
+                            })().map((track: never, index: number) => (
+                                <tr
+                                    key={track.id}
                                     className="hover:bg-white/10 cursor-pointer transition group"
                                     onClick={() => playTracks(track.id)}
                                 >
@@ -169,11 +168,14 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                         <div className="flex-wrap ">
                             <AlbumSlider title="Discographie">
                             {(() => {
-                                const sorted = Array.isArray(albums)
-                                    ? [...albums].sort((a, b) => (b.date.substring(0, 4) ?? 0) - (a.date.substring(0, 4) ?? 0))
+                                return Array.isArray(albums)
+                                    ? [...albums].sort(
+                                          (a, b) =>
+                                              (b.date.substring(0, 4) ?? 0) -
+                                              (a.date.substring(0, 4) ?? 0),
+                                      )
                                     : [];
-                                return sorted
-                            })().map((album: any, index: number) => (
+                            })().map((album: never) => (
                                 (
                                     <AlbumCard className="size-80 overflow-visible">
                                         <Link className="size-60" href={"../album/"+album.id}>
@@ -183,9 +185,9 @@ export default function Artist({ artist, tracks, albums, isFollowing }: any) {
                                                 <CardSubtitle>{album.date.substring(0,4)}</CardSubtitle>
                                             </CardContent>
                                         </Link>
-                                        </AlbumCard> 
+                                        </AlbumCard>
                                 )
-                            ))}     
+                            ))}
                         </AlbumSlider>
                     </div>
                 </div>

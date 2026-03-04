@@ -10,6 +10,7 @@ Route::get('/', function () {
     if (auth()->check()) {
         return Inertia::render('dashboard');
     }
+
     return Inertia::render('welcome');
 })->name('home');
 
@@ -76,9 +77,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Playlists
     Route::get('/playlists/user', [App\Http\Controllers\PlaylistController::class, 'getUserPlaylists'])->name('playlists.list');
+    Route::get('/playlists/for-track', [App\Http\Controllers\PlaylistController::class, 'getUserPlaylistsForTrack'])->name('playlists.forTrack');
     Route::post('/playlists/create', [App\Http\Controllers\PlaylistController::class, 'create'])->name('playlists.create');
     Route::post('/playlists/add-track', [App\Http\Controllers\PlaylistController::class, 'addTrack'])->name('playlists.addTrack');
     Route::post('/playlists/remove-track', [App\Http\Controllers\PlaylistController::class, 'removeTrack'])->name('playlists.removeTrack');
+    Route::post('/playlists/sync-track', [App\Http\Controllers\PlaylistController::class, 'syncTrackPlaylists'])->name('playlists.syncTrack');
     Route::patch('/playlists/update', [App\Http\Controllers\PlaylistController::class, 'update'])->name('playlists.update');
     Route::delete('/playlists/delete', [App\Http\Controllers\PlaylistController::class, 'delete'])->name('playlists.delete');
 

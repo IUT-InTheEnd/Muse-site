@@ -1,12 +1,11 @@
-import AppHeaderLayout from '@/layouts/app/app-header-layout';
-import { proxyUrl } from '@/components/proxy';
 import { Head, router } from '@inertiajs/react';
-import { show } from '@/actions/App/Http/Controllers/ArtistController';
-import {PlayIcon, PauseIcon, LoaderIcon,} from 'lucide-react';
-import { useMusicPlayer } from '@/hooks/use-music-player';
+import { LoaderIcon, PauseIcon, PlayIcon } from 'lucide-react';
 import React from 'react';
+import { show } from '@/actions/App/Http/Controllers/ArtistController';
+import { proxyUrl } from '@/components/proxy';
+import { useMusicPlayer } from '@/hooks/use-music-player';
 
-export default function AllTracks({ artist, albums }: any) {
+export default function AllTracks({ artist, albums }: never) {
     const { playTrack, isLoading, playing } = useMusicPlayer();
     const [currentTrackId, setCurrentTrackId] = React.useState<number | null>(null);
 
@@ -31,7 +30,7 @@ export default function AllTracks({ artist, albums }: any) {
     };
 
     return (
-        <>        
+        <>
             <Head title={artist.artist_name + " - Discographie"}>
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
@@ -40,24 +39,23 @@ export default function AllTracks({ artist, albums }: any) {
                 />
             </Head>
             <div className="relative min-h-screen p-10">
-                <h1 
-                    onClick={() => router.visit(show(artist.artist_id))} 
+                <h1
+                    onClick={() => router.visit(show(artist.artist_id))}
                     className="hover:underline cursor-pointer text-4xl font-bold mb-6"
                 >
                     {artist.artist_name}
                 </h1>
 
                 {(() => {
-                                const sorted = Array.isArray(albums)
-                                    ? [...albums].sort((a, b) => (b.date.substring(0,4) ?? 0) - (a.date.substring(0,4)?? 0))
+                                return Array.isArray(albums)
+                                    ? [...albums].sort((a, b) => (b.date.substring(0, 4) ?? 0) - (a.date.substring(0, 4) ?? 0))
                                     : [];
-                                return sorted;
-                            })().map((album: any) => (
+                            })().map((album: never) => (
                     <div key={album.id} className="mb-20">
                         <div className="flex mb-8">
-                            <img 
-                                className="size-60 mr-8 rounded-lg object-cover" 
-                                src={proxyUrl(album.artwork)} 
+                            <img
+                                className="size-60 mr-8 rounded-lg object-cover"
+                                src={proxyUrl(album.artwork)}
                                 alt={album.title}
                             />
                             <div>
@@ -96,8 +94,8 @@ export default function AllTracks({ artist, albums }: any) {
                             </thead>
                             <tbody>
                                 {album.tracks
-                                    .sort((a: any, b: any) => (b.listens ?? 0) - (a.listens ?? 0))
-                                    .map((track: any, trackIndex: number) => (
+                                    .sort((a: never, b: never) => (b.listens ?? 0) - (a.listens ?? 0))
+                                    .map((track: never, trackIndex: number) => (
                                         <tr
                                             key={track.id}
                                             className="hover:bg-white/10 cursor-pointer transition group"
@@ -105,9 +103,9 @@ export default function AllTracks({ artist, albums }: any) {
                                         >
                                             <td className="p-3 rounded-l-lg">{trackIndex + 1}</td>
                                             <td className="p-3 flex items-center gap-3">
-                                                <img 
-                                                    src={proxyUrl(track.artwork)} 
-                                                    className="w-10 h-10 rounded object-cover bg-gray-800" 
+                                                <img
+                                                    src={proxyUrl(track.artwork)}
+                                                    className="w-10 h-10 rounded object-cover bg-gray-800"
                                                     alt={track.title}
                                                 />
                                                 <div className="flex flex-col">
@@ -118,7 +116,7 @@ export default function AllTracks({ artist, albums }: any) {
                                                         {track.artist.name}
                                                     </span>
                                                 </div>
-                                                
+
                                             </td>
                                             <td className="p-3">{track.listens}</td>
                                             <td className="p-3 text-right rounded-r-lg font-mono text-sm">

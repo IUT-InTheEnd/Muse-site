@@ -1,16 +1,16 @@
+import { Link } from '@inertiajs/react'
+import { AlbumCard } from '@/components/musecomponents/cards/AlbumCard'
+import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard'
 import { CardCover, CardContent, CardTitle, CardSubtitle } from '@/components/musecomponents/cards/Card'
 import { MusicCard } from '@/components/musecomponents/cards/MusicCard'
-import { AlbumCard } from '@/components/musecomponents/cards/AlbumCard'
-import { MusicSlider } from '@/components/musecomponents/sliders/MusicSlider'
 import { AlbumSlider } from '@/components/musecomponents/sliders/AlbumSlider'
 import { ArtistSlider } from '@/components/musecomponents/sliders/ArtistSlider'
-import { Link } from '@inertiajs/react'
-import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard'
+import { MusicSlider } from '@/components/musecomponents/sliders/MusicSlider'
 
 type FavoritesPageProps = {
-  tracks: any[]
-  albums: any[]
-  artists: any[]
+  tracks: never[]
+  albums: never[]
+  artists: never[]
 }
 
 export default function FavoritesPage({ tracks, albums, artists }: FavoritesPageProps) {

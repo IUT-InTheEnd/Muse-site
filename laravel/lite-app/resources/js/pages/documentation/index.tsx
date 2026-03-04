@@ -1,9 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import type { SharedData } from '@/types';
-import Navbar from '@/components/musecomponents/Navbar';
-import Footer from '@/components/musecomponents/Footer';
 import { Separator } from '@radix-ui/react-separator';
 import { ExternalLink } from 'lucide-react';
+import type { SharedData } from '@/types';
 
 interface Props {
     links: {
@@ -14,13 +12,11 @@ interface Props {
 }
 
 export default function Index({ links }: Props) {
-    
-    const { auth } = usePage<SharedData>().props;
-    
+
     return (
         <>
             <Head title="Documentation" />
-            
+
             <div className="flex py-12 flex-col items-center lg:justify-center">
                 <main className="flex flex-col w-full max-w-xl sm:max-w-xl lg:max-w-2xl xl:max-w-4xl items-start justify-center gap-6 px-10 py-10 ">
 
