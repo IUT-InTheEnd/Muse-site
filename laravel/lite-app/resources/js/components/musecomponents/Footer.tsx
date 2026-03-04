@@ -18,9 +18,9 @@ const Footer = () => {
                             lg:grid-cols-4 lg:gap-12'>
                 {/* legal */}
                 <div className='flex flex-col gap-2 text-center sm:text-left'>
-                    <a href="" className="font-semibold hover:underline">Légal</a>
+                    <a href="/mentionslegales" className="font-semibold hover:underline">Légal</a>
                     <div className='flex flex-col text-sm'>
-                        <a href="" className="hover:underline">Mentions légales</a>
+                        <a href="/mentionslegales" className="hover:underline">Mentions légales</a>
                         <a href="" className="hover:underline">Consentement</a>
                     </div>
                 </div>
@@ -49,7 +49,7 @@ const Footer = () => {
                     <p className="font-semibold">Contact</p>
                     <div className='flex flex-col text-sm'>
                         <p>7 Rue Édouard Branly 22300 Lannion</p>
-                        <a href="" className="hover:underline">Contacter le support</a>
+                        <a href="/support" className="hover:underline">Contacter le support</a>
                     </div>
                 </div>
             </div>

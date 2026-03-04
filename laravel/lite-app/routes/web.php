@@ -14,6 +14,14 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
+Route::get('/mentionslegales', function () {
+    return Inertia::render('mentionslegales');
+})->name('mentionslegales');
+
+Route::get('/support', function () {
+    return Inertia::render('support');
+})->name('support');
+
 Route::get('/genpassword', function () {
     return view('genpassword');
 })->name('genpassword');
@@ -65,7 +73,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
 
     // Favorites - User
-    Route::get('/favoris', [FavoritesController::class, 'index'])->name('favorites.index');
+    Route::get('/favorites', [FavoritesController::class, 'index'])->name('favorites.index');
 
     // Favorites - Tracks
     Route::post('/favorites/toggle', [FavoritesController::class, 'toggle'])->name('favorites.toggle');
@@ -100,13 +108,5 @@ Route::middleware(['auth'])->group(function () {
 
 // Images read
 Route::get('/image/{filename}', [App\Http\Controllers\ImageFileController::class, 'getImage'])->name('image.get');
-
-Route::get('/mentionslegales', function () {
-    return Inertia::render('mentionslegales');
-})->name('mentionslegales');
-
-Route::get('/support', function () {
-    return Inertia::render('support');
-})->name('support');
 
 require __DIR__.'/settings.php';
