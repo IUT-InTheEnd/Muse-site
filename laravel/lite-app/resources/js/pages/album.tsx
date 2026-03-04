@@ -1,37 +1,49 @@
-import { dashboard, login, register } from '@/routes';
-import type { SharedData } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import Navbar from '@/components/musecomponents/Navbar';
-import { Button } from '@/components/ui/button';
+import {
+    TrackList,
+    type TrackListItem,
+} from '@/components/musecomponents/TrackList';
+import {
+    type ArtistData,
+    type TrackData,
+} from '@/components/musecomponents/TrackRow';
 import { proxyUrl } from '@/components/proxy';
+import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/contexts/music-player-context';
+import type { SharedData } from '@/types';
+import { Head, usePage } from '@inertiajs/react';
 
 type Props = {
-  album: Record<string, any>;
-  artistes: Record<string, any>;
-  nombreMusiques: number;
-  listeMusiques: {
-    'track': Record<string, any>;
-    'artist': Record<string, any>;
-  }[];
+    album: Record<string, any>;
+    artistes: Record<string, any>;
+    nombreMusiques: number;
+    listeMusiques: {
+        track: Record<string, any>;
+        artist: Record<string, any>;
+    }[];
 };
 
-export default function album({ album, artistes, nombreMusiques, listeMusiques }: Props) {
+export default function album({
+    album,
+    artistes,
+    nombreMusiques,
+    listeMusiques,
+}: Props) {
     const { auth } = usePage<SharedData>().props;
 
     const { playTrack } = useMusicPlayer();
 
     let total = 0;
-    listeMusiques.forEach(element => {
+    listeMusiques.forEach((element) => {
         total += element.track.track_duration;
     });
 
     let listeArtistes = '';
-    if(artistes.length > 2) {
+    if (artistes.length > 2) {
         listeArtistes = `${artistes[0].artist_name} & ${artistes[1].artist_name}...`;
-    }
-    else {
-        listeArtistes = artistes.map((artist: { artist_name: any; }) => artist.artist_name).join(' & ');
+    } else {
+        listeArtistes = artistes
+            .map((artist: { artist_name: any }) => artist.artist_name)
+            .join(' & ');
     }
 
     const h = Math.floor(total / 3600);
@@ -48,99 +60,77 @@ export default function album({ album, artistes, nombreMusiques, listeMusiques }
                 />
             </Head>
             <div className="flex min-h-screen flex-col items-center lg:justify-center">
-                <div className="relative flex w-full bg-cover bg-center h-80 items-center" style={{ backgroundImage: `url(${proxyUrl(album.album_image_file)})` }}>
-                    <div className="absolute inset-0 bg-black/70 pointer-events-none"></div>
-                    <main className="relative z-10 flex flex-col gap-6 text-left px-6 py-10 ml-8">
+                <div
+                    className="relative flex h-80 w-full items-center bg-cover bg-center"
+                    style={{
+                        backgroundImage: `url(${proxyUrl(album.album_image_file)})`,
+                    }}
+                >
+                    <div className="pointer-events-none absolute inset-0 bg-black/70"></div>
+                    <main className="relative z-10 ml-8 flex flex-col gap-6 px-6 py-10 text-left">
                         <div className="flex flex-col gap-2">
                             <h1 className="!text-6xl font-bold">
                                 {album.album_title}
                             </h1>
-                            <h2 className="text-white text-lg font-semibold">
-                                {listeArtistes} • {album.album_date_created.split('-')[0]} •
-                                {nombreMusiques > 0 ? ` ${nombreMusiques} titres` : '0 titre'} •
-                                {h > 0 ? ` ${h}h ` : ''} {min % 60} min { sec} sec
+                            <h2 className="text-lg font-semibold text-white">
+                                {listeArtistes} •{' '}
+                                {album.album_date_created.split('-')[0]} •
+                                {nombreMusiques > 0
+                                    ? ` ${nombreMusiques} titres`
+                                    : '0 titre'}{' '}
+                                •{h > 0 ? ` ${h}h ` : ''} {min % 60} min {sec}{' '}
+                                sec
                             </h2>
                         </div>
 
-                        <div className="flex gap-2 max-w-sm">
-                            <Button className="flex-1" onClick={async () => {
-                            try {
-                                const res = await fetch(
-                                    `/test-music-player?id=${encodeURIComponent(listeMusiques[0].track.track_id)}`,
-                                );
-                                if (!res.ok)
-                                    throw new Error(`HTTP ${res.status}`);
-                                const data = await res.json();
-                                const track = {
-                                    src: proxyUrl(data.url) ?? '',
-                                    title: data.title,
-                                    artist: data.artist,
-                                    artwork: proxyUrl(data.artwork),
-                                };
-                                playTrack(track);
-                            } catch (err) {
-                                console.error(err);
-                                void alert('Impossible de charger la musique.');
-                            }
-                        }}>Écouter</Button>
-                            <Button className="flex-2">Ajouter à ma bibliothèque</Button>
+                        <div className="flex max-w-sm gap-2">
+                            <Button
+                                className="flex-1"
+                                onClick={async () => {
+                                    try {
+                                        const res = await fetch(
+                                            `/test-music-player?id=${encodeURIComponent(listeMusiques[0].track.track_id)}`,
+                                        );
+                                        if (!res.ok)
+                                            throw new Error(
+                                                `HTTP ${res.status}`,
+                                            );
+                                        const data = await res.json();
+                                        const track = {
+                                            src: proxyUrl(data.url) ?? '',
+                                            title: data.title,
+                                            artist: data.artist,
+                                            artwork: proxyUrl(data.artwork),
+                                        };
+                                        playTrack(track);
+                                    } catch (err) {
+                                        console.error(err);
+                                        void alert(
+                                            'Impossible de charger la musique.',
+                                        );
+                                    }
+                                }}
+                            >
+                                Écouter
+                            </Button>
+                            <Button className="flex-2">
+                                Ajouter à ma bibliothèque
+                            </Button>
                         </div>
                     </main>
                 </div>
-                <div className="w-full mb-10 justify-center">
-                    <table className="w-5xl border-collapse justify-center m-auto mt-10 mb-50">
-                        <thead>
-                            <tr className="border-b text-left text-sm">
-                                <th className="py-3 w-12 text-center">#</th>
-                                <th className="py-3 w-100">TITRE</th>
-                                <th className="py-3 text-right">LECTURES</th>
-                                <th className="py-3 w-100 text-right pr-3">DURÉE</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {listeMusiques.map((element, index) => (
-                                <tr key={element.track.track_id} className="hover:bg-gray-500/20 transition hover:rounded-md" onClick={async () => {
-                            try {
-                                const res = await fetch(
-                                    `/test-music-player?id=${encodeURIComponent(element.track.track_id)}`,
-                                );
-                                if (!res.ok)
-                                    throw new Error(`HTTP ${res.status}`);
-                                const data = await res.json();
-                                const track = {
-                                    src: proxyUrl(data.url) ?? '',
-                                    title: data.title,
-                                    artist: data.artist,
-                                    artwork: proxyUrl(data.artwork),
-                                };
-                                playTrack(track);
-                            } catch (err) {
-                                console.error(err);
-                                void alert('Impossible de charger la musique.');
-                            }
-                        }}>
-                                    <td className="py-3 text-center">{index + 1}</td>
-                                    <td className="py-3 flex">
-                                        <img className="w-12 h-12" src={proxyUrl(element.track.track_image_file)}></img>
-                                        <div>
-                                            <div className="ml-4">
-                                                {element.track.track_title}
-                                            </div>
-                                            <div className="ml-4 text-sm text-gray-500">
-                                                {element.artist.artist_name}
-                                            </div>
-                                        </div>
-                                  </td>
-                                  <td className="py-3 text-right font-mono">
-                                      {element.track.track_listens ? element.track.track_listens.toLocaleString("fr-FR") : "???"}
-                                  </td>
-                                  <td className="py-3 text-right font-mono pr-3">
-                                      {`${Math.floor(element.track.track_duration / 3600) == 0 ? '' : `${Math.floor(element.track.track_duration / 3600)}:`}${Math.floor((element.track.track_duration / 60) % 60)}:${element.track.track_duration % 60 < 10 ? '0' : ''}${element.track.track_duration % 60}`}
-                                  </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="mb-10 w-full px-6">
+                    <div className="mx-auto mt-10 mb-50 max-w-5xl">
+                        <TrackList
+                            tracks={listeMusiques.map(
+                                (element): TrackListItem => ({
+                                    track: element.track as TrackData,
+                                    artist: element.artist as ArtistData,
+                                }),
+                            )}
+                            showIndex={true}
+                        />
+                    </div>
                 </div>
             </div>
         </>

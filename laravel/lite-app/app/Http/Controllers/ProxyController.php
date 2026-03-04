@@ -100,7 +100,7 @@ class ProxyController extends Controller
     private function returnPlaceholder(string $type): \Illuminate\Http\Response
     {
         $placeholder = $this->placeholders[$type] ?? $this->placeholders['image'];
-        $path = public_path($placeholder['path']);
+        $path = asset($placeholder['path']);
 
         if (! file_exists($path)) {
             abort(404, 'Placeholder non trouvé');

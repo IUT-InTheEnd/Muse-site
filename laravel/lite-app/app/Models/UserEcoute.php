@@ -22,7 +22,11 @@ use Illuminate\Database\Eloquent\Model;
 class UserEcoute extends Model
 {
     protected $table = 'user_ecoute';
+
+    protected $primaryKey = ['user_id', 'track_id'];
+
     public $incrementing = false;
+
     public $timestamps = false;
 
     protected $casts = [
@@ -33,6 +37,8 @@ class UserEcoute extends Model
     ];
 
     protected $fillable = [
+        'user_id',
+        'track_id',
         'nb_ecoute',
         'last_listen',
     ];

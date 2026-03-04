@@ -1,3 +1,15 @@
+import { router } from '@inertiajs/react';
+import {
+    Heart,
+    ListMusic,
+    ListPlus,
+    Loader2,
+    Music,
+    Pause,
+    Play,
+    Plus,
+} from 'lucide-react';
+import * as React from 'react';
 import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,17 +30,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useMusicPlayer } from '@/contexts/music-player-context';
 import { cn } from '@/lib/utils';
-import { router } from '@inertiajs/react';
-import {
-    Heart,
-    ListPlus,
-    Loader2,
-    Music,
-    Pause,
-    Play,
-    Plus,
-} from 'lucide-react';
-import * as React from 'react';
 
 export type TrackData = {
     track_id: number;
@@ -60,6 +61,9 @@ type TrackRowProps = {
     onFavoriteChange?: (trackId: number, isFavorite: boolean) => void;
     onAddToPlaylist?: (trackId: number, playlistId: number) => void;
     onCreatePlaylist?: (name: string, trackId: number) => void;
+    // Pour jouer une liste de tracks avec le bon index
+    siblingTracks?: { track: TrackData; artist?: ArtistData }[];
+    trackIndexInSiblings?: number;
 };
 
 export function TrackRow({
@@ -73,12 +77,16 @@ export function TrackRow({
     onFavoriteChange,
     onAddToPlaylist,
     onCreatePlaylist,
+    siblingTracks,
+    trackIndexInSiblings,
 }: TrackRowProps) {
     const {
         track: currentTrack,
         playing,
         playTrack,
         togglePlay,
+        addToQueue,
+        setPlaylist,
     } = useMusicPlayer();
 
     const [isAddingFavorite, setIsAddingFavorite] = React.useState(false);
@@ -105,6 +113,22 @@ export function TrackRow({
         return `${m}:${s.toString().padStart(2, '0')}`;
     };
 
+    // Fonction utilitaire pour charger les donnees d'une piste
+    const fetchTrackData = async (trackId: number) => {
+        const res = await fetch(
+            `/test-music-player?id=${encodeURIComponent(trackId)}`,
+        );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        return {
+            id: trackId,
+            src: proxyUrl(data.url) ?? '',
+            title: data.title,
+            artist: data.artist,
+            artwork: proxyUrl(data.artwork),
+        };
+    };
+
     // Jouer ou mettre en pause la piste
     const handlePlayPause = async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -113,18 +137,25 @@ export function TrackRow({
             togglePlay();
         } else {
             try {
-                const res = await fetch(
-                    `/test-music-player?id=${encodeURIComponent(track.track_id)}`,
-                );
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                const trackData = {
-                    src: proxyUrl(data.url) ?? '',
-                    title: data.title,
-                    artist: data.artist,
-                    artwork: proxyUrl(data.artwork),
-                };
-                playTrack(trackData);
+                // Si on a des tracks environnantes, charger toutes les tracks et utiliser setPlaylist
+                if (
+                    siblingTracks &&
+                    siblingTracks.length > 0 &&
+                    trackIndexInSiblings !== undefined
+                ) {
+                    // Charger toutes les tracks en parallele
+                    const trackDataPromises = siblingTracks.map((sibling) =>
+                        fetchTrackData(sibling.track.track_id),
+                    );
+                    const allTracksData = await Promise.all(trackDataPromises);
+
+                    // Utiliser setPlaylist pour definir la queue et jouer au bon index
+                    setPlaylist(allTracksData, trackIndexInSiblings);
+                } else {
+                    // Comportement original: jouer une seule piste
+                    const trackData = await fetchTrackData(track.track_id);
+                    playTrack(trackData);
+                }
             } catch (err) {
                 console.error(err);
                 alert('Impossible de charger la musique.');
@@ -261,7 +292,7 @@ export function TrackRow({
                 </div>
 
                 {/* Cover */}
-                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded">
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded">
                     {track.track_image_file ? (
                         <img
                             src={proxyUrl(track.track_image_file)}
@@ -340,10 +371,39 @@ export function TrackRow({
                                 className={cn(
                                     'h-4 w-4',
                                     localIsFavorite &&
-                                        'fill-red-500 text-red-500',
+                                        'fill-purple-500 text-purple-500',
                                 )}
                             />
                         )}
+                    </Button>
+
+                    {/* Bouton Mettre en file d'attente */}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={async (e) => {
+                            e.stopPropagation();
+                            try {
+                                const res = await fetch(
+                                    `/test-music-player?id=${encodeURIComponent(track.track_id)}`,
+                                );
+                                if (!res.ok)
+                                    throw new Error(`HTTP ${res.status}`);
+                                const data = await res.json();
+                                const trackData = {
+                                    src: proxyUrl(data.url) ?? '',
+                                    title: data.title,
+                                    artist: data.artist,
+                                    artwork: proxyUrl(data.artwork),
+                                };
+                                addToQueue(trackData);
+                            } catch (err) {
+                                console.error(err);
+                            }
+                        }}
+                    >
+                        <ListMusic className="h-4 w-4" />
                     </Button>
 
                     {/* Menu Playlist */}

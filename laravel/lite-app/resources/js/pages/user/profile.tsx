@@ -7,9 +7,10 @@ import {
 } from '@/components/musecomponents/cards/Card';
 import { PlaylistCard } from '@/components/musecomponents/cards/PlaylistCard';
 import {
-    TrackRow,
-    type PlaylistData,
-} from '@/components/musecomponents/TrackRow';
+    TrackList,
+    type TrackListItem,
+} from '@/components/musecomponents/TrackList';
+import { type PlaylistData } from '@/components/musecomponents/TrackRow';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem, User } from '@/types';
@@ -147,53 +148,36 @@ export default function Profile({
                 <div className="flex flex-col gap-8 px-4 md:px-8">
                     {/* Recent Tracks Section */}
                     {recent_tracks.length > 0 && (
-                        <section>
-                            <div className="mb-4 flex items-center justify-between">
-                                <h2 className="text-2xl font-bold">
-                                    Titres récents
-                                </h2>
-                            </div>
-                            <div className="rounded-lg bg-card/50 backdrop-blur-sm">
-                                {recent_tracks.map((ecoute, index) => {
+                        <TrackList
+                            title="Titres récents"
+                            tracks={recent_tracks
+                                .filter((ecoute) => ecoute.track)
+                                .map((ecoute): TrackListItem => {
                                     const track = ecoute.track;
                                     const artist =
                                         track?.realisers?.[0]?.artist;
-
-                                    if (!track) return null;
-
-                                    return (
-                                        <TrackRow
-                                            key={ecoute.track_id}
-                                            track={{
-                                                track_id: track.track_id,
-                                                track_title: track.track_title,
-                                                track_image_file:
-                                                    track.track_image_file,
-                                                track_duration:
-                                                    track.track_duration,
-                                                track_listens:
-                                                    track.track_listens,
-                                            }}
-                                            artist={
-                                                artist
-                                                    ? {
-                                                          artist_id:
-                                                              artist.artist_id,
-                                                          artist_name:
-                                                              artist.artist_name,
-                                                      }
-                                                    : undefined
-                                            }
-                                            index={index}
-                                            isFavorite={favorite_track_ids.includes(
-                                                track.track_id,
-                                            )}
-                                            playlists={user_playlists}
-                                        />
-                                    );
+                                    return {
+                                        track: {
+                                            track_id: track.track_id,
+                                            track_title: track.track_title,
+                                            track_image_file:
+                                                track.track_image_file,
+                                            track_duration:
+                                                track.track_duration,
+                                            track_listens: track.track_listens,
+                                        },
+                                        artist: artist
+                                            ? {
+                                                  artist_id: artist.artist_id,
+                                                  artist_name:
+                                                      artist.artist_name,
+                                              }
+                                            : undefined,
+                                    };
                                 })}
-                            </div>
-                        </section>
+                            playlists={user_playlists}
+                            favoriteTrackIds={favorite_track_ids}
+                        />
                     )}
 
                     {/* Public Playlists Section */}

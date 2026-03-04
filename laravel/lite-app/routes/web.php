@@ -29,17 +29,17 @@ Route::get('/genpassword', function () {
 })->name('genpassword');
 
 Route::get('/test-music-player', [App\Http\Controllers\MusicController::class, 'playMusic'])->name('test-music-player');
+Route::post('/add-listen', [App\Http\Controllers\MusicController::class, 'addListen'])->name('add-listen');
 
 // Proxy pour les ressources externes (audio, images) - protégé par auth
 Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::class, 'stream'])->name('proxy');
 
-Route::middleware('auth')->get('/artiste/{id}' ,[ArtistController::class,"show"])->name('artist');
-Route::middleware('auth')->get('/artiste/{id}/all' ,[ArtistController::class,"allTracks"])->name('artist/all_song');
+Route::middleware('auth')->get('/artiste/{id}', [ArtistController::class, 'show'])->name('artist');
+Route::middleware('auth')->get('/artiste/{id}/all', [ArtistController::class, 'allTracks'])->name('artist/all_song');
 Route::middleware('auth')->post('/artiste/{id}/follow', [ArtistController::class, 'follow'])->name('artist.follow');
 Route::middleware('auth')->delete('/artiste/{id}/follow', [ArtistController::class, 'unfollow'])->name('artist.unfollow');
 
-
-// Api user
+// User profile
 Route::middleware('auth')->patch('/user/profile', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('user.updateProfile');
 Route::middleware('auth')->patch('/user/info', [App\Http\Controllers\UserController::class, 'updateUserInfo'])->name('user.updateInfo');
 
@@ -81,7 +81,7 @@ Route::get('/playlist/{id}', [App\Http\Controllers\PlaylistController::class, 's
 Route::get('/user/{username}/playlists', [App\Http\Controllers\PlaylistController::class, 'userPlaylists'])->name('user.playlists');
 Route::get('/user/playlists', [App\Http\Controllers\PlaylistController::class, 'myPlaylists'])->name('my.playlists');
 
-// API routes for favorites and playlists
+// Routes pour favoris et playlists
 Route::middleware(['auth'])->group(function () {
     // Favorites
     Route::post('/favorites/toggle', [FavoritesController::class, 'toggle'])->name('favorites.toggle');
@@ -96,11 +96,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/playlists/delete', [App\Http\Controllers\PlaylistController::class, 'delete'])->name('playlists.delete');
 });
 
-// Images create/read/update/delete - protégé par auth
+// Images create/read/update/delete
 Route::get('/image/{filename}', [App\Http\Controllers\ImageFileController::class, 'getImage'])->name('image.get');
 Route::middleware('auth')->post('/image', [App\Http\Controllers\ImageFileController::class, 'uploadImage'])->name('image.upload');
 Route::middleware('auth')->patch('/image', [App\Http\Controllers\ImageFileController::class, 'updateImage'])->name('image.update');
 Route::middleware('auth')->delete('/image', [App\Http\Controllers\ImageFileController::class, 'deleteImage'])->name('image.delete');
-
 
 require __DIR__.'/settings.php';
