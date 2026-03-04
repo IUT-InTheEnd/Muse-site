@@ -101,4 +101,12 @@ Route::middleware(['auth'])->group(function () {
 // Images read
 Route::get('/image/{filename}', [App\Http\Controllers\ImageFileController::class, 'getImage'])->name('image.get');
 
+Route::get('/mentionslegales', function () {
+    return Inertia::render('mentionslegales');
+})->name('mentionslegales');
+
+Route::get('/support', function () {
+    return Inertia::render('support');
+})->name('support');
+
 require __DIR__.'/settings.php';
