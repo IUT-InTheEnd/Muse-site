@@ -26,7 +26,7 @@ Route::get('/genpassword', function () {
     return view('genpassword');
 })->name('genpassword');
 
-<<<<<<< api
+
 Route::get('/test-music-player', [App\Http\Controllers\TestMusicPlayer::class, 'playMusic'])->name('test-music-player');
 
 // Proxy pour les ressources externes (audio, images) - protégé par auth
@@ -34,21 +34,14 @@ Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::
 
 Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
 
-=======
->>>>>>> main
 // Routes pour les documentations
 Route::prefix('documentation')->name('documentation.')->group(function () {
     Route::get('/', function () {
         return Inertia::render('documentation/index', [                 // accueil docs
             'links' => [
                 'installation' => route('documentation.installation'),  // doc installation
-<<<<<<< api
-                'api'          => route('documentation.api'),           // doc api
-                'utilisation'  => route('documentation.utilisation'),   // doc utilisation
-=======
                 'api' => route('documentation.api'),           // doc api
                 'utilisation' => route('documentation.utilisation'),   // doc utilisation
->>>>>>> main
             ],
         ]);
     })->name('index');
@@ -121,13 +114,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/image', [App\Http\Controllers\ImageFileController::class, 'deleteImage'])->name('image.delete');
 });
 
-<<<<<<< api
-// // Playlist
-// Route::middleware(['auth', 'verified'])->get('/playlist/{id}', [App\Http\Controllers\PlaylistController::class, 'index'])->name('playlist.index');
-=======
 // Images read
 Route::get('/image/{filename}', [App\Http\Controllers\ImageFileController::class, 'getImage'])->name('image.get');
->>>>>>> main
 
 // DEBUG DE GOLMON
 Route::get('/apy', function () {

@@ -3,13 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-<<<<<<< api
-
-class AlbumController extends Controller
-{
-    //
-}
-=======
 use App\Models\Album;
 use App\Models\Realiser;
 use App\Models\Artist;
@@ -42,5 +35,4 @@ class AlbumController extends Controller
             'listeMusiques' => $listeTracks
         ]);
     }   
-}   
->>>>>>> main
+}

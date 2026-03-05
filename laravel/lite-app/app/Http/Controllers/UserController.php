@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-<<<<<<< api
+
 use App\Enums\Instruments;
 use App\Enums\ListeningContext;
 use App\Http\Resources\UserResource;
@@ -10,20 +10,6 @@ use App\Models\User;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-
-class UserController extends Controller
-{
-    #[ExcludeRouteFromDocs]
-    public function debugCreateToken(string $id, string $name)
-    {
-        return User::findOrFail($id)->createToken($name)->plainTextToken;
-    }
-
-    public function getUser(Request $request)
-    {
-        return new UserResource($request->user());
-=======
-use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -62,7 +48,17 @@ class UserController extends Controller
             'user_playlists' => $userPlaylists,
             'is_owner' => $isOwner,
         ]);
->>>>>>> main
+    }
+
+    #[ExcludeRouteFromDocs]
+    public function debugCreateToken(string $id, string $name)
+    {
+        return User::findOrFail($id)->createToken($name)->plainTextToken;
+    }
+    
+    public function getUser(Request $request)
+    {
+        return new UserResource($request->user());
     }
 
     public function updateUserInfo(Request $request)
