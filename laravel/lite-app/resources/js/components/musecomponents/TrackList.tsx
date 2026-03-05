@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import {
     TrackRow,
@@ -11,6 +12,14 @@ export type TrackListItem = {
     track: TrackData;
     artist?: ArtistData;
 };
+
+export type SortColumn =
+    | 'track_title'
+    | 'track_listens'
+    | 'track_favorites'
+    | 'track_duration'
+    | null;
+export type SortDirection = 'asc' | 'desc';
 
 type TrackListProps = {
     /** Titre de la section (optionnel) */
@@ -39,6 +48,10 @@ type TrackListProps = {
     limit?: number;
     /** Actions supplementaires a droite du titre */
     actions?: React.ReactNode;
+    /** Colonne de tri (optionnel) */
+    sortColumn?: SortColumn;
+    /** Direction du tri (optionnel) */
+    sortDirection?: SortDirection;
 };
 
 export function TrackList({
@@ -55,12 +68,30 @@ export function TrackList({
     renderTitle,
     limit,
     actions,
+    sortColumn = null,
+    sortDirection = 'asc',
 }: TrackListProps) {
+    // Trier les tracks si une colonne de tri est specifiee
+    const sortedTracks = useMemo(() => {
+        if (!sortColumn) return tracks;
+
+        return [...tracks].sort((a, b) => {
+            const valueA = (a.track as Record<string, any>)[sortColumn];
+            const valueB = (b.track as Record<string, any>)[sortColumn];
+
+            if (valueA === undefined || valueB === undefined) return 0;
+            if (valueA < valueB) return sortDirection === 'asc' ? -1 : 1;
+            if (valueA > valueB) return sortDirection === 'asc' ? 1 : -1;
+
+            return 0;
+        });
+    }, [tracks, sortColumn, sortDirection]);
+
     // Appliquer la limite si specifiee
-    const displayedTracks = limit ? tracks.slice(0, limit) : tracks;
+    const displayedTracks = limit ? sortedTracks.slice(0, limit) : sortedTracks;
 
     // Preparer les siblingTracks pour la lecture en sequence
-    const siblingTracks = React.useMemo(
+    const siblingTracks = useMemo(
         () =>
             displayedTracks.map((item) => ({
                 track: item.track,

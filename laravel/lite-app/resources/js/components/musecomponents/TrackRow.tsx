@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 export type TrackData = {
     track_id: number;
     track_title: string;
+    track_favorites: number;
     track_image_file?: string;
     track_duration?: number;
     track_listens?: number;
@@ -86,21 +87,14 @@ export function TrackRow({
 
     const [isAddingFavorite, setIsAddingFavorite] = React.useState(false);
     const [localIsFavorite, setLocalIsFavorite] = React.useState(isFavorite);
-    const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] =
-        React.useState(false);
+    const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = React.useState(false);
     const [isCreatingPlaylist, setIsCreatingPlaylist] = React.useState(false);
     const [newPlaylistName, setNewPlaylistName] = React.useState('');
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [isLoadingPlaylists, setIsLoadingPlaylists] = React.useState(false);
-    const [playlistsWithStatus, setPlaylistsWithStatus] = React.useState<
-        PlaylistData[]
-    >([]);
-    const [selectedPlaylistIds, setSelectedPlaylistIds] = React.useState<
-        number[]
-    >([]);
-    const [initialSelectedIds, setInitialSelectedIds] = React.useState<
-        number[]
-    >([]);
+    const [playlistsWithStatus, setPlaylistsWithStatus] = React.useState<PlaylistData[]>([]);
+    const [selectedPlaylistIds, setSelectedPlaylistIds] = React.useState<number[]>([]);
+    const [initialSelectedIds, setInitialSelectedIds] = React.useState<number[]>([]);
 
     // Determiner si cette piste est en cours de lecture
     const isCurrentTrack = currentTrack?.title === track.track_title;
@@ -436,6 +430,12 @@ export function TrackRow({
                 {track.track_listens !== undefined && (
                     <span className="hidden font-mono text-sm text-muted-foreground md:block">
                         {track.track_listens.toLocaleString('fr-FR')}
+                    </span>
+                )}
+
+                {track.track_favorites !== undefined && (
+                    <span className="hidden font-mono text-sm text-muted-foreground md:block">
+                        {track.track_favorites?.toLocaleString('fr-FR')}
                     </span>
                 )}
 
