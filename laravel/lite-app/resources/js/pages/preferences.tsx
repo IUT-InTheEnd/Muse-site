@@ -38,7 +38,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
     const handleFinish = () => {
         router.post('/preferences', formData, {
             onSuccess: () => {
-                alert('Tes préférences ont été enregistrées !');
+                alert('préférences enregistrées');
             },
             onError: (errors) => {
                 console.error("Erreur lors de l'enregistrement", errors);
@@ -112,7 +112,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                     placeholder="Rechercher un genre..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="rounded-full px-6 py-6"
+                                    className="px-6 py-6"
                                 />
                             </div>
                         </div>
@@ -141,12 +141,15 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                 isSelected ? 'border-primary' : 'border-transparent hover:border-primary'
                                             }`}
                                         >
+
+                                            <div className={`absolute inset-0 ${isSelected ? 'bg-primary/40' : 'bg-black/0'}`} />
+
                                             <div className="absolute inset-0 flex items-center justify-center p-2 text-center">
                                                 <h2 className="uppercase">{genre.name}</h2>
                                             </div>
 
                                             {isSelected && (
-                                                <div className="absolute top-2 right-2 bg-white text-black rounded-full p-1">
+                                                <div className="absolute top-2 right-2 bg-white text-primary rounded-full p-1">
                                                     <Check size={16} strokeWidth={4}/>
                                                 </div>
                                             )}
@@ -158,15 +161,15 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                 )}
 
                 {step === 2 && (
-                    <section className="animate-fadeIn">
+                    <section>
                         <div className="text-center mb-10">
-                            <h1 className="text-3xl font-bold uppercase tracking-tight text-white">Quels sont vos artistes préférés ?</h1>
-                            <p className="text-gray-400 mt-2">Sélectionnez au moins 3 artistes que vous aimez</p>
+                            <h1>Quels sont vos artistes préférés ?</h1>
+                            <h3 className="!text-gray-400 mt-2">Sélectionnez au moins 3 artistes que vous aimez</h3>
                             <div className="mt-6 max-w-md mx-auto">
                                 <Input 
                                     type="text" 
                                     placeholder="Rechercher un artiste..." 
-                                    className="rounded-full px-6 py-6 bg-[#1e2530] border-gray-700 text-white focus:border-[#5E00FF] outline-none transition-all"
+                                    className="px-6 py-6"
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
@@ -187,7 +190,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                     : [...formData.artists, art.artist_id];
                                                 setFormData({...formData, artists: newArt});
                                             }}
-                                            className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer border-4 transition-all group ${isSelected ? 'border-[#5E00FF]' : 'border-transparent hover:border-gray-500'}`}
+                                            className={`relative aspect-square overflow-hidden cursor-pointer border-3 transition-all group ${isSelected ? 'border-primary' : 'border-transparent hover:border-primary'}`}
                                         >
                                             <img 
                                                 src={`https://images.weserv.nl/?url=${encodeURIComponent(art.artist_image_file)}&w=400&h=400&fit=cover`}
@@ -198,16 +201,14 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                 }}
                                             />
                                             
-                                            <div className={`absolute inset-0 transition-colors ${isSelected ? 'bg-[#5E00FF]/40' : 'bg-black/50'}`} />
+                                            <div className={`absolute inset-0 ${isSelected ? 'bg-primary/40' : 'bg-black/50'}`} />
                                             
                                             <div className="absolute inset-0 flex items-center justify-center p-4">
-                                                <p className="text-2xl font-bold text-white text-center uppercase leading-tight drop-shadow-lg tracking-tighter">
-                                                    {art.artist_name}
-                                                </p>
+                                                <h2>{art.artist_name}</h2>
                                             </div>
                                             
                                             {isSelected && (
-                                                <div className="absolute top-2 right-2 bg-white text-[#5E00FF] rounded-full p-1 shadow-lg animate-in zoom-in">
+                                                <div className="absolute top-2 right-2 bg-white text-primary rounded-full p-1">
                                                     <Check size={20} strokeWidth={4}/>
                                                 </div>
                                             )}
