@@ -62,4 +62,12 @@ Route::get('/favoris', fn () => Inertia::render('favoris/index'))->name('favorit
 // // Playlist
 // Route::middleware(['auth', 'verified'])->get('/playlist/{id}', [App\Http\Controllers\PlaylistController::class, 'index'])->name('playlist.index');
 
+// DEBUG DE GOLMON
+Route::get('/apy', function () {
+    return view('apy');
+})->name('apy');
+Route::get('/valr', function () {
+    return view('validationTest');
+});
+
 require __DIR__.'/settings.php';

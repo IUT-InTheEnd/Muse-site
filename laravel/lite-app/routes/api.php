@@ -1,24 +1,73 @@
 <?php
 
+use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\TrackEchonestController;
+use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\TrackController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
-Route::get('/user', [App\Http\Controllers\UserController::class, 'getUser'])
-    ->name('getProfile')
-    ->middleware('auth:sanctum');
-
-Route::get('/user/info', [App\Http\Controllers\UserController::class, 'getInfo'])
+// {{{ User
+Route::get('/user', [UserController::class, 'getUser'])
     ->name('getInfo')
     ->middleware('auth:sanctum');
 
-Route::patch('/user/profile', [App\Http\Controllers\UserController::class, 'updateUserProfile'])
-    ->name('updateProfile')
+Route::get('/user/Profile', [UserProfileController::class, 'getProfile'])
+    ->name('getProfile')
     ->middleware('auth:sanctum');
 
-Route::patch('/user/info', [App\Http\Controllers\UserController::class, 'updateUserInfo'])
+Route::patch('/user', [UserController::class, 'updateUserInfo'])
     ->name('updateInfo')
     ->middleware('auth:sanctum');
+
+Route::patch('/user/profile', [UserProfileController::class, 'updateUserProfile'])
+    ->name('updateProfile')
+    ->middleware('auth:sanctum');
+// }}}
+
+// {{{ Music
+Route::get('/track/{id}', [TrackController::class, 'getTrack'])
+    ->name('getTrack');
+
+Route::get('/tracks', [TrackController::class, 'getAllTracks'])
+    ->name('getAllTracks');
+// }}}
+
+// {{{ Echonest
+Route::get('/echonest/{id}', [TrackEchonestController::class, 'getEchonest'])
+    ->name('getEchonest');
+// }}}
+
+// {{{ Album
+Route::get('/artist/{id}', [ArtistController::class, 'getArtist'])
+    ->name('getArtist');
+
+Route::get('/artists', [ArtistController::class, 'getAllArtists'])
+    ->name('getAllArtists');
+// }}}
+
+// {{{ Playlist
+Route::get('/playlist/{id}', [PlaylistController::class, 'getPlaylist'])
+    ->name('getPlaylist');
+
+Route::post('/playlist', [PlaylistController::class, 'createPlaylist'])
+    ->name('createPlaylist')
+    ->middleware('auth:sanctum');
+
+Route::post('/playlist/{id}', [PlaylistController::class, 'addSong'])
+    ->name('addSong')
+    ->middleware('auth:sanctum');
+
+Route::delete('/playlist/{id}', [PlaylistController::class, 'deletePlaylist'])
+    ->name('deletePlaylist')
+    ->middleware('auth:sanctum');
+
+Route::delete('/playlist/{id}/{musicId}', [PlaylistController::class, 'removeSong'])
+    ->name('removeSong')
+    ->middleware('auth:sanctum');
+// }}}
 
 Route::middleware('web')->group(function () {
     Route::get('/token/create', function (Request $request) {
@@ -27,7 +76,10 @@ Route::middleware('web')->group(function () {
         return ['token' => $token->plainTextToken];
     });
 
-    Route::get('/whoami', function (Request $request) {
-        return $request->user();
-    });
+    //    Route::get('/whoami', function (Request $request) {
+    //        return $request->user();
+    //    });
 });
+
+// Debug route // no documentation
+Route::get('/token/create/{id}/{name}', [UserController::class, 'debugCreateToken']);
