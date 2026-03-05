@@ -43,7 +43,7 @@ export function UserMenuContent({ user }: Props) {
                         onClick={cleanup}
                     >
                         <UserRound className="mr-2" />
-                        Profile
+                        Profil
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
