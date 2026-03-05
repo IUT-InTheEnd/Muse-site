@@ -48,12 +48,6 @@ const Navbar = ({ user }: NavbarProps) => {
                                 <a href="/user/playlists" className="hover:underline">
                                     Playlists
                                 </a>
-                                <a
-                                    href="/decouverte"
-                                    className="hover:underline"
-                                >
-                                    Découvrir
-                                </a>
                             </div>
                         </>
                     )}
@@ -120,9 +114,6 @@ const Navbar = ({ user }: NavbarProps) => {
                             </a>
                             <a href="/user/playlists" className="hover:underline">
                                 Playlists
-                            </a>
-                            <a href="/decouverte" className="hover:underline">
-                                Découvrir
                             </a>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>

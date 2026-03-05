@@ -44,7 +44,9 @@ function AppWrapper({
                 </header>
 
                 {/* Page Content */}
-                {children}
+                <div className='my-2'>
+                    {children}
+                </div>
 
                 {/* Footer */}
                 <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">

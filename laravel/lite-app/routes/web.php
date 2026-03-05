@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    if (auth()->check()) {
-        return Inertia::render('dashboard');
+    if (!auth()->check()) {
+        return Inertia::render('welcome');
     }
 
-    return Inertia::render('welcome');
+    return app(\App\Http\Controllers\DashboardController::class)->index();
 })->name('home');
 
 Route::get('/mentionslegales', function () {

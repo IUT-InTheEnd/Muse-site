@@ -100,17 +100,18 @@ export default function Artist({ artist, tracks, albums, isFollowing }: never) {
                                 const sorted = Array.isArray(albums)
                                     ? [...albums].sort((a, b) => (b.date.substring(0,4) ?? 0) - (a.date.substring(0,4)?? 0))
                                     : [];
+                                const albumDateYear = sorted[0]?.date ? sorted[0].date.substring(0, 4) : 'Unknown Year';
                             return (
                                 <>
                                     <AlbumCard className='size-60 overflow-visible px-0'>
-                                        <Link href={"../album/"+sorted[0]?.id}>
+                                        <Link href={"../album/" + sorted[0]?.id}>
                                             <CardCover src={proxyUrl(sorted[0]?.artwork)} alt={sorted[0]?.title} />
                                             <CardContent className='px-0'>
-                                                <CardTitle className="line-clamp-2">{sorted[0]?.title.toUpperCase()}</CardTitle>
-                                                <CardSubtitle>{sorted[0]?.date.substring(0,4)}</CardSubtitle>
+                                                <CardTitle className="line-clamp-2">{sorted[0]?.title?.toUpperCase()}</CardTitle>
+                                                <CardSubtitle>{albumDateYear}</CardSubtitle>
                                             </CardContent>
                                         </Link>
-                                    </AlbumCard >
+                                    </AlbumCard>
                               </>
                             );
                         })()}
@@ -167,31 +168,34 @@ export default function Artist({ artist, tracks, albums, isFollowing }: never) {
                 <div className="ml-20 mt-10">
                         <div className="flex-wrap ">
                             <AlbumSlider title="Discographie">
-                            {(() => {
-                                return Array.isArray(albums)
-                                    ? [...albums].sort(
-                                          (a, b) =>
-                                              (b.date.substring(0, 4) ?? 0) -
-                                              (a.date.substring(0, 4) ?? 0),
-                                      )
-                                    : [];
-                            })().map((album: never) => (
-                                (
-                                    <AlbumCard className="size-80 overflow-visible">
-                                        <Link className="size-60" href={"../album/"+album.id}>
-                                            <CardCover src={proxyUrl(album.artwork)} alt={album.title} />
-                                            <CardContent className='px-0'>
-                                                <CardTitle className="line-clamp-2">{album.title.toUpperCase()}</CardTitle>
-                                                <CardSubtitle>{album.date.substring(0,4)}</CardSubtitle>
-                                            </CardContent>
-                                        </Link>
-                                        </AlbumCard>
-                                )
-                            ))}
-                        </AlbumSlider>
+                                {Array.isArray(albums)
+                                    ? [...albums]
+                                        .sort((a, b) => {
+                                        // sécuriser les dates pour le tri
+                                        const yearA = a.date ? parseInt(a.date.substring(0, 4)) : 0;
+                                        const yearB = b.date ? parseInt(b.date.substring(0, 4)) : 0;
+                                        return yearB - yearA;
+                                        })
+                                        .map((album) => {
+                                        const year = album.date ? album.date.substring(0, 4) : 'Unknown Year';
+
+                                        return (
+                                            <AlbumCard key={album.id} className="size-80 overflow-visible">
+                                            <Link className="size-60" href={"../album/" + album.id}>
+                                                <CardCover src={proxyUrl(album.artwork)} alt={album.title} />
+                                                <CardContent className="px-0">
+                                                <CardTitle className="line-clamp-2">{album.title?.toUpperCase()}</CardTitle>
+                                                <CardSubtitle>{year}</CardSubtitle>
+                                                </CardContent>
+                                            </Link>
+                                            </AlbumCard>
+                                        );
+                                    })
+                                : null}
+                            </AlbumSlider>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
             </>
     );

@@ -121,6 +121,7 @@ export default function Album({
     const h = Math.floor(total / 3600);
     const min = Math.floor((total - h * 3600) / 60);
     const sec = total % 60;
+    const year = album.album_date_created?.split('-')?.[0] ?? 'Unknown Year';
 
     return (
         <>
@@ -145,16 +146,12 @@ export default function Album({
                                 {album.album_title}
                             </h1>
                             <h2 className="text-lg font-semibold text-white">
-                                {listeArtistes} •{' '}
-                                {album.album_date_created.split('-')[0]} •
-                                {nombreMusiques > 0
-                                    ? ` ${nombreMusiques} titres`
-                                    : '0 titre'}{' '}
-                                •{h > 0 ? ` ${h}h ` : ''} {min % 60} min {sec}{' '}
-                                sec
+                                {listeArtistes} • {year} •
+                                {nombreMusiques > 0 ? ` ${nombreMusiques} titres` : '0 titre'} •
+                                {h > 0 ? ` ${h}h ` : ''} {min % 60} min {sec} sec
                             </h2>
                         </div>
-
+                        
                         <div className="flex max-w-sm gap-2">
                             <Button
                                 className="flex-1"
