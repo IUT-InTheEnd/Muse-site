@@ -30,11 +30,14 @@ const Navbar = ({ user }: NavbarProps) => {
                     {user && (
                         <>
                             <div className="relative hidden items-center sm:flex">
-                                <input
-                                    type="text"
-                                    placeholder="Rechercher..."
-                                    className="w-64 rounded-full border border-gray-300 py-1 pr-10 pl-3 focus:ring-2 focus:ring-primary focus:outline-none"
-                                />
+                                <form method="get" action="/search" className="w-full">
+                                    <input
+                                        type="text"
+                                        name="q"
+                                        placeholder="Rechercher..."
+                                        className="w-64 rounded-full border border-gray-300 py-1 pl-3 pr-3 focus:ring-2 focus:ring-primary focus:outline-none"
+                                    />
+                                </form>
                                 <Search className="absolute top-1/2 right-1 -translate-y-1/2 p-1" />
                             </div>
 
@@ -47,12 +50,6 @@ const Navbar = ({ user }: NavbarProps) => {
                                 </a>
                                 <a href="/user/playlists" className="hover:underline">
                                     Playlists
-                                </a>
-                                <a
-                                    href="/decouverte"
-                                    className="hover:underline"
-                                >
-                                    Découvrir
                                 </a>
                             </div>
                         </>
@@ -120,9 +117,6 @@ const Navbar = ({ user }: NavbarProps) => {
                             </a>
                             <a href="/user/playlists" className="hover:underline">
                                 Playlists
-                            </a>
-                            <a href="/decouverte" className="hover:underline">
-                                Découvrir
                             </a>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>

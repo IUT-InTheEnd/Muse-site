@@ -1,7 +1,6 @@
 import type { VariantProps } from 'class-variance-authority';
 import type { ComponentProps } from 'react';
-import type {
-    CardVariants} from '@/components/musecomponents/cards/Card';
+import type { CardVariants } from '@/components/musecomponents/cards/Card';
 import {
     Card,
     CardPlayButton
@@ -10,6 +9,7 @@ import {
 type CardProps = ComponentProps<'div'> &
     VariantProps<typeof CardVariants> & {
         trackId?: number;
+        showPlayButton?: boolean;
     };
 
 export function MusicCard({
@@ -18,13 +18,16 @@ export function MusicCard({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     variant,
     trackId,
+    showPlayButton,
     children,
     ...props
 }: CardProps) {
     return (
         <Card type="media" variant="musique" className="relative" {...props}>
             {children}
-            {trackId && <CardPlayButton trackId={trackId} />}
+            {trackId && showPlayButton !== false && (
+                <CardPlayButton trackId={trackId} />
+            )}
         </Card>
     );
 }

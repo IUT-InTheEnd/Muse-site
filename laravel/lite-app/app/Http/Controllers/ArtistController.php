@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ArtistResource;
 use App\Models\Artist;
 use App\Models\Track;
 use App\Models\Album;
@@ -131,9 +132,9 @@ class ArtistController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function getArtist($id){
-        return response()->json(Artist::find($id));
-    }
+    // public function getArtist($id){
+    //     return response()->json(Artist::find($id));
+    // }
 
     public function getArtistAlbums($id)
     {
@@ -149,5 +150,20 @@ class ArtistController extends Controller
         }
         return response()->json(['success' => true]);
     }
+    
+    /**
+     * @unauthenticated
+     */
+    public function getArtist(int $id)
+    {
+        return new ArtistResource(Artist::findOrFail($id));
+    }
 
+    /**
+     * @unauthenticated
+     */
+    public function getAllArtists()
+    {
+        return ArtistResource::collection(Artist::paginate());
+    }
 }

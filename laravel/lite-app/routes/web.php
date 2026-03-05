@@ -3,15 +3,16 @@
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\FavoritesController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    if (auth()->check()) {
-        return Inertia::render('dashboard');
+    if (!auth()->check()) {
+        return Inertia::render('welcome');
     }
 
-    return Inertia::render('welcome');
+    return app(\App\Http\Controllers\DashboardController::class)->index();
 })->name('home');
 
 Route::get('/mentionslegales', function () {
@@ -25,6 +26,14 @@ Route::get('/support', function () {
 Route::get('/genpassword', function () {
     return view('genpassword');
 })->name('genpassword');
+
+
+Route::get('/test-music-player', [App\Http\Controllers\TestMusicPlayer::class, 'playMusic'])->name('test-music-player');
+
+// Proxy pour les ressources externes (audio, images) - protégé par auth
+Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::class, 'stream'])->name('proxy');
+
+Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
 
 // Routes pour les documentations
 Route::prefix('documentation')->name('documentation.')->group(function () {
@@ -75,6 +84,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/user/info', [App\Http\Controllers\UserController::class, 'updateUserInfo'])->name('user.updateInfo');
 
     Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
+    Route::get('/search', [SearchController::class, 'view'])->name('search.view');
 
     // Favorites - User
     Route::get('/favorites', [FavoritesController::class, 'index'])->name('favorites.index');
@@ -112,5 +122,13 @@ Route::middleware(['auth'])->group(function () {
 
 // Images read
 Route::get('/image/{filename}', [App\Http\Controllers\ImageFileController::class, 'getImage'])->name('image.get');
+
+// DEBUG DE GOLMON
+Route::get('/apy', function () {
+    return view('apy');
+})->name('apy');
+Route::get('/valr', function () {
+    return view('validationTest');
+});
 
 require __DIR__.'/settings.php';

@@ -47,15 +47,16 @@ class FavoritesController extends Controller
         $favoriteArtists = UserPrefereArtiste::where('user_id', $user->id)
             ->with('artist')
             ->get()
-            ->pluck('artist')
-            ->filter()
-            ->map(function ($artist) {
+            ->map(function ($userArtist) {
+                $artist = $userArtist->artist; 
+                if (!$artist) return null; 
                 return [
-                    'artist_id' => $artist->id,
-                    'artist_name' => $artist->artist_name,
-                    'artist_image_file' => $artist->artist_image_file,
+                    'id' => $artist->artist_id, 
+                    'name' => $artist->artist_name,
+                    'cover' => $artist->artist_image_file,
                 ];
-            });
+            })
+            ->filter();
 
         return Inertia::render('favoris/index', [
             'tracks' => $favoriteTracks,
@@ -90,6 +91,7 @@ class FavoritesController extends Controller
                 'is_favorite' => false,
                 'message' => 'Titre retire des favoris',
             ]);
+
         } else {
             $favoritesPlaylist->tracks()->attach($trackId);
             $favoritesPlaylist->playlist_date_updated = now();

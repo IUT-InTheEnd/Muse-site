@@ -37,6 +37,6 @@ class UserAjouteAlbumFavori extends Model
 
 	public function album()
 	{
-		return $this->belongsTo(Album::class, 'user_id', 'album_id');
+		return $this->belongsTo(Album::class, 'album_id', 'album_id');
 	}
 }
