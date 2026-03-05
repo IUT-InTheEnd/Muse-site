@@ -42,7 +42,7 @@ const Navbar = ({ user }: NavbarProps) => {
                                 <a href="/" className="hover:underline">
                                     Accueil
                                 </a>
-                                <a href="/favoris" className="hover:underline">
+                                <a href="/favorites" className="hover:underline">
                                     Favoris
                                 </a>
                                 <a href="/user/playlists" className="hover:underline">
@@ -115,7 +115,7 @@ const Navbar = ({ user }: NavbarProps) => {
                             <a href="/" className="hover:underline">
                                 Accueil
                             </a>
-                            <a href="/favoris" className="hover:underline">
+                            <a href="/favorites" className="hover:underline">
                                 Favoris
                             </a>
                             <a href="/user/playlists" className="hover:underline">
