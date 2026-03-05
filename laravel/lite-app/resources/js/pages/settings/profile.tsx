@@ -4,6 +4,7 @@ import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileCo
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
+import ProfileImageUpload from '@/components/profile-image-upload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,6 +41,16 @@ export default function Profile({
                 <div className="flex flex-col gap-8 xl:flex-row">
                     {/* Left column - Profile form */}
                     <div className="flex-1 space-y-12">
+                        {/* Profile Image Section */}
+                        <div className="space-y-6">
+                            <Heading
+                                variant="small"
+                                title="Photo de profil"
+                                description="Ajoutez ou modifiez votre photo de profil"
+                            />
+                            <ProfileImageUpload />
+                        </div>
+
                         <div className="space-y-6">
                             <Heading
                                 variant="small"

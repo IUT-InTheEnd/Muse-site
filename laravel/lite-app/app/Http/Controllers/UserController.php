@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+<<<<<<< api
 use App\Enums\Instruments;
 use App\Enums\ListeningContext;
 use App\Http\Resources\UserResource;
@@ -21,6 +22,47 @@ class UserController extends Controller
     public function getUser(Request $request)
     {
         return new UserResource($request->user());
+=======
+use App\Models\User;
+use App\Models\UserProfile;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class UserController extends Controller
+{
+    public function show(string $username)
+    {
+        $user = User::where('name', $username)->firstOrFail();
+
+        // Vérifie si le profil est public
+        $isOwner = auth()->id() === $user->id;
+        if ($user->user_privacy && ! $user->user_privacy->public_profile_visibility && ! $isOwner) {
+            abort(403, 'Profile is private');
+        }
+
+        // Si c'est le propriétaire, affiche toutes les playlists, sinon seulement les publiques
+        $playlists = $isOwner
+            ? $user->playlists()->withCount('tracks')->get()
+            : $user->playlists()->where('playlist_public', true)->withCount('tracks')->get();
+
+        $recentTracks = $user->user_ecoutes()->with('track.realisers.artist')->latest('last_listen')->take(10)->get();
+        $followedArtists = $user->artists()->get();
+
+        // Récupère les IDs des pistes favorites de l'utilisateur connecté (on veut montrer les favoris du de l'utilisateur qui visite la page, pas du propriétaire du profil)
+        $authUser = auth()->user();
+        $favoriteTrackIds = $authUser ? $authUser->getFavoriteTrackIds() : [];
+        $userPlaylists = $authUser ? $authUser->playlists()->get(['playlist_id', 'playlist_name', 'playlist_image_file']) : [];
+
+        return Inertia::render('user/profile', [
+            'user' => $user,
+            'playlists' => $playlists,
+            'recent_tracks' => $recentTracks,
+            'followed_artists' => $followedArtists,
+            'favorite_track_ids' => $favoriteTrackIds,
+            'user_playlists' => $userPlaylists,
+            'is_owner' => $isOwner,
+        ]);
+>>>>>>> main
     }
 
     public function updateUserInfo(Request $request)

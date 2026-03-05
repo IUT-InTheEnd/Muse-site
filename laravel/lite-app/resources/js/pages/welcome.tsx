@@ -1,20 +1,8 @@
-import { dashboard, login, register } from '@/routes';
-import type { SharedData } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import Navbar from '@/components/musecomponents/Navbar';
-import Footer from '@/components/musecomponents/Footer';
+import { Head, Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
-import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
-import { CardCover, CardTitle, CardContent, CardSubtitle} from '@/components/musecomponents/cards/Card';
-import { MusicSlider } from '@/components/musecomponents/sliders/MusicSlider';
+import { login, register } from '@/routes';
 
-export default function Welcome({
-    canRegister = true,
-}: {
-    canRegister?: boolean;
-}) {
-    const { auth } = usePage<SharedData>().props;
-
+export default function Welcome() {
     return (
         <>
             <Head title="Welcome">
@@ -24,13 +12,8 @@ export default function Welcome({
                     rel="stylesheet"
                 />
             </Head>
-            <div className="flex min-h-screen flex-col items-center lg:justify-center">
-                <header className="w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
-                    <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl text-sm">
-                        <Navbar user={auth.user} />
-                    </div>
-                </header>
-                <div className="relative flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/guy2.jpg')" }}>
+            <div className="flex flex-col items-center lg:justify-center">
+                <div className="relative flex w-full min-h-[calc(100vh-5rem-11rem)] items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/guy2.jpg')" }}>
                     <div className="absolute inset-0 bg-black/70 pointer-events-none"></div>
 
                     <main className="relative z-10 flex flex-col max-w-md sm:max-w-lg lg:max-w-xl items-center justify-center gap-6 text-center px-6 py-10">
@@ -58,15 +41,9 @@ export default function Welcome({
                                     Je me connecte
                                 </Link>
                             </Button>
-                        </div> 
+                        </div>
                     </main>
                 </div>
-
-                <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
-                    <div className="mx-auto w-full max-w-[675px] lg:max-w-4xl py-6 text-sm">
-                        <Footer />
-                    </div>
-                </footer>
             </div>
         </>
     );

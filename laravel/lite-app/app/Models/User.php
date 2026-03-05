@@ -27,6 +27,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $two_factor_confirmed_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $user_image_file
  * @property float|null $user_age
  * @property string|null $user_job
  * @property string|null $user_plays_music
@@ -35,8 +36,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $user_music_contexts
  * @property int|null $profile_id
  * @property UserProfile|null $user_profile
+ * @property UserPrivacy|null $user_privacy
  * @property UserPreferenceEchonest|null $user_preference_echonest
- * @property Collection|PossedePlaylist[] $possede_playlists
+ * @property Collection|Playlist[] $playlists
  * @property Collection|Represente[] $representes
  * @property Collection|UserParle[] $user_parles
  * @property Collection|Artist[] $artists
@@ -73,6 +75,7 @@ class User extends Authenticatable
         'two_factor_secret',
         'two_factor_recovery_codes',
         'two_factor_confirmed_at',
+        'user_image_file',
         'user_age',
         'user_job',
         'user_plays_music',
@@ -87,14 +90,19 @@ class User extends Authenticatable
         return $this->belongsTo(UserProfile::class, 'profile_id');
     }
 
+    public function user_privacy()
+    {
+        return $this->hasOne(UserPrivacy::class, 'id');
+    }
+
     public function user_preference_echonest()
     {
         return $this->hasOne(UserPreferenceEchonest::class);
     }
 
-    public function possede_playlists()
+    public function playlists()
     {
-        return $this->hasMany(PossedePlaylist::class);
+        return $this->hasMany(Playlist::class);
     }
 
     public function representes()
@@ -109,7 +117,7 @@ class User extends Authenticatable
 
     public function artists()
     {
-        return $this->belongsToMany(Artist::class, 'user_prefere_artiste');
+        return $this->belongsToMany(Artist::class, 'user_prefere_artiste', 'user_id', 'artist_id');
     }
 
     public function ajoute_favoris()
@@ -124,11 +132,41 @@ class User extends Authenticatable
 
     public function albums()
     {
-        return $this->belongsToMany(Album::class, 'user_ajoute_album_favoris');
+        return $this->belongsToMany(Album::class, 'user_ajoute_album_favoris', 'user_id', 'album_id');
     }
 
     public function user_ecoutes()
     {
         return $this->hasMany(UserEcoute::class);
+    }
+
+    public function getFavoritesPlaylist(): Playlist
+    {
+        $playlist = $this->playlists()
+            ->where('playlist_deletable', false)
+            ->where('playlist_name', 'Favoris')
+            ->first();
+
+        if (! $playlist) {
+            $playlist = Playlist::create([
+                'user_id' => $this->id,
+                'playlist_name' => 'Favoris',
+                'playlist_description' => 'Vos titres favoris',
+                'playlist_date_created' => now(),
+                'playlist_date_updated' => now(),
+                'playlist_public' => false,
+                'playlist_deletable' => false,
+            ]);
+        }
+
+        return $playlist;
+    }
+
+    public function getFavoriteTrackIds(): array
+    {
+        return $this->getFavoritesPlaylist()
+            ->tracks()
+            ->pluck('track.track_id')
+            ->toArray();
     }
 }

@@ -1,3 +1,10 @@
+# Muse
+
+##  Git LFS
+
+- Installer Git LFS
+- `git lfs checkout`
+
 ## Clonage du projet
 
 ```bash
@@ -12,14 +19,17 @@ git pull
 ## mise en place du projet
 
 ### database
+
 ```bash
 cd <repo>/database
 docker compose up -d
 ```
+
 ensuite installer les packages python de la manière que vous préférez
 et run le `main.py`
 
 ### laravel
+
 ```bash
 cd <repo>/laravel/lite-app
 composer install

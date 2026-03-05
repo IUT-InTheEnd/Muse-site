@@ -1,6 +1,6 @@
-import { Slider } from "./Slider"
 import type { ReactElement } from "react"
 import type { MusicCard } from "@/components/musecomponents/cards/MusicCard"
+import { Slider } from "./Slider"
 
 type MusicSliderProps = {
   title?: string
@@ -23,7 +23,7 @@ export function MusicSlider({
 
 {/* <MusicSlider title="Titres populaires">
   {tracks.map(track => (
-    <MusicCard key={track.id} asChild>
+    <MusicCard key={track.id}>
       <Link href={`/musics/${track.id}`}>
         <CardCover src={track.cover} />
         <CardContent>

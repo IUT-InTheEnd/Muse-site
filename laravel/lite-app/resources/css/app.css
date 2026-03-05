@@ -9,7 +9,7 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Inter', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
@@ -146,23 +146,24 @@
 
 
 h1{
+    color: var(--foreground);
     font-size: 2rem;
     font-weight: bold;
 }
 
 h2{
     font-size: 1.5rem;
-    font-weight: semi-bold;
+    font-weight: bold;
 }
 
 h3{
     font-size: 1.25rem;
-    font-weight: semi-bold;
+    font-weight: bold;
 }   
 
 h4{
     font-size: 1.125rem;
-    font-weight: semi-bold;
+    font-weight: bold;
 }
 
 h5{
@@ -186,27 +187,33 @@ h6{
 }
 
 
-.backgroundimg-container{
+.backgroundimg-container {
+    position: absolute; 
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 700px;
-    position : relative;
+    height: 600px; 
+    z-index: 0; 
+    overflow: hidden;
 }
 
-.background-image{
+.background-artist {
     height: 100%;
     width: 100%;
     object-fit: cover;
     display: block;
+    object-position: 50% 25%; 
 }
 
-.gradient{
+
+.gradient {
     height: 100%;
     width: 100%;
-    background-image: linear-gradient(to top, rgb(255, 255, 255), transparent);
-    position : absolute;
-    opacity: 1;
+    background: linear-gradient(to top, var(--background, #1F2937), transparent);
+    position: absolute;
     top: 0;
-    left:0;
+    left: 0;
+    z-index: 1; 
 }
 
 .link-doc {

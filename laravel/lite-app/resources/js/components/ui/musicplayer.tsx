@@ -1,4 +1,4 @@
-import { PlayIcon, PauseIcon, SkipForwardIcon, SkipBackIcon, ShuffleIcon, RepeatIcon, Repeat1Icon, VolumeIcon, Volume1Icon, Volume2Icon, VolumeXIcon, MusicIcon, ChevronDownIcon } from 'lucide-react';
+import { PlayIcon, PauseIcon, SkipForwardIcon, SkipBackIcon, ShuffleIcon, RepeatIcon, Repeat1Icon, VolumeIcon, Volume1Icon, Volume2Icon, VolumeXIcon, MusicIcon, ChevronDownIcon, LoaderIcon, AlertCircleIcon, XIcon } from 'lucide-react';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 
 function formatTime(s: number): string {
@@ -11,7 +11,7 @@ function formatTime(s: number): string {
 }
 
 export default function MusicPlayer() {
-    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized } = useMusicPlayer();
+    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError } = useMusicPlayer();
 
     // État minimisé : afficher un bouton flottant avec l'icône de musique
     if (minimized) {
@@ -24,6 +24,12 @@ export default function MusicPlayer() {
                 <MusicIcon size={28} />
                 {playing && (
                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                )}
+                {error && (
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
+                )}
+                {isLoading && (
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full animate-pulse" />
                 )}
             </button>
         );
@@ -60,6 +66,19 @@ export default function MusicPlayer() {
                         <div className="text-base text-neutral-500 dark:text-white/60 truncate">
                             {track?.artist || '—'}
                         </div>
+                        {error && (
+                            <div className="flex items-center gap-1 text-sm text-red-500 mt-1">
+                                <AlertCircleIcon size={14} />
+                                <span className="truncate">{error}</span>
+                                <button 
+                                    onClick={clearError}
+                                    className="ml-1 hover:text-red-400"
+                                    aria-label="Fermer l'erreur"
+                                >
+                                    <XIcon size={14} />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -84,9 +103,16 @@ export default function MusicPlayer() {
 
                         <button
                             onClick={togglePlay}
-                            className="w-14 h-14 flex items-center justify-center rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black"
+                            disabled={isLoading}
+                            className="w-14 h-14 flex items-center justify-center rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black disabled:opacity-50"
                         >
-                            {playing ? <PauseIcon size={28} /> : <PlayIcon size={28} />}
+                            {isLoading ? (
+                                <LoaderIcon size={28} className="animate-spin" />
+                            ) : playing ? (
+                                <PauseIcon size={28} />
+                            ) : (
+                                <PlayIcon size={28} />
+                            )}
                         </button>
 
                         <button onClick={skipForward}>

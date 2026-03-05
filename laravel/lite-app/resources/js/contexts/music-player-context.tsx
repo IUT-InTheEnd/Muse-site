@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 export type Track = {
+    id?: number;
     src: string;
     title?: string;
     artist?: string;
@@ -18,6 +19,12 @@ export type MusicPlayerState = {
     shuffle: boolean;
     repeatMode: RepeatMode;
     minimized: boolean;
+    error: string | null;
+    isLoading: boolean;
+    // Playlist state
+    playlist: Track[];
+    currentIndex: number;
+    hasListenBeenCounted: boolean;
 };
 
 export type MusicPlayerActions = {
@@ -33,6 +40,15 @@ export type MusicPlayerActions = {
     skipForward: () => void;
     skipBack: () => void;
     toggleMinimized: () => void;
+    clearError: () => void;
+    // Playlist actions
+    setPlaylist: (tracks: Track[], startIndex?: number) => void;
+    addToQueue: (track: Track) => void;
+    addToQueueNext: (track: Track) => void;
+    removeFromQueue: (index: number) => void;
+    clearQueue: () => void;
+    playNext: () => void;
+    playPrevious: () => void;
 };
 
 export type MusicPlayerContextType = MusicPlayerState & MusicPlayerActions;
@@ -49,6 +65,8 @@ type PersistedState = {
     repeatMode: RepeatMode;
     track: Track | null;
     minimized: boolean;
+    playlist: Track[];
+    currentIndex: number;
 };
 
 function loadPersistedState(): Partial<PersistedState> {
@@ -73,6 +91,41 @@ function savePersistedState(state: PersistedState): void {
     }
 }
 
+// Fonction pour appeler l'API add-listen
+async function addListenToTrack(trackId: number): Promise<void> {
+    try {
+        const response = await fetch('/add-listen', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN':
+                    document
+                        .querySelector('meta[name="csrf-token"]')
+                        ?.getAttribute('content') || '',
+            },
+            body: JSON.stringify({
+                track_id: trackId,
+            }),
+        });
+
+        if (!response.ok) {
+            console.error('Failed to add listen:', response.status);
+        }
+    } catch (error) {
+        console.error('Error adding listen:', error);
+    }
+}
+
+// Fonction utilitaire pour obtenir un index aléatoire différent du courant
+function getRandomIndex(currentIndex: number, playlistLength: number): number {
+    if (playlistLength <= 1) return 0;
+    let newIndex: number;
+    do {
+        newIndex = Math.floor(Math.random() * playlistLength);
+    } while (newIndex === currentIndex);
+    return newIndex;
+}
+
 export function MusicPlayerProvider({
     children,
 }: {
@@ -81,7 +134,7 @@ export function MusicPlayerProvider({
     const audioRef = React.useRef<HTMLAudioElement | null>(null);
     const previousVolumeRef = React.useRef<number>(1);
 
-    // Charger l'état persisté au montage
+    // Charger l'etat persiste au montage
     const persistedState = React.useMemo(() => loadPersistedState(), []);
 
     const [track, setTrack] = React.useState<Track | null>(
@@ -100,83 +153,58 @@ export function MusicPlayerProvider({
     const [minimized, setMinimized] = React.useState(
         persistedState.minimized ?? false,
     );
+    const [error, setError] = React.useState<string | null>(null);
+    const [isLoading, setIsLoading] = React.useState(false);
 
-    // Initialiser l'élément audio une seule fois
+    // Playlist state
+    const [playlist, setPlaylistState] = React.useState<Track[]>(
+        persistedState.playlist ?? [],
+    );
+    const [currentIndex, setCurrentIndex] = React.useState<number>(
+        persistedState.currentIndex ?? -1,
+    );
+    const [hasListenBeenCounted, setHasListenBeenCounted] =
+        React.useState(false);
+
+    // Refs pour eviter les closures stales dans les event listeners
+    const playlistRef = React.useRef(playlist);
+    const currentIndexRef = React.useRef(currentIndex);
+    const shuffleRef = React.useRef(shuffle);
+    const repeatModeRef = React.useRef(repeatMode);
+    const trackRef = React.useRef(track);
+    const hasListenBeenCountedRef = React.useRef(hasListenBeenCounted);
+
+    // Mettre a jour les refs quand les valeurs changent
     React.useEffect(() => {
-        const audio = new Audio();
-        audioRef.current = audio;
-        audio.volume = volume;
-
-        // Si on a une piste persistée, la définir comme source (sans lecture automatique)
-        if (track?.src) {
-            audio.src = track.src;
-        }
-
-        const onTimeUpdate = () => setCurrentTime(audio.currentTime);
-        const onLoaded = () => setDuration(audio.duration || 0);
-        const onEnded = () => {
-            if (repeatMode === 'one') {
-                audio.currentTime = 0;
-                audio.play();
-            } else {
-                setPlaying(false);
-                // À venir : logique de playlist pour lecture aléatoire/répétition totale
-            }
-        };
-        const onPlay = () => setPlaying(true);
-        const onPause = () => setPlaying(false);
-
-        audio.addEventListener('timeupdate', onTimeUpdate);
-        audio.addEventListener('loadedmetadata', onLoaded);
-        audio.addEventListener('ended', onEnded);
-        audio.addEventListener('play', onPlay);
-        audio.addEventListener('pause', onPause);
-
-        return () => {
-            audio.pause();
-            audio.removeEventListener('timeupdate', onTimeUpdate);
-            audio.removeEventListener('loadedmetadata', onLoaded);
-            audio.removeEventListener('ended', onEnded);
-            audio.removeEventListener('play', onPlay);
-            audio.removeEventListener('pause', onPause);
-            audioRef.current = null;
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // Mettre à jour le comportement du mode répétition quand il change
+        playlistRef.current = playlist;
+    }, [playlist]);
     React.useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio) return;
-
-        const onEnded = () => {
-            if (repeatMode === 'one') {
-                audio.currentTime = 0;
-                audio.play();
-            } else {
-                setPlaying(false);
-            }
-        };
-
-        audio.addEventListener('ended', onEnded);
-        return () => audio.removeEventListener('ended', onEnded);
+        currentIndexRef.current = currentIndex;
+    }, [currentIndex]);
+    React.useEffect(() => {
+        shuffleRef.current = shuffle;
+    }, [shuffle]);
+    React.useEffect(() => {
+        repeatModeRef.current = repeatMode;
     }, [repeatMode]);
-
-    // Synchroniser le volume avec l'élément audio
     React.useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.volume = volume;
-        }
-    }, [volume]);
-
-    // Persister les changements d'état
+        trackRef.current = track;
+    }, [track]);
     React.useEffect(() => {
-        savePersistedState({ volume, shuffle, repeatMode, track, minimized });
-    }, [volume, shuffle, repeatMode, track, minimized]);
+        hasListenBeenCountedRef.current = hasListenBeenCounted;
+    }, [hasListenBeenCounted]);
 
-    // Actions
-    const playTrack = React.useCallback((newTrack: Track) => {
+    // Fonction pour jouer une piste de la playlist par index
+    const playTrackAtIndex = React.useCallback((index: number) => {
+        const currentPlaylist = playlistRef.current;
+        if (index < 0 || index >= currentPlaylist.length) return;
+
+        const newTrack = currentPlaylist[index];
         setTrack(newTrack);
+        setCurrentIndex(index);
+        setError(null);
+        setHasListenBeenCounted(false);
+
         const audio = audioRef.current;
         if (!audio) return;
 
@@ -185,17 +213,243 @@ export function MusicPlayerProvider({
         audio
             .play()
             .then(() => setPlaying(true))
-            .catch(() => setPlaying(false));
+            .catch((err) => {
+                setPlaying(false);
+                console.error('Error playing track at index:', err);
+            });
+    }, []);
+
+    // Fonction pour passer a la piste suivante
+    const goToNextTrack = React.useCallback(() => {
+        const currentPlaylist = playlistRef.current;
+        const currentIdx = currentIndexRef.current;
+        const isShuffled = shuffleRef.current;
+        const repeat = repeatModeRef.current;
+
+        if (currentPlaylist.length === 0) return;
+
+        let nextIndex: number;
+
+        if (isShuffled) {
+            nextIndex = getRandomIndex(currentIdx, currentPlaylist.length);
+        } else {
+            nextIndex = currentIdx + 1;
+            if (nextIndex >= currentPlaylist.length) {
+                if (repeat === 'all') {
+                    nextIndex = 0;
+                } else {
+                    // Fin de la playlist, ne pas continuer
+                    setPlaying(false);
+                    return;
+                }
+            }
+        }
+
+        playTrackAtIndex(nextIndex);
+    }, [playTrackAtIndex]);
+
+    // Fonction pour revenir a la piste precedente
+    const goToPreviousTrack = React.useCallback(() => {
+        const currentPlaylist = playlistRef.current;
+        const currentIdx = currentIndexRef.current;
+        const isShuffled = shuffleRef.current;
+        const repeat = repeatModeRef.current;
+
+        if (currentPlaylist.length === 0) return;
+
+        // Si on est au debut de la piste (< 3s), aller a la precedente
+        // Sinon, redemarrer la piste actuelle
+        const audio = audioRef.current;
+        if (audio && audio.currentTime > 3) {
+            audio.currentTime = 0;
+            return;
+        }
+
+        let prevIndex: number;
+
+        if (isShuffled) {
+            prevIndex = getRandomIndex(currentIdx, currentPlaylist.length);
+        } else {
+            prevIndex = currentIdx - 1;
+            if (prevIndex < 0) {
+                if (repeat === 'all') {
+                    prevIndex = currentPlaylist.length - 1;
+                } else {
+                    // Debut de la playlist, redemarrer la piste actuelle
+                    if (audio) audio.currentTime = 0;
+                    return;
+                }
+            }
+        }
+
+        playTrackAtIndex(prevIndex);
+    }, [playTrackAtIndex]);
+
+    // Initialiser l'element audio une seule fois
+    React.useEffect(() => {
+        const audio = new Audio();
+        audioRef.current = audio;
+        audio.volume = volume;
+
+        // NOTE: On ne charge PAS automatiquement la piste persistee au montage
+        // pour eviter les erreurs de proxy avant que la session soit etablie.
+        // L'utilisateur devra cliquer sur play pour relancer la piste.
+
+        const onTimeUpdate = () => {
+            setCurrentTime(audio.currentTime);
+
+            // Verifier si on a atteint 50% de la piste et enregistrer l'ecoute
+            if (
+                audio.duration > 0 &&
+                audio.currentTime >= audio.duration / 2 &&
+                !hasListenBeenCountedRef.current
+            ) {
+                const currentTrack = trackRef.current;
+                if (currentTrack?.id) {
+                    setHasListenBeenCounted(true);
+                    addListenToTrack(currentTrack.id);
+                }
+            }
+        };
+
+        const onLoaded = () => {
+            setDuration(audio.duration || 0);
+            setIsLoading(false);
+            setError(null);
+        };
+
+        const onEnded = () => {
+            const repeat = repeatModeRef.current;
+
+            if (repeat === 'one') {
+                audio.currentTime = 0;
+                setHasListenBeenCounted(false);
+                audio.play();
+            } else {
+                // Passer a la piste suivante selon le mode
+                goToNextTrack();
+            }
+        };
+
+        const onPlay = () => setPlaying(true);
+        const onPause = () => setPlaying(false);
+        const onError = () => {
+            setIsLoading(false);
+            setPlaying(false);
+            // Verifier le type d'erreur
+            const mediaError = audio.error;
+            if (mediaError) {
+                switch (mediaError.code) {
+                    case MediaError.MEDIA_ERR_ABORTED:
+                        setError('Lecture annulee');
+                        break;
+                    case MediaError.MEDIA_ERR_NETWORK:
+                        setError('Erreur reseau lors du chargement');
+                        break;
+                    case MediaError.MEDIA_ERR_DECODE:
+                        setError('Impossible de decoder le fichier audio');
+                        break;
+                    case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                        setError('Format audio non supporte');
+                        break;
+                    default:
+                        setError('Erreur de lecture audio');
+                }
+            } else {
+                setError('Erreur de lecture audio');
+            }
+            console.error('Audio error:', mediaError);
+        };
+        const onLoadStart = () => {
+            setIsLoading(true);
+            setError(null);
+        };
+
+        audio.addEventListener('timeupdate', onTimeUpdate);
+        audio.addEventListener('loadedmetadata', onLoaded);
+        audio.addEventListener('ended', onEnded);
+        audio.addEventListener('play', onPlay);
+        audio.addEventListener('pause', onPause);
+        audio.addEventListener('error', onError);
+        audio.addEventListener('loadstart', onLoadStart);
+
+        return () => {
+            audio.pause();
+            audio.removeEventListener('timeupdate', onTimeUpdate);
+            audio.removeEventListener('loadedmetadata', onLoaded);
+            audio.removeEventListener('ended', onEnded);
+            audio.removeEventListener('play', onPlay);
+            audio.removeEventListener('pause', onPause);
+            audio.removeEventListener('error', onError);
+            audio.removeEventListener('loadstart', onLoadStart);
+            audioRef.current = null;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [goToNextTrack]);
+
+    // Synchroniser le volume avec l'element audio
+    React.useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = volume;
+        }
+    }, [volume]);
+
+    // Persister les changements d'etat
+    React.useEffect(() => {
+        savePersistedState({
+            volume,
+            shuffle,
+            repeatMode,
+            track,
+            minimized,
+            playlist,
+            currentIndex,
+        });
+    }, [volume, shuffle, repeatMode, track, minimized, playlist, currentIndex]);
+
+    // Actions
+    const playTrack = React.useCallback((newTrack: Track) => {
+        setTrack(newTrack);
+        setError(null);
+        setHasListenBeenCounted(false);
+        // Si on joue une piste individuelle, la mettre dans une playlist d'un element
+        setPlaylistState([newTrack]);
+        setCurrentIndex(0);
+
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        audio.src = newTrack.src;
+        audio.currentTime = 0;
+        audio
+            .play()
+            .then(() => setPlaying(true))
+            .catch((err) => {
+                setPlaying(false);
+                console.error('Error playing track:', err);
+            });
     }, []);
 
     const play = React.useCallback(() => {
         const audio = audioRef.current;
-        if (!audio || !audio.src) return;
+        if (!audio) return;
+
+        // Si on a une piste persistee mais pas de source chargee, la charger
+        if (!audio.src && track?.src) {
+            audio.src = track.src;
+        }
+
+        if (!audio.src) return;
+
+        setError(null);
         audio
             .play()
             .then(() => setPlaying(true))
-            .catch(() => setPlaying(false));
-    }, []);
+            .catch((err) => {
+                setPlaying(false);
+                console.error('Error playing:', err);
+            });
+    }, [track]);
 
     const pause = React.useCallback(() => {
         const audio = audioRef.current;
@@ -206,13 +460,25 @@ export function MusicPlayerProvider({
 
     const togglePlay = React.useCallback(() => {
         const audio = audioRef.current;
-        if (!audio || !audio.src) return;
+        if (!audio) return;
+
+        // Si on a une piste persistee mais pas de source chargee, la charger
+        if (!audio.src && track?.src) {
+            audio.src = track.src;
+        }
+
+        if (!audio.src) return;
+
         if (playing) {
             audio.pause();
         } else {
-            audio.play().catch(() => setPlaying(false));
+            setError(null);
+            audio.play().catch((err) => {
+                setPlaying(false);
+                console.error('Error in togglePlay:', err);
+            });
         }
-    }, [playing]);
+    }, [playing, track]);
 
     const seek = React.useCallback((time: number) => {
         const audio = audioRef.current;
@@ -247,23 +513,94 @@ export function MusicPlayerProvider({
     }, []);
 
     const skipForward = React.useCallback(() => {
-        // À venir : support des playlists
-        console.log('Skip forward - playlist support coming soon');
-    }, []);
+        goToNextTrack();
+    }, [goToNextTrack]);
 
     const skipBack = React.useCallback(() => {
-        // À venir : support des playlists
-        // Pour l'instant, redémarrer la piste actuelle si on dépasse 3 secondes
-        const audio = audioRef.current;
-        if (!audio) return;
-        if (audio.currentTime > 3) {
-            audio.currentTime = 0;
-        }
-    }, []);
+        goToPreviousTrack();
+    }, [goToPreviousTrack]);
 
     const toggleMinimized = React.useCallback(() => {
         setMinimized((v) => !v);
     }, []);
+
+    const clearError = React.useCallback(() => {
+        setError(null);
+    }, []);
+
+    // Actions de playlist
+    const setPlaylist = React.useCallback(
+        (tracks: Track[], startIndex: number = 0) => {
+            setPlaylistState(tracks);
+            if (
+                tracks.length > 0 &&
+                startIndex >= 0 &&
+                startIndex < tracks.length
+            ) {
+                playTrackAtIndex(startIndex);
+            }
+        },
+        [playTrackAtIndex],
+    );
+
+    const addToQueue = React.useCallback((newTrack: Track) => {
+        setPlaylistState((prev) => [...prev, newTrack]);
+    }, []);
+
+    // Ajouter une piste juste apres la piste en cours (sera jouee ensuite)
+    const addToQueueNext = React.useCallback(
+        (newTrack: Track) => {
+            setPlaylistState((prev) => {
+                const newPlaylist = [...prev];
+                // Inserer juste apres la position courante
+                const insertIndex = currentIndex + 1;
+                newPlaylist.splice(insertIndex, 0, newTrack);
+                return newPlaylist;
+            });
+        },
+        [currentIndex],
+    );
+
+    const removeFromQueue = React.useCallback(
+        (index: number) => {
+            setPlaylistState((prev) => {
+                const newPlaylist = [...prev];
+                newPlaylist.splice(index, 1);
+
+                // Ajuster l'index courant si necessaire
+                if (index < currentIndex) {
+                    setCurrentIndex((curr) => curr - 1);
+                } else if (index === currentIndex && newPlaylist.length > 0) {
+                    // Si on supprime la piste en cours, jouer la suivante
+                    const newIndex = Math.min(index, newPlaylist.length - 1);
+                    playTrackAtIndex(newIndex);
+                }
+
+                return newPlaylist;
+            });
+        },
+        [currentIndex, playTrackAtIndex],
+    );
+
+    const clearQueue = React.useCallback(() => {
+        setPlaylistState([]);
+        setCurrentIndex(-1);
+        setTrack(null);
+        const audio = audioRef.current;
+        if (audio) {
+            audio.pause();
+            audio.src = '';
+        }
+        setPlaying(false);
+    }, []);
+
+    const playNext = React.useCallback(() => {
+        goToNextTrack();
+    }, [goToNextTrack]);
+
+    const playPrevious = React.useCallback(() => {
+        goToPreviousTrack();
+    }, [goToPreviousTrack]);
 
     const value = React.useMemo<MusicPlayerContextType>(
         () => ({
@@ -275,6 +612,11 @@ export function MusicPlayerProvider({
             shuffle,
             repeatMode,
             minimized,
+            error,
+            isLoading,
+            playlist,
+            currentIndex,
+            hasListenBeenCounted,
             playTrack,
             play,
             pause,
@@ -287,6 +629,14 @@ export function MusicPlayerProvider({
             skipForward,
             skipBack,
             toggleMinimized,
+            clearError,
+            setPlaylist,
+            addToQueue,
+            addToQueueNext,
+            removeFromQueue,
+            clearQueue,
+            playNext,
+            playPrevious,
         }),
         [
             track,
@@ -297,6 +647,11 @@ export function MusicPlayerProvider({
             shuffle,
             repeatMode,
             minimized,
+            error,
+            isLoading,
+            playlist,
+            currentIndex,
+            hasListenBeenCounted,
             playTrack,
             play,
             pause,
@@ -309,6 +664,14 @@ export function MusicPlayerProvider({
             skipForward,
             skipBack,
             toggleMinimized,
+            clearError,
+            setPlaylist,
+            addToQueue,
+            addToQueueNext,
+            removeFromQueue,
+            clearQueue,
+            playNext,
+            playPrevious,
         ],
     );
 
