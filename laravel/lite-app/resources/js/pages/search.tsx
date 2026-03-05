@@ -1,19 +1,54 @@
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import {
-    TrackList,
-    type SortColumn,
-    type SortDirection,
-} from '@/components/musecomponents/TrackList';
+import { TrackList, type SortColumn, type SortDirection} from '@/components/musecomponents/TrackList';
 import { Button } from '@/components/ui/button';
+import { ArtistSlider } from '@/components/musecomponents/sliders/ArtistSlider';
+import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard';
+import { CardCover, CardTitle } from '@/components/musecomponents/cards/Card';
+import { proxyUrl } from '@/components/proxy';
 
 type Props = {
     listeMusiques: Array<Record<string, any>>;
+    listeArtistes: Array<Record<string, any>>;
+    langues: Array<Record<string, any>>;
+    genres: Array<Record<string, any>>;
+    testLangues: Array<string>;
+    testGenres: Array<string>;
 };
 
-export default function search({ listeMusiques }: Props) {
+export default function search({ listeMusiques, listeArtistes, langues, genres, testLangues, testGenres }: Props) {
     const [sortColumn, setSortColumn] = useState<SortColumn>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+    const [showFilters, setShowFilters] = useState(false);
+    
+    const [selectedGenres, setSelectedGenres] = useState<string[]>(() => (testGenres || []).map(String));
+    const [selectedLangues, setSelectedLangues] = useState<string[]>(() => (testLangues || []).map(String));
+    
+    useEffect(() => {
+        setSelectedGenres((testGenres || []).map(String));
+    }, [testGenres]);
+
+    useEffect(() => {
+        setSelectedLangues((testLangues || []).map(String));
+    }, [testLangues]);
+
+    const handleGenreChange = (genreId: string) => {
+        setSelectedGenres((prev) => {
+            const next = prev.includes(genreId) ? prev.filter((g) => g !== genreId) : [...prev, genreId];
+            return next;
+        });
+    };
+    const handleLangueChange = (langueId: string) => {
+        setSelectedLangues((prev) => {
+            const next = prev.includes(langueId) ? prev.filter((l) => l !== langueId) : [...prev, langueId];
+            return next;
+        });
+    };
+
+    console.log(testLangues)
+
+    console.log(testGenres)
 
     const [visibleCount, setVisibleCount] = useState(20);
 
@@ -63,7 +98,7 @@ export default function search({ listeMusiques }: Props) {
 
     return (
         <>
-            <Head title="Recherche avancée">
+            <Head title="Recherche">
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
                     href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
@@ -71,55 +106,88 @@ export default function search({ listeMusiques }: Props) {
                 />
             </Head>
             <div className="flex min-h-screen flex-col items-center lg:justify-center">
-                <form
-                    method="get"
-                    action="/search"
-                    className="flex h-[180px] w-full items-center justify-center"
-                >
-                    <input
-                        type="text"
-                        name="q"
-                        placeholder="Rechercher..."
-                        className="w-100 rounded border px-4 py-2"
-                        defaultValue={filters?.q || ''}
-                    />
-                    <Button type="submit" className="ml-2">
-                        Rechercher
-                    </Button>
+                <form method="get" action="/search" className="w-full flex flex-col items-center mt-20">
+                    {/* Ligne principale : icône + champ + bouton */}
+                    <div className="flex items-center mb-2">
+                        <img src="/images/filtre.png" className="w-8 mr-2 cursor-pointer" onClick={() => setShowFilters(!showFilters)} />
+                        <input type="text" name="q" placeholder="ex : Linkin Park" className="w-100 rounded border px-4 py-2" defaultValue={filters?.q || ''} />
+                        <Button type="submit" className="ml-2">Rechercher</Button>
+                    </div>
+
+                    {/* Bloc filtres, sous la ligne principale */}
+                    {showFilters && (
+                        <div className="border rounded p-4 w-250 bg-gray-50 grid grid-cols-5 gap-2">
+                        {genres.map((genre) => (
+                            <label key={genre.genre_id} className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    name="genres[]"
+                                    value={genre.genre_id}                                // envoie l'id
+                                    checked={selectedGenres.includes(String(genre.genre_id))} // compare par id
+                                    onChange={() => handleGenreChange(String(genre.genre_id))}
+                                />
+                                {genre.genre_title}
+                           </label>
+                        ))}
+                        </div>
+                    )}
+                    {showFilters && (
+                        <div className="border rounded p-4 w-250 bg-gray-50 grid grid-cols-5 gap-2">
+                        {langues.map((langue) => (
+                            <label key={langue.language_id} className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    name="langues[]"
+                                    value={langue.language_id}
+                                    checked={selectedLangues.includes(String(langue.language_id))}
+                                    onChange={() => handleLangueChange(String(langue.language_id))}
+                                />
+                                {langue.language_label}
+                            </label>
+                        ))}
+                        </div>
+                    )}
                 </form>
+                <ArtistSlider>
+                    {listeArtistes.map((artist) => (
+                        <ArtistCard key={artist.artist_id} className="w-40">
+                            <Link href={`/artiste/${artist.artist_id}`}>
+                                <CardCover src={proxyUrl(artist.artist_image_file)} rounded onError={(e) => {e.currentTarget.src = "/images/default-artist.jpg";}} />
+                                <CardTitle>{artist.artist_name}</CardTitle>
+                            </Link>
+                        </ArtistCard>
+                    ))}
+                </ArtistSlider>
 
                 {/* En-tetes de tri */}
                 <div className="m-auto mt-10 w-5xl">
                     <div className="flex border-b px-3 py-3 text-left text-sm">
-                        <div className="w-20"></div> {/* Espace pour index */}
-                        <div className="flex-1 cursor-pointer" onClick={() => toggleSort('track_title')}>
+                        <div className="w-10"></div> {/* Espace pour index */}
+                        <div className="ml-15 w-[400px] cursor-pointer" onClick={() => toggleSort('track_title')}>
                             TITRE
-                            <span className="ml-1 inline-block w-4 text-center">
+                            <span className="ml-1 inline-block text-center">
                                 {sortColumn === 'track_title' ? (sortDirection === 'asc' ? ('▲') : ('▼')) : ( <span className="opacity-0">▲</span> )}
                             </span>
                         </div>
-                        <div className="w-24 cursor-pointer text-right" onClick={() => toggleSort('track_listens')}>
+                        <div className="w-[120px] cursor-pointer text-right" onClick={() => toggleSort('track_listens')}>
                             LECTURES
                             <span className="ml-1 inline-block w-4 text-center">
                                 {sortColumn === 'track_listens' ? (sortDirection === 'asc' ? ('▲') : ('▼')) : ( <span className="opacity-0">▲</span> )}
                             </span>
                         </div>
-                        <div className="w-24 cursor-pointer text-right" onClick={() => toggleSort('track_favorites')}>
+                        <div className="w-[130px] cursor-pointer text-right" onClick={() => toggleSort('track_favorites')}>
                             FAVORITES
                             <span className="ml-1 inline-block w-4 text-center">
                                 {sortColumn === 'track_favorites' ? (sortDirection === 'asc' ? ('▲') : ('▼')) : ( <span className="opacity-0">▲</span> )}
                             </span>
                         </div>
-                        <div
-                            className="w-20 cursor-pointer pr-3 text-right"
-                            onClick={() => toggleSort('track_duration')}
-                        >
+                        <div className="w-[140px] cursor-pointer pr-3 text-right" onClick={() => toggleSort('track_duration')}>
                             DURÉE
                             <span className="ml-1 inline-block w-4 text-center">
                                 {sortColumn === 'track_duration' ? (sortDirection === 'asc' ? ('▲') : ('▼')) : ( <span className="opacity-0">▲</span> )}
                             </span>
                         </div>
-                        <div className="w-24"></div> {/* Espace pour actions */}
+                        <div className="w-20 cursor-pointer pr-3 text-right" onClick={() => toggleSort('track_duration')}></div>
                     </div>
 
                     <TrackList

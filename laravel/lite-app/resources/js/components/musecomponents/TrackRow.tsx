@@ -382,6 +382,7 @@ export function TrackRow({
                             src={proxyUrl(track.track_image_file)}
                             alt={track.track_title}
                             className="h-full w-full object-cover"
+                            onError={(e) => {e.currentTarget.src = "/images/default-artist.jpg";}}
                         />
                     ) : (
                         <div className="flex h-full w-full items-center justify-center bg-muted">
@@ -410,7 +411,7 @@ export function TrackRow({
                 </div>
 
                 {/* Titre et Artiste */}
-                <div className="flex min-w-0 flex-1 flex-col">
+                <div className="min-w-0 w-[400px] flex-col">
                     <span
                         className={cn(
                             'line-clamp-1 font-medium',
@@ -428,19 +429,19 @@ export function TrackRow({
 
                 {/* Nombre de lectures */}
                 {track.track_listens !== undefined && (
-                    <span className="hidden font-mono text-sm text-muted-foreground md:block">
+                    <span className="hidden font-mono text-sm text-muted-foreground md:block w-30 text-right">
                         {track.track_listens.toLocaleString('fr-FR')}
                     </span>
                 )}
 
                 {track.track_favorites !== undefined && (
-                    <span className="hidden font-mono text-sm text-muted-foreground md:block">
+                    <span className="hidden font-mono text-sm text-muted-foreground md:block w-30 text-right">
                         {track.track_favorites?.toLocaleString('fr-FR')}
                     </span>
                 )}
 
                 {/* Duree */}
-                <span className="w-14 text-right font-mono text-sm text-muted-foreground">
+                <span className="text-right font-mono text-sm text-muted-foreground w-30 text-right">
                     {formatDuration(track.track_duration)}
                 </span>
 
