@@ -3,6 +3,7 @@
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\FavoritesController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -71,6 +72,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/user/info', [App\Http\Controllers\UserController::class, 'updateUserInfo'])->name('user.updateInfo');
 
     Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
+    Route::get('/search', [SearchController::class, 'view'])->name('search.view');
 
     // Favorites - User
     Route::get('/favorites', [FavoritesController::class, 'index'])->name('favorites.index');
