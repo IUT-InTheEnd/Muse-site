@@ -7,11 +7,10 @@ use App\Enums\Instruments;
 use App\Enums\ListeningContext;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Models\UserProfile;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Models\UserProfile;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class UserController extends Controller

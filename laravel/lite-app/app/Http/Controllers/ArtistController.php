@@ -132,9 +132,9 @@ class ArtistController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function getArtist($id){
-        return response()->json(Artist::find($id));
-    }
+    // public function getArtist($id){
+    //     return response()->json(Artist::find($id));
+    // }
 
     public function getArtistAlbums($id)
     {
