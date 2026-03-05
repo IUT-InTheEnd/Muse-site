@@ -81,7 +81,7 @@ class ProxyController extends Controller
         'www.rollingstone.com',
         'www.rollingstone.fr',
         'yt3.googleusercontent.com',
-        'ytimg.com'
+        'ytimg.com',
     ];
 
     // Types de contenu autorisés
@@ -128,20 +128,36 @@ class ProxyController extends Controller
             return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
-        // 3. Récupérer la ressource distante
+        // 3. Préparer les headers à transmettre au serveur distant
+        $forwardHeaders = [
+            // Certains serveurs bloquent les requêtes sans User-Agent
+            'User-Agent' => 'Mozilla/5.0 (compatible; LITE-Proxy/1.0)',
+        ];
+
+        // Transmettre le header Range pour le seeking audio/vidéo
+        if ($request->hasHeader('Range')) {
+            $forwardHeaders['Range'] = $request->header('Range');
+        }
+
+        // 4. Récupérer la ressource distante en streaming (ne charge pas le fichier en mémoire)
         try {
-            $response = Http::withOptions([
-                'timeout' => 30,
-            ])->get($url);
+            $response = Http::withHeaders($forwardHeaders)
+                ->withOptions([
+                    'stream' => true,
+                    'timeout' => 30,
+                ])
+                ->get($url);
         } catch (\Exception $e) {
             return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
-        if (! $response->successful()) {
+        $statusCode = $response->status();
+
+        if ($statusCode >= 400) {
             return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
-        // 4. Vérifier le Content-Type
+        // 5. Vérifier le Content-Type
         $contentType = $response->header('Content-Type') ?? 'application/octet-stream';
         $baseContentType = trim(explode(';', $contentType)[0]);
 
@@ -149,20 +165,35 @@ class ProxyController extends Controller
             return $this->returnPlaceholder($this->guessTypeFromContentType($baseContentType));
         }
 
-        // 5. Construire les headers de réponse
-        $headers = [
+        // 6. Construire les headers de réponse
+        $responseHeaders = [
             'Content-Type' => $contentType,
-            'Cache-Control' => 'public, max-age=86400', // Cache 24h
+            'Cache-Control' => 'public, max-age=86400',
+            'Accept-Ranges' => 'bytes', // Indique au client qu'il peut faire du seeking
         ];
 
-        // Ajouter Content-Length si disponible
-        $contentLength = $response->header('Content-Length');
-        if ($contentLength) {
-            $headers['Content-Length'] = $contentLength;
+        if ($contentLength = $response->header('Content-Length')) {
+            $responseHeaders['Content-Length'] = $contentLength;
         }
 
-        // 6. Retourner la réponse
-        return response($response->body(), 200, $headers);
+        // Retransmettre Content-Range pour les réponses 206 Partial Content
+        if ($contentRange = $response->header('Content-Range')) {
+            $responseHeaders['Content-Range'] = $contentRange;
+        }
+
+        // 7. Streamer chunk par chunk (évite de charger tout le fichier en mémoire)
+        $stream = $response->toPsrResponse()->getBody();
+
+        return response()->stream(
+            function () use ($stream) {
+                while (! $stream->eof()) {
+                    echo $stream->read(8192);
+                    flush();
+                }
+            },
+            $statusCode,
+            $responseHeaders
+        );
     }
 
     /**
@@ -171,7 +202,7 @@ class ProxyController extends Controller
     private function returnPlaceholder(string $type): \Illuminate\Http\Response
     {
         $placeholder = $this->placeholders[$type] ?? $this->placeholders['image'];
-        $path = asset($placeholder['path']);
+        $path = public_path($placeholder['path']);
 
         if (! file_exists($path)) {
             abort(404, 'Placeholder non trouvé');
