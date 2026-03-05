@@ -35,4 +35,4 @@ class AlbumController extends Controller
             'listeMusiques' => $listeTracks
         ]);
     }   
-}   
+}

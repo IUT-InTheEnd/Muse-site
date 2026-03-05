@@ -26,6 +26,14 @@ Route::get('/genpassword', function () {
     return view('genpassword');
 })->name('genpassword');
 
+
+Route::get('/test-music-player', [App\Http\Controllers\TestMusicPlayer::class, 'playMusic'])->name('test-music-player');
+
+// Proxy pour les ressources externes (audio, images) - protégé par auth
+Route::middleware('auth')->get('/proxy', [App\Http\Controllers\ProxyController::class, 'stream'])->name('proxy');
+
+Route::get('/artiste/{id}' ,[ArtistController::class,"show"]);
+
 // Routes pour les documentations
 Route::prefix('documentation')->name('documentation.')->group(function () {
     Route::get('/', function () {
@@ -108,5 +116,13 @@ Route::middleware(['auth'])->group(function () {
 
 // Images read
 Route::get('/image/{filename}', [App\Http\Controllers\ImageFileController::class, 'getImage'])->name('image.get');
+
+// DEBUG DE GOLMON
+Route::get('/apy', function () {
+    return view('apy');
+})->name('apy');
+Route::get('/valr', function () {
+    return view('validationTest');
+});
 
 require __DIR__.'/settings.php';
