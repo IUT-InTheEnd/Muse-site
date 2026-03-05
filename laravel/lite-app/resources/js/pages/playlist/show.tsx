@@ -1,3 +1,14 @@
+import {
+    TrackList,
+    type TrackListItem,
+} from '@/components/musecomponents/TrackList';
+import {
+    type ArtistData,
+    type TrackData,
+} from '@/components/musecomponents/TrackRow';
+import { Button } from '@/components/ui/button';
+import { useMusicPlayer } from '@/contexts/music-player-context';
+import { fetchTracks } from '@/lib/track-api';
 import { Head, router } from '@inertiajs/react';
 import {
     CameraIcon,
@@ -10,17 +21,6 @@ import {
     XIcon,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
-import {
-    TrackList,
-    type TrackListItem,
-} from '@/components/musecomponents/TrackList';
-import {
-    type ArtistData,
-    type TrackData,
-} from '@/components/musecomponents/TrackRow';
-import { proxyUrl } from '@/components/proxy';
-import { Button } from '@/components/ui/button';
-import { useMusicPlayer } from '@/contexts/music-player-context';
 
 type Track = {
     track_id: number;
@@ -94,22 +94,9 @@ export default function PlaylistShow({ playlist }: Props) {
         if (playlist.tracks.length === 0) return;
 
         try {
-            const trackDataPromises = playlist.tracks.map(async (track) => {
-                const res = await fetch(
-                    `/test-music-player?id=${encodeURIComponent(track.track_id)}`,
-                );
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                return {
-                    id: track.track_id,
-                    src: proxyUrl(data.url) ?? '',
-                    title: data.title,
-                    artist: data.artist,
-                    artwork: proxyUrl(data.artwork),
-                };
-            });
-
-            const allTracks = await Promise.all(trackDataPromises);
+            const allTracks = await fetchTracks(
+                playlist.tracks.map((t) => t.track_id),
+            );
             setPlayerPlaylist(allTracks, 0);
         } catch (err) {
             console.error(err);

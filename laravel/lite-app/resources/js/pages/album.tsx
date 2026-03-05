@@ -1,6 +1,3 @@
-import { Head, usePage } from '@inertiajs/react';
-import { Check, Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import {
     TrackList,
     type TrackListItem,
@@ -12,7 +9,11 @@ import {
 import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/contexts/music-player-context';
+import { fetchTracks } from '@/lib/track-api';
 import type { SharedData } from '@/types';
+import { Head, usePage } from '@inertiajs/react';
+import { Check, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 type Props = {
     album: {
@@ -160,33 +161,11 @@ export default function Album({
                                 className="flex-1"
                                 onClick={async () => {
                                     try {
-                                        // Fetch all tracks in parallel
-                                        const trackPromises = listeMusiques.map(
-                                            async (element) => {
-                                                const res = await fetch(
-                                                    `/test-music-player?id=${encodeURIComponent(element.track.track_id)}`,
-                                                );
-                                                if (!res.ok)
-                                                    throw new Error(
-                                                        `HTTP ${res.status}`,
-                                                    );
-                                                const data = await res.json();
-                                                return {
-                                                    id: element.track.track_id,
-                                                    src:
-                                                        proxyUrl(data.url) ??
-                                                        '',
-                                                    title: data.title,
-                                                    artist: data.artist,
-                                                    artwork: proxyUrl(
-                                                        data.artwork,
-                                                    ),
-                                                };
-                                            },
+                                        const tracks = await fetchTracks(
+                                            listeMusiques.map(
+                                                (el) => el.track.track_id,
+                                            ),
                                         );
-
-                                        const tracks =
-                                            await Promise.all(trackPromises);
                                         setPlaylist(tracks, 0);
                                     } catch (err) {
                                         console.error(err);

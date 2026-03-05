@@ -4,26 +4,9 @@ import { cva } from 'class-variance-authority';
 import { LoaderIcon, PauseIcon, PlayIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { proxyUrl } from '@/components/proxy';
-import type { Track} from '@/hooks/use-music-player';
 import { useMusicPlayer } from '@/hooks/use-music-player';
+import { fetchTrack, fetchTracks } from '@/lib/track-api';
 import { cn } from '@/lib/utils';
-
-// Fonction utilitaire pour charger les données d'une piste
-async function fetchTrackData(trackId: number): Promise<Track> {
-    const res = await fetch(
-        `/test-music-player?id=${encodeURIComponent(trackId)}`,
-    );
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    return {
-        id: trackId,
-        src: proxyUrl(data.url) ?? '',
-        title: data.title,
-        artist: data.artist,
-        artwork: proxyUrl(data.artwork),
-    };
-}
 
 const CardVariants = cva('flex flex-col rounded-xl overflow-hidden ', {
     variants: {
@@ -172,15 +155,12 @@ function CardPlayButton({
         try {
             // Mode multiple tracks (album ou playlist)
             if (trackIds && trackIds.length > 0) {
-                const trackDataPromises = trackIds.map((id) =>
-                    fetchTrackData(id),
-                );
-                const allTracksData = await Promise.all(trackDataPromises);
+                const allTracksData = await fetchTracks(trackIds);
                 setPlaylist(allTracksData, 0);
             }
             // Mode single track
             else if (trackId) {
-                const trackData = await fetchTrackData(trackId);
+                const trackData = await fetchTrack(trackId);
                 playTrack(trackData);
             }
         } catch (err) {

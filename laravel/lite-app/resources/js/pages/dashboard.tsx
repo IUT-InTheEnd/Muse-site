@@ -1,11 +1,11 @@
-import { Head } from '@inertiajs/react';
-import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 import AppLayout from '@/layouts/app-layout';
+import { fetchTrack } from '@/lib/track-api';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
+import { Head } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -21,25 +21,13 @@ export default function Dashboard() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                
                 <div className="flex justify-end">
                     <Button
                         onClick={async () => {
                             const id = prompt("Entrez l'id du morceau", '1');
                             if (!id) return;
                             try {
-                                const res = await fetch(
-                                    `/test-music-player?id=${encodeURIComponent(id)}`,
-                                );
-                                if (!res.ok)
-                                    throw new Error(`HTTP ${res.status}`);
-                                const data = await res.json();
-                                const track = {
-                                    src: proxyUrl(data.url) ?? '',
-                                    title: data.title,
-                                    artist: data.artist,
-                                    artwork: proxyUrl(data.artwork),
-                                };
+                                const track = await fetchTrack(Number(id));
                                 playTrack(track);
                             } catch (err) {
                                 console.error(err);

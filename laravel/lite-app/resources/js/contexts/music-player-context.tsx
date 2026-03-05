@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { fetchTracks } from '../lib/track-api';
 
 export type Track = {
     id?: number;
@@ -128,8 +129,10 @@ function getRandomIndex(currentIndex: number, playlistLength: number): number {
 
 export function MusicPlayerProvider({
     children,
+    userId,
 }: {
     children: React.ReactNode;
+    userId?: number;
 }) {
     const audioRef = React.useRef<HTMLAudioElement | null>(null);
     const previousVolumeRef = React.useRef<number>(1);
@@ -173,6 +176,10 @@ export function MusicPlayerProvider({
     const repeatModeRef = React.useRef(repeatMode);
     const trackRef = React.useRef(track);
     const hasListenBeenCountedRef = React.useRef(hasListenBeenCounted);
+
+    // Refs pour la gestion des recommandations
+    const isFetchingRecommendationsRef = React.useRef(false);
+    const lastRecoFetchIndexRef = React.useRef<number>(-1);
 
     // Mettre a jour les refs quand les valeurs changent
     React.useEffect(() => {
@@ -284,6 +291,78 @@ export function MusicPlayerProvider({
 
         playTrackAtIndex(prevIndex);
     }, [playTrackAtIndex]);
+
+    React.useEffect(() => {
+        const remainingAfterCurrent = playlist.length - 1 - currentIndex;
+
+        if (
+            userId == null ||
+            playlist.length === 0 ||
+            currentIndex < 0 ||
+            remainingAfterCurrent > 4 ||
+            isFetchingRecommendationsRef.current ||
+            lastRecoFetchIndexRef.current === currentIndex
+        ) {
+            return;
+        }
+
+        const run = () => {
+            isFetchingRecommendationsRef.current = true;
+            lastRecoFetchIndexRef.current = currentIndex;
+
+            const currentTrackId = trackRef.current?.id;
+
+            const csrfToken =
+                document
+                    .querySelector('meta[name="csrf-token"]')
+                    ?.getAttribute('content') ?? '';
+
+            const type = currentTrackId ? 'hybride' : 'user_based_p2';
+
+            const params = new URLSearchParams({
+                recommandation_type: type,
+                n: '10',
+            });
+
+            if (currentTrackId) {
+                params.set('track_id', String(currentTrackId));
+            }
+
+            fetch(`/recommendations?${params.toString()}`, {
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    Accept: 'application/json',
+                },
+            })
+                .then((r) => r.json())
+                .then(async (data: { track_ids: number[] }) => {
+                    const existingIds = new Set(
+                        playlistRef.current.map((t) => t.id),
+                    );
+
+                    const newIds = (data.track_ids ?? [])
+                        .filter((id) => !existingIds.has(id))
+                        .slice(0, 4);
+
+                    if (newIds.length === 0) return;
+
+                    const newTracks = await fetchTracks(newIds);
+
+                    if (newTracks.length) {
+                        setPlaylistState((prev) => [...prev, ...newTracks]);
+                    }
+                })
+                .finally(() => {
+                    isFetchingRecommendationsRef.current = false;
+                });
+        };
+
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(run, { timeout: 2000 });
+        } else {
+            setTimeout(run, 500);
+        }
+    }, [currentIndex, playlist.length, userId]);
 
     // Initialiser l'element audio une seule fois
     React.useEffect(() => {

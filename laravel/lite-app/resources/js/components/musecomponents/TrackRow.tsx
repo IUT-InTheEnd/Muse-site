@@ -1,15 +1,3 @@
-import {
-    Check,
-    Heart,
-    ListMusic,
-    ListPlus,
-    Loader2,
-    Music,
-    Pause,
-    Play,
-    Plus,
-} from 'lucide-react';
-import * as React from 'react';
 import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -23,7 +11,20 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useMusicPlayer } from '@/contexts/music-player-context';
+import { fetchTrack, fetchTracks } from '@/lib/track-api';
 import { cn } from '@/lib/utils';
+import {
+    Check,
+    Heart,
+    ListMusic,
+    ListPlus,
+    Loader2,
+    Music,
+    Pause,
+    Play,
+    Plus,
+} from 'lucide-react';
+import * as React from 'react';
 
 export type TrackData = {
     track_id: number;
@@ -118,22 +119,6 @@ export function TrackRow({
         return `${m}:${s.toString().padStart(2, '0')}`;
     };
 
-    // Fonction utilitaire pour charger les donnees d'une piste
-    const fetchTrackData = async (trackId: number) => {
-        const res = await fetch(
-            `/test-music-player?id=${encodeURIComponent(trackId)}`,
-        );
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        return {
-            id: trackId,
-            src: proxyUrl(data.url) ?? '',
-            title: data.title,
-            artist: data.artist,
-            artwork: proxyUrl(data.artwork),
-        };
-    };
-
     // Jouer ou mettre en pause la piste
     const handlePlayPause = async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -142,23 +127,19 @@ export function TrackRow({
             togglePlay();
         } else {
             try {
-                // Si on a des tracks environnantes, charger toutes les tracks et utiliser setPlaylist
+                // Si on a des tracks environnantes, charger toutes les tracks en batch et utiliser setPlaylist
                 if (
                     siblingTracks &&
                     siblingTracks.length > 0 &&
                     trackIndexInSiblings !== undefined
                 ) {
-                    // Charger toutes les tracks en parallele
-                    const trackDataPromises = siblingTracks.map((sibling) =>
-                        fetchTrackData(sibling.track.track_id),
+                    const allTracksData = await fetchTracks(
+                        siblingTracks.map((s) => s.track.track_id),
                     );
-                    const allTracksData = await Promise.all(trackDataPromises);
-
-                    // Utiliser setPlaylist pour definir la queue et jouer au bon index
                     setPlaylist(allTracksData, trackIndexInSiblings);
                 } else {
                     // Comportement original: jouer une seule piste
-                    const trackData = await fetchTrackData(track.track_id);
+                    const trackData = await fetchTrack(track.track_id);
                     playTrack(trackData);
                 }
             } catch (err) {
@@ -475,18 +456,9 @@ export function TrackRow({
                         onClick={async (e) => {
                             e.stopPropagation();
                             try {
-                                const res = await fetch(
-                                    `/test-music-player?id=${encodeURIComponent(track.track_id)}`,
+                                const trackData = await fetchTrack(
+                                    track.track_id,
                                 );
-                                if (!res.ok)
-                                    throw new Error(`HTTP ${res.status}`);
-                                const data = await res.json();
-                                const trackData = {
-                                    src: proxyUrl(data.url) ?? '',
-                                    title: data.title,
-                                    artist: data.artist,
-                                    artwork: proxyUrl(data.artwork),
-                                };
                                 addToQueue(trackData);
                             } catch (err) {
                                 console.error(err);

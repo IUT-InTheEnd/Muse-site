@@ -56,7 +56,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Music player
     Route::get('/test-music-player', [App\Http\Controllers\MusicController::class, 'playMusic'])->name('test-music-player');
+    Route::get('/tracks', [App\Http\Controllers\MusicController::class, 'playMusicBatch'])->name('tracks.batch');
     Route::post('/add-listen', [App\Http\Controllers\MusicController::class, 'addListen'])->name('add-listen');
+
+    // Recommendations
+    Route::get('/recommendations', [App\Http\Controllers\RecommendationController::class, 'getRecommendations'])->name('recommendations.get');
 
     // Proxy pour les ressources externes (audio, images) - protégé par auth
     Route::get('/proxy', [App\Http\Controllers\ProxyController::class, 'stream'])->name('proxy');
