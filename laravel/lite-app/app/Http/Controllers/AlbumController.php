@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Album;
-use App\Models\Realiser;
 use App\Models\Artist;
+use App\Models\Realiser;
 use App\Models\Track;
 use Inertia\Inertia;
 
@@ -21,7 +20,7 @@ class AlbumController extends Controller
 
         $listeTracks = [];
 
-        for ($i=0; $i < $nombre; $i++) { 
+        for ($i = 0; $i < $nombre; $i++) {
             $listeTracks[$i]['track'] = Track::find($toutRealiser[$i]->track_id);
             $listeTracks[$i]['artist'] = Artist::find($toutRealiser[$i]->artist_id);
         }
@@ -32,7 +31,7 @@ class AlbumController extends Controller
             'album' => $album,
             'artistes' => $artistes,
             'nombreMusiques' => $nombre,
-            'listeMusiques' => $listeTracks
+            'listeMusiques' => $listeTracks,
         ]);
-    }   
+    }
 }
