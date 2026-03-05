@@ -25,7 +25,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
     const [searchQuery, setSearchQuery] = useState("");
 
     const [formData, setFormData] = useState({
-        genres: [] as string[],
+        genres: [] as number[],
         artists: [] as number[],
         moments: [] as string[],
         preferences: '' as string,
@@ -101,7 +101,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
 
             <div className="mt-12">
                 {step === 1 && (
-                    <section className="animate-fadeIn">
+                    <section>
                         <div className="text-center mb-10">
                             <h1>Quels sont vos genres préférés ?</h1>
                             <h3 className="!text-gray-400">Sélectionnez au moins 3 genres musicaux</h3>
@@ -126,14 +126,14 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                 })
                                 .slice(0, 12)
                                 .map((genre) => {
-                                    const isSelected = formData.genres.includes(genre.name);
+                                    const isSelected = formData.genres.includes(genre.id);
                                     return (
                                         <div 
                                             key={genre.id}
                                             onClick={() => {
                                                 const newGenres = isSelected 
-                                                    ? formData.genres.filter(g => g !== genre.name)
-                                                    : [...formData.genres, genre.name];
+                                                    ? formData.genres.filter(id => id !== genre.id)
+                                                    : [...formData.genres, genre.id];
                                                 setFormData({...formData, genres: newGenres});
                                             }}
                                             style={{ backgroundColor: genre.color }}
@@ -141,7 +141,6 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                 isSelected ? 'border-primary' : 'border-transparent hover:border-primary'
                                             }`}
                                         >
-
                                             <div className={`absolute inset-0 ${isSelected ? 'bg-primary/40' : 'bg-black/0'}`} />
 
                                             <div className="absolute inset-0 flex items-center justify-center p-2 text-center">
@@ -370,7 +369,11 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                         <Pencil />
                                     </Button>
                                 </div>
-                                <h4> {formData.genres.join(' ') || 'Aucun genre sélectionné'} </h4>
+                                <h4> 
+                                    {formData.genres.length > 0 
+                                        ? genres.filter(g => formData.genres.includes(g.id)).map(g => g.name).join(', ') 
+                                        : 'Aucun genre sélectionné'} 
+                                </h4>
                             </div>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center border-b border-foreground">
@@ -379,7 +382,14 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                         <Pencil />
                                     </Button>
                                 </div>
-                                <h4>{formData.artists.join(' ') || 'Aucun artiste sélectionné'}</h4>
+                                <h4>
+                                    {formData.artists.length > 0 
+                                        ? allArtists
+                                            .filter(art => formData.artists.includes(art.artist_id))
+                                            .map(art => art.artist_name)
+                                            .join(', ') 
+                                        : 'Aucun artiste sélectionné'}
+                                </h4>
                             </div>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center border-b border-foreground">
