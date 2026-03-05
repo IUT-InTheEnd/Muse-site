@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Album;
+use App\Models\Track;
 use App\Models\UserAjouteAlbumFavori;
 use App\Models\UserPrefereArtiste;
 use Illuminate\Http\JsonResponse;
@@ -80,6 +82,9 @@ class FavoritesController extends Controller
 
         if ($exists) {
             $favoritesPlaylist->tracks()->detach($trackId);
+            $track = Track::find($trackId);
+            $track->track_favorites = $track->track_favorites - 1;
+            $track->save();
 
             return response()->json([
                 'success' => true,
@@ -91,6 +96,10 @@ class FavoritesController extends Controller
             $favoritesPlaylist->tracks()->attach($trackId);
             $favoritesPlaylist->playlist_date_updated = now();
             $favoritesPlaylist->save();
+
+            $track = Track::find($trackId);
+            $track->track_favorites = $track->track_favorites + 1;
+            $track->save();
 
             return response()->json([
                 'success' => true,
@@ -133,6 +142,9 @@ class FavoritesController extends Controller
 
         if ($exists) {
             $user->albums()->detach($albumId);
+            $album = Album::find($albumId);
+            $album->album_favorites = $album->album_favorites - 1;
+            $album->save();
 
             return response()->json([
                 'success' => true,
@@ -141,6 +153,9 @@ class FavoritesController extends Controller
             ]);
         } else {
             $user->albums()->attach($albumId);
+            $album = Album::find($albumId);
+            $album->album_favorites = $album->album_favorites + 1;
+            $album->save();
 
             return response()->json([
                 'success' => true,

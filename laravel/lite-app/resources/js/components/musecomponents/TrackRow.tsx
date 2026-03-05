@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 export type TrackData = {
     track_id: number;
     track_title: string;
+    track_favorites: number;
     track_image_file?: string;
     track_duration?: number;
     track_listens?: number;
@@ -86,21 +87,14 @@ export function TrackRow({
 
     const [isAddingFavorite, setIsAddingFavorite] = React.useState(false);
     const [localIsFavorite, setLocalIsFavorite] = React.useState(isFavorite);
-    const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] =
-        React.useState(false);
+    const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = React.useState(false);
     const [isCreatingPlaylist, setIsCreatingPlaylist] = React.useState(false);
     const [newPlaylistName, setNewPlaylistName] = React.useState('');
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [isLoadingPlaylists, setIsLoadingPlaylists] = React.useState(false);
-    const [playlistsWithStatus, setPlaylistsWithStatus] = React.useState<
-        PlaylistData[]
-    >([]);
-    const [selectedPlaylistIds, setSelectedPlaylistIds] = React.useState<
-        number[]
-    >([]);
-    const [initialSelectedIds, setInitialSelectedIds] = React.useState<
-        number[]
-    >([]);
+    const [playlistsWithStatus, setPlaylistsWithStatus] = React.useState<PlaylistData[]>([]);
+    const [selectedPlaylistIds, setSelectedPlaylistIds] = React.useState<number[]>([]);
+    const [initialSelectedIds, setInitialSelectedIds] = React.useState<number[]>([]);
 
     // Determiner si cette piste est en cours de lecture
     const isCurrentTrack = currentTrack?.title === track.track_title;
@@ -388,6 +382,7 @@ export function TrackRow({
                             src={proxyUrl(track.track_image_file)}
                             alt={track.track_title}
                             className="h-full w-full object-cover"
+                            onError={(e) => {e.currentTarget.src = "/images/default-artist.jpg";}}
                         />
                     ) : (
                         <div className="flex h-full w-full items-center justify-center bg-muted">
@@ -416,7 +411,7 @@ export function TrackRow({
                 </div>
 
                 {/* Titre et Artiste */}
-                <div className="flex min-w-0 flex-1 flex-col">
+                <div className="min-w-0 w-[400px] flex-col">
                     <span
                         className={cn(
                             'line-clamp-1 font-medium',
@@ -434,13 +429,19 @@ export function TrackRow({
 
                 {/* Nombre de lectures */}
                 {track.track_listens !== undefined && (
-                    <span className="hidden font-mono text-sm text-muted-foreground md:block">
+                    <span className="hidden font-mono text-sm text-muted-foreground md:block w-30 text-right">
                         {track.track_listens.toLocaleString('fr-FR')}
                     </span>
                 )}
 
+                {track.track_favorites !== undefined && (
+                    <span className="hidden font-mono text-sm text-muted-foreground md:block w-30 text-right">
+                        {track.track_favorites?.toLocaleString('fr-FR')}
+                    </span>
+                )}
+
                 {/* Duree */}
-                <span className="w-14 text-right font-mono text-sm text-muted-foreground">
+                <span className="text-right font-mono text-sm text-muted-foreground w-30 text-right">
                     {formatDuration(track.track_duration)}
                 </span>
 
