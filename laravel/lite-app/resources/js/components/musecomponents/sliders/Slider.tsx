@@ -1,6 +1,6 @@
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 
 
@@ -76,7 +76,8 @@ export function Slider({
         </div>
       </div>
 
-      <div className="relative w-full overflow-hidden">
+      {/* Carousel */}
+      <div className="relative w-full max-w-7xl mx-auto overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-out"
           style={{

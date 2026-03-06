@@ -3,6 +3,7 @@
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use App\Http\Controllers\Settings\PrivacyController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -21,6 +22,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('settings/password', [SecurityController::class, 'updatePassword'])
         ->middleware('throttle:6,1')
         ->name('user-password.update');
+
+    Route::get('settings/api-token', [UserController::class, 'regenerateToken'])->name('api-token.reset');
 
     Route::get('settings/appearance', function () {
         return Inertia::render('settings/appearance');

@@ -17,7 +17,7 @@ export function MixedSlider({
 }
 
 
-// utilisation : 
+// utilisation :
 
 {/* <MixedSlider title="Récemment écouté">
   <AlbumCard ... />

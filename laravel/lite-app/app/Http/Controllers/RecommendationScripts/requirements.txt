@@ -1,0 +1,10 @@
+psycopg2-binary
+langcodes
+pandas
+numpy
+<<<<<<< HEAD
+scikit-learn
+=======
+pycountry
+scikit-learn
+>>>>>>> db6aaa4 (fix bugs)

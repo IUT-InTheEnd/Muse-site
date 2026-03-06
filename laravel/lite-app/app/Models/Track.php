@@ -101,7 +101,7 @@ class Track extends Model
 
     public function playlists()
     {
-        return $this->belongsToMany(Playlist::class, 'playlist_contient_track');
+        return $this->belongsToMany(Playlist::class, 'playlist_contient_track', 'track_id', 'playlist_id');
     }
 
     public function track_chanter_ens()

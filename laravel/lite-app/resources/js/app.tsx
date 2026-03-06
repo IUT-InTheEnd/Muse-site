@@ -35,7 +35,7 @@ function AppWrapper({
 
     return (
         <div className="min-h-screen">
-            <MusicPlayerProvider>
+            <MusicPlayerProvider userId={user?.id}>
                 {/* Header */}
                 <header className="w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
                     <div className="mx-auto w-full max-w-[675px] text-sm lg:max-w-4xl">
@@ -44,16 +44,16 @@ function AppWrapper({
                 </header>
 
                 {/* Page Content */}
-                {children}
+                <div className='my-2'>
+                    {children}
+                </div>
 
                 {/* Footer */}
-                {!user && (
-                    <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
-                        <div className="mx-auto w-full max-w-[675px] py-6 text-sm lg:max-w-4xl">
-                            <Footer />
-                        </div>
-                    </footer>
-                )}
+                <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+                    <div className="mx-auto w-full max-w-[675px] py-6 text-sm lg:max-w-4xl">
+                        <Footer />
+                    </div>
+                </footer>
 
                 {/* Player */}
                 <AuthenticatedMusicPlayer initialAuth={!!user} />

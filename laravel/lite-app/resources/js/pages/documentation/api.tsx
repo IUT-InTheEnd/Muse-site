@@ -1,12 +1,8 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import type { SharedData } from '@/types';
-import Navbar from '@/components/musecomponents/Navbar';
-import Footer from '@/components/musecomponents/Footer';
 import { Separator } from '@radix-ui/react-separator';
+import type { SharedData } from '@/types';
 
 export default function Installation() {
-
-    const { auth } = usePage<SharedData>().props;
 
     return (
         <>
