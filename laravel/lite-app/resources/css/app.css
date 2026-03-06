@@ -9,7 +9,7 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Inter', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
@@ -145,53 +145,25 @@
 }
 
 
-.bouton-primary {
-    padding: 12px 16px;
-    background-color: var(--primary);
-    color: var(--primary-foreground);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.bouton-secondary {
-    padding: 12px 16px;
-    background-color: transparent;
-    color: var(--primary-foreground);
-    border: 0.5px solid var(--foreground);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-a, p, span{
-    color: var(--foreground);
-}
-
-h1, h2, h3, h4, h5, h6 {
-    color: var(--foreground);
-}
-
 h1{
+    color: var(--foreground);
     font-size: 2rem;
     font-weight: bold;
 }
 
 h2{
     font-size: 1.5rem;
-    font-weight: semi-bold;
+    font-weight: bold;
 }
 
 h3{
     font-size: 1.25rem;
-    font-weight: semi-bold;
+    font-weight: bold;
 }   
 
 h4{
     font-size: 1.125rem;
-    font-weight: semi-bold;
+    font-weight: bold;
 }
 
 h5{
@@ -215,60 +187,51 @@ h6{
 }
 
 
-.backgroundimg-container{
+.backgroundimg-container {
+    position: absolute; 
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 700px;
-    position : relative;
+    height: 600px; 
+    z-index: 0; 
+    overflow: hidden;
 }
 
-.background-image{
+.background-artist {
     height: 100%;
     width: 100%;
     object-fit: cover;
     display: block;
+    object-position: 50% 25%; 
 }
 
-.gradient{
+
+.gradient {
     height: 100%;
     width: 100%;
-    background-image: linear-gradient(to top, rgb(255, 255, 255), transparent);
-    position : absolute;
-    opacity: 1;
+    background: linear-gradient(to top, var(--background, #1F2937), transparent);
+    position: absolute;
     top: 0;
-    left:0;
+    left: 0;
+    z-index: 1; 
 }
 
-/* STEP BAR PREFERENCES */
+.link-doc {
+    display: flex;
+    background-color: var(--primary-10);
+    padding: 12px 16px;
+    border-radius: 8px;
+    width: 100%;
 
-.step-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    &:hover {
+        background-color: var(--primary);
+        color: white;
+    }
+}
+
+.link-doc > div {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: var(--primary-foreground); 
-    z-index: 10;
-}
-.step-label {
-    margin-top: 12px;
-    font-size: 14px;
-    color: var(--primary-foreground); 
-    text-align: center;
-}
-.active-circle {
-    background-color: var(--primary); 
-    box-shadow: 0 0 0 4px rgba(201, 182, 233, 0.3);
-}
-.inactive-circle {
-    background-color: #757575;
-}
-.progress-bar-line {
-    position: absolute;
+    justify-content: space-between; 
     width: 100%;
-    height: 4px;
-    background-color: #D9D9D9;
-    top: 20px;
-    z-index: 0;
 }

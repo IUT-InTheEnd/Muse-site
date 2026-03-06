@@ -240,7 +240,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                 : [...formData.moments, m];
                                             setFormData({...formData, moments: newMoments});
                                         }}
-                                        className="border-white"
+                                        className="border-none"
                                     >
                                         <div className="shrink-0">{iconMap[m]}</div>
                                         <h6 className="flex-1 text-center pr-4">{m}</h6>
@@ -259,7 +259,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                         key={p}
                                         variant={formData.preferences === p ? "default" : "secondary"}
                                         onClick={() => setFormData({...formData, preferences: p})}
-                                        className="border-white"
+                                        className="border-none"
                                     >
                                         <div className="shrink-0">{preferenceIconMap[p]}</div>
                                         <h6 className="flex-1 text-center pr-4">{p}</h6>
@@ -278,7 +278,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                         key={m}
                                         variant={formData.styles === m ? "default" : "secondary"}
                                         onClick={() => setFormData({...formData, styles: m})}
-                                        className="border-white"
+                                        className="border-none"
                                     >
                                         <div className="shrink-0">{styleIconMap[m]}</div>
                                         <h6 className="flex-1 text-center pr-4">{m}</h6>
@@ -302,7 +302,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                 : [...formData.langues, m];
                                             setFormData({ ...formData, langues: newLangues });
                                         }}
-                                        className="border-white"
+                                        className="border-none"
                                     >
                                         <div className="shrink-0">{langueIconMap[m]}</div>
                                         <h6 className="flex-1 text-center pr-4">{m}</h6>
@@ -347,7 +347,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                 : [...formData.humeurs, h];
                                             setFormData({ ...formData, humeurs: newHumeurs });
                                         }}
-                                        className="border-white"
+                                        className="border-none"
                                     >
                                         <div className="shrink-0">{humeurIconMap[h]}</div>
                                         <h6 className="flex-1 text-center pr-4">{h}</h6>

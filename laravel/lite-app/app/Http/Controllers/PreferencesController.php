@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class PreferencesController extends Controller
 {
-   
     public function index()
     {
         $genres = Genre::all()->map(function ($genre) {
@@ -54,12 +53,10 @@ class PreferencesController extends Controller
 
         DB::transaction(function () use ($request, $user) {
             $user->artists()->sync($request->artists);
-            $genreIds = Genre::whereIn('genre_title', $request->genres)
-                            ->pluck('genre_id');
 
             $user->ajoute_genre_favoris()->delete();
 
-            foreach ($genreIds as $id) {
+            foreach ($request->genres as $id) {
                 $user->ajoute_genre_favoris()->create([
                     'genre_id' => $id,
                 ]);
