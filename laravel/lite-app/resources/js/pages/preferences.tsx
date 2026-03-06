@@ -38,7 +38,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
     const handleFinish = () => {
         router.post('/preferences', formData, {
             onSuccess: () => {
-                alert('préférences enregistrées');
+                
             },
             onError: (errors) => {
                 console.error("Erreur lors de l'enregistrement", errors);

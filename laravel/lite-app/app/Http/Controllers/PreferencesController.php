@@ -67,6 +67,6 @@ class PreferencesController extends Controller
             ]);
         });
 
-        return redirect()->route('dashboard');
+        return redirect()->route('dashboard')->with('success', 'Préférences enregistrées !');
     }
 }
