@@ -61,11 +61,9 @@ class PreferencesController extends Controller
                     'genre_id' => $id,
                 ]);
             }
-
+            $momentsFormatted = "['" . implode("', '", $request->moments) . "']";
             $user->update([
-                'listening_moments' => json_encode($request->moments),
-                'music_style'       => $request->styles,
-                'preferred_moods'   => json_encode($request->humeurs),
+                'user_music_contexts' => $momentsFormatted,
             ]);
         });
 
