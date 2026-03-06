@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Enums\Instruments;
 use App\Enums\ListeningContext;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Models\UserProfile;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -54,7 +52,7 @@ class UserController extends Controller
     {
         return User::findOrFail($id)->createToken($name)->plainTextToken;
     }
-    
+
     public function getUser(Request $request)
     {
         return new UserResource($request->user());

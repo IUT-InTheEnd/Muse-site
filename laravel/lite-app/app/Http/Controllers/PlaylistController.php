@@ -292,26 +292,11 @@ class PlaylistController extends Controller
 
     public function getPlaylist(int $id)
     {
-        return new PlaylistResource(Playlist::findOrFail($id));
-    }
-    
-    public function createPlaylist(Request $request)
-    {
-        return response(status: 501);
-    }
-    
-    public function deletePlaylist(int $id)
-    {
-        return response(status: 501);
-    }
-    
-    public function addSong(Request $request)
-    {
-        return response(status: 501);
-    }
-    
-    public function removeSong(Request $request)
-    {
-        return response(status: 501);
+        $user = auth()->user()->id;
+        $playlist = Playlist::findOrFail($id);
+        if (! $playlist->playlist_public && $playlist->user_id !== auth()->user()->id) {
+            return response(status: 403);
+        }
+        return new PlaylistResource($playlist);
     }
 }

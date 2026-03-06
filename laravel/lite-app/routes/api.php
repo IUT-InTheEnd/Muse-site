@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\ArtistController;
-use App\Http\Controllers\TrackEchonestController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\TrackController;
+use App\Http\Controllers\TrackEchonestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ Route::get('/echonest/{id}', [TrackEchonestController::class, 'getEchonest'])
     ->name('getEchonest');
 // }}}
 
-// {{{ Album
+// {{{ Artist
 Route::get('/artist/{id}', [ArtistController::class, 'getArtist'])
     ->name('getArtist');
 
@@ -48,23 +49,32 @@ Route::get('/artists', [ArtistController::class, 'getAllArtists'])
     ->name('getAllArtists');
 // }}}
 
+// {{{ Album
+Route::get('/album/{id}', [AlbumController::class, 'getAlbum'])
+    ->name('getAlbum');
+
+Route::get('/albums', [AlbumController::class, 'getAllAlbums'])
+    ->name('getAllAlbums');
+// }}}
+
 // {{{ Playlist
 Route::get('/playlist/{id}', [PlaylistController::class, 'getPlaylist'])
-    ->name('getPlaylist');
+    ->name('getPlaylist')
+    ->middleware('auth:sanctum');
 
-Route::post('/playlist', [PlaylistController::class, 'createPlaylist'])
+Route::post('/playlist', [PlaylistController::class, 'create'])
     ->name('createPlaylist')
     ->middleware('auth:sanctum');
 
-Route::post('/playlist/{id}', [PlaylistController::class, 'addSong'])
+Route::post('/playlist/track', [PlaylistController::class, 'addTrack'])
     ->name('addSong')
     ->middleware('auth:sanctum');
 
-Route::delete('/playlist/{id}', [PlaylistController::class, 'deletePlaylist'])
+Route::delete('/playlist', [PlaylistController::class, 'delete'])
     ->name('deletePlaylist')
     ->middleware('auth:sanctum');
 
-Route::delete('/playlist/{id}/{musicId}', [PlaylistController::class, 'removeSong'])
+Route::delete('/playlist/track', [PlaylistController::class, 'removeTrack'])
     ->name('removeSong')
     ->middleware('auth:sanctum');
 // }}}
