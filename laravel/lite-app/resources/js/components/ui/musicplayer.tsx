@@ -64,13 +64,15 @@ export default function MusicPlayer() {
                             {track?.title || 'No track'}
                         </div>
                         <div className="text-base text-neutral-500 dark:text-white/60 truncate">
-                            {track?.artist || '—'}
+                            <a href={`/artiste/${track?.artistid}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                {track?.artist || '—'}
+                            </a>
                         </div>
                         {error && (
                             <div className="flex items-center gap-1 text-sm text-red-500 mt-1">
                                 <AlertCircleIcon size={14} />
                                 <span className="truncate">{error}</span>
-                                <button 
+                                <button
                                     onClick={clearError}
                                     className="ml-1 hover:text-red-400"
                                     aria-label="Fermer l'erreur"

@@ -6,6 +6,7 @@ export type Track = {
     src: string;
     title?: string;
     artist?: string;
+    artistid?: number;
     artwork?: string;
 };
 
