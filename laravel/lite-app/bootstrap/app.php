@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'abilities' => checkAbilities::class,
             'ability' => checkForAnyAbility::class,
+            'db_api' => \App\Http\Middleware\UseApiDatabase::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
