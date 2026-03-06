@@ -141,12 +141,13 @@ export default function Artist({ artist, tracks, albums, isFollowing }: never) {
                             {(() => {
                                 const sorted = Array.isArray(albums)
                                     ? [...albums].sort(
-                                          (a, b) =>
-                                              (b.date.substring(0, 4) ?? 0) -
-                                              (a.date.substring(0, 4) ?? 0),
-                                      )
+                                        (a, b) =>
+                                            (b.date?.substring(0, 4) ?? 0) -
+                                            (a.date?.substring(0, 4) ?? 0)
+                                    )
                                     : [];
-                                const albumDateYear = sorted[0]?.date ? sorted[0].date.substring(0, 4) : 'Unknown Year';
+
+                                const albumDateYear = sorted[0]?.date?.substring(0, 4) ?? "Unknown Year";
                             return (
                                 <>
                                     <AlbumCard className='size-60 overflow-visible px-0'>
@@ -160,9 +161,9 @@ export default function Artist({ artist, tracks, albums, isFollowing }: never) {
                                     </AlbumCard>
                               </>
                             );
-                        })()}
+                            })()}
+                        </div>
                     </div>
-                </div>
 
                     <div className="mt-10 ml-20">
                         <div className="flex items-baseline justify-between">
@@ -232,7 +233,6 @@ export default function Artist({ artist, tracks, albums, isFollowing }: never) {
                                 {Array.isArray(albums)
                                     ? [...albums]
                                         .sort((a, b) => {
-                                        // sécuriser les dates pour le tri
                                         const yearA = a.date ? parseInt(a.date.substring(0, 4)) : 0;
                                         const yearB = b.date ? parseInt(b.date.substring(0, 4)) : 0;
                                         return yearB - yearA;
