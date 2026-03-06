@@ -38,7 +38,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
     const handleFinish = () => {
         router.post('/preferences', formData, {
             onSuccess: () => {
-                alert('préférences enregistrées');
+                
             },
             onError: (errors) => {
                 console.error("Erreur lors de l'enregistrement", errors);
@@ -143,7 +143,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                         >
                                             <div className={`absolute inset-0 ${isSelected ? 'bg-primary/40' : 'bg-black/0'}`} />
 
-                                            <div className="absolute inset-0 flex items-center text-background justify-center p-2 text-center">
+                                            <div className="absolute inset-0 flex items-center text-white justify-center p-2 text-center">
                                                 <h2 className="uppercase">{genre.name}</h2>
                                             </div>
 
@@ -202,7 +202,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                             
                                             <div className={`absolute inset-0 ${isSelected ? 'bg-primary/40' : 'bg-black/50'}`} />
                                             
-                                            <div className="absolute inset-0 flex text-background items-center justify-center p-4">
+                                            <div className="absolute inset-0 flex text-white items-center justify-center p-4">
                                                 <h2>{art.artist_name}</h2>
                                             </div>
                                             

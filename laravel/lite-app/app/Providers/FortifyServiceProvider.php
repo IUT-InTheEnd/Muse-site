@@ -31,6 +31,16 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
+
+        $this->app->instance(
+        \Laravel\Fortify\Contracts\RegisterResponse::class,
+        new class implements \Laravel\Fortify\Contracts\RegisterResponse {
+            public function toResponse($request)
+            {
+                return redirect()->route('preferences.index');
+            }
+        }
+    );
     }
 
     /**

@@ -27,14 +27,7 @@ export default function Index({ links }: Props) {
                         className="h-px w-full bg-gray-300"
                     />
                     <div className="flex flex-col gap-4 items-start w-full">
-                        <Link href={links.installation} className="link-doc">
-                            <div className='flex justify-between items-center w-full'>
-                                <p className='bold'>Installation</p>
-                                <ExternalLink className='h-4 w-4'/>
-                            </div>
-                        </Link>
-
-                        <Link href={links.api} className="link-doc">
+                        <Link href={'docs/api'} className="link-doc">
                             <div className='flex justify-between items-center'>
                                 <p className='bold'>API</p>
                                 <ExternalLink className='h-4 w-4'/>

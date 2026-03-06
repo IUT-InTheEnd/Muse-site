@@ -21,7 +21,6 @@ const Footer = () => {
                     <a href="/mentionslegales" className="font-semibold hover:underline">Légal</a>
                     <div className='flex flex-col text-sm'>
                         <a href="/mentionslegales" className="hover:underline">Mentions légales</a>
-                        <a href="" className="hover:underline">Consentement</a>
                     </div>
                 </div>
 
@@ -29,8 +28,7 @@ const Footer = () => {
                 <div className='flex flex-col gap-2 text-center sm:text-left'>
                     <a href="/documentation" className="font-semibold hover:underline">Documentation</a>
                     <div className='flex flex-col text-sm'>
-                        <a href="/documentation/installation" className="hover:underline">Installation</a>
-                        <a href="/documentation/api" className="hover:underline">API</a>
+                        <a href="/docs/api" className="hover:underline">API</a>
                         <a href="/documentation/utilisation" className="hover:underline">Utilisation</a>
                         <a href="https://laravel.com/docs" target="_blank" rel="noopener noreferrer" className="hover:underline">Laravel</a>
                     </div>

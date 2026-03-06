@@ -55,12 +55,12 @@ export default function Privacy() {
                                 />
                                 <label
                                     htmlFor="public_profile_visibility"
-                                    className="text-sm font-medium text-white"
+                                    className="text-sm font-medium"
                                 >
                                     Rendre mon profil public
                                 </label>
                             </div>
-                            <p className="text-sm text-white">
+                            <p className="text-sm">
                                 Si activé, votre profil sera visible par tous
                                 les utilisateurs. Sinon, il ne sera visible que
                                 par vous.
