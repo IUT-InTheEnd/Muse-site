@@ -133,12 +133,12 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
 
                         <ArtistSlider title='Artistes favoris'>
                             {artists?.filter(Boolean).map((artist) => (
-                                <ArtistCard className="rounded-full" key={artist.id}>
+                                <ArtistCard key={artist.id}>
                                     <Link href={`/artiste/${artist.id}`}>
-                                    <CardCover src={artist.cover} />
+                                    <CardCover className="rounded-full"  src={artist.cover} />
                                     <CardContent>
                                         <CardSubtitle>
-                                            <CardTitle>{artist.artist_name}</CardTitle>
+                                            <CardTitle>{artist.name}</CardTitle>
                                         </CardSubtitle>
                                     </CardContent>
                                     </Link>
