@@ -126,13 +126,7 @@ export default function Album({
 
     return (
         <>
-            <Head title={album.album_title}>
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
-                    rel="stylesheet"
-                />
-            </Head>
+            <Head title={album.album_title}></Head>
             <div className="flex min-h-screen flex-col items-center lg:justify-center">
                 <div
                     className="relative flex h-80 w-full items-center bg-cover bg-center"
@@ -152,7 +146,7 @@ export default function Album({
                                 {h > 0 ? ` ${h}h ` : ''} {min % 60} min {sec} sec
                             </h2>
                         </div>
-                        
+
                         <div className="flex max-w-sm gap-2">
                             <Button
                                 className="flex-1"

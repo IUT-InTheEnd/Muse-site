@@ -47,7 +47,7 @@ export default function MusicPlayer() {
             </button>
 
             <div className="flex items-center gap-8">
-                {/* GAUCHE - Info de la piste */}
+                {/* Info de la piste */}
                 <div className="flex items-center gap-5 flex-1 min-w-0">
                     {track?.artwork ? (
                         <img
@@ -84,7 +84,7 @@ export default function MusicPlayer() {
                     </div>
                 </div>
 
-                {/* CENTRE - Contrôles + progression */}
+                {/* Contrôles + progression */}
                 <div className="flex flex-col flex-1 items-center gap-2">
                     {/* Contrôles */}
                     <div className="flex items-center gap-6">
@@ -156,7 +156,7 @@ export default function MusicPlayer() {
                     </div>
                 </div>
 
-                {/* DROITE - Volume */}
+                {/* Volume */}
                 <div className="flex items-center gap-3 flex-1 justify-end">
                     <button onClick={toggleMute} className="cursor-pointer">
                         {volume === 0 ? (

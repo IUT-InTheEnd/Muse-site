@@ -330,7 +330,7 @@ export function TrackRow({
                 )}
                 onClick={handlePlayPause}
             >
-                {/* Index / Play-Pause */}
+                {/* Play-Pause */}
                 <div className="flex w-8 items-center justify-center">
                     {showIndex && !isCurrentTrack && (
                         <span className="text-sm text-muted-foreground group-hover:hidden">

@@ -119,11 +119,11 @@ export default function Register() {
                                 />
                                 <span>
                                     J'accepte les{' '}
-                                    <TextLink href="/terms" tabIndex={7}>
+                                    <TextLink href="/mentionslegales" tabIndex={7}>
                                         conditions d'utilisation
                                     </TextLink>{' '}
                                     et la{' '}
-                                    <TextLink href="/privacy" tabIndex={8}>
+                                    <TextLink href="/pilotiqueconfidentialite" tabIndex={8}>
                                         politique de confidentialité
                                     </TextLink>
                                     .

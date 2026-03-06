@@ -48,10 +48,13 @@ class FavoritesController extends Controller
             ->with('artist')
             ->get()
             ->map(function ($userArtist) {
-                $artist = $userArtist->artist; 
-                if (!$artist) return null; 
+                $artist = $userArtist->artist;
+                if (! $artist) {
+                    return null;
+                }
+
                 return [
-                    'id' => $artist->artist_id, 
+                    'id' => $artist->artist_id,
                     'name' => $artist->artist_name,
                     'cover' => $artist->artist_image_file,
                 ];

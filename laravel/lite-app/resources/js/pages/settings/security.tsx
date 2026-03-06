@@ -270,7 +270,6 @@ export default function Security({
                     errors={errors}
                 />
 
-                {/* API key section */}
                 <div className="space-y-6">
                     <Heading
                         variant="small"
@@ -300,17 +299,14 @@ export default function Security({
                         .
                     </p>
 
-                    {/* Zone for the API Key when generated */}
                     <Input
                         readOnly
                         placeholder="Votre clé API apparaîtra ici après régénération"
                         className="mt-1 block w-150"
                     />
 
-                    {/* Button */}
                     <Button
                         onClick={() => {
-                            /* Call regenerate API key action */
                             fetch('/settings/api-token', {
                                 method: 'GET',
                                 headers: {

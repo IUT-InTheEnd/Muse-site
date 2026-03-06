@@ -8,9 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 
 export default function Support() {
     const [canSubmit, setCanSubmit] = useState(true);
-    const selectRef = useRef(null);
-    const nameRef = useRef(null);
-    const messageRef = useRef(null);
+    const selectRef = useRef<HTMLElement | null>(null);
+    const nameRef = useRef<HTMLInputElement | null>(null);
+    const messageRef = useRef<HTMLTextAreaElement | null>(null);
 
     function checkSubmition() {
         const select = selectRef.current;

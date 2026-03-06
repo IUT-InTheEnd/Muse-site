@@ -39,9 +39,7 @@ export default function Profile({
 
             <SettingsLayout>
                 <div className="flex flex-col gap-8 xl:flex-row">
-                    {/* Left column - Profile form */}
                     <div className="flex-1 space-y-12">
-                        {/* Profile Image Section */}
                         <div className="space-y-6">
                             <Heading
                                 variant="small"
@@ -170,7 +168,6 @@ export default function Profile({
                         <DeleteUser />
                     </div>
 
-                    {/* Right column - User info card */}
                     <div className="w-full xl:w-80">
                         <UserInfoCard />
                     </div>

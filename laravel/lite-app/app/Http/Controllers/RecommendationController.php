@@ -66,10 +66,7 @@ class RecommendationController extends Controller
         ]);
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers privés — validation + délégation au service
-    // -------------------------------------------------------------------------
-
+    // Tout ca est envoyé au service qui va actuellement exécuter les scripts python, on valide juste les paramètres ici
     private function itemBasedMatheo(Request $request, int $userId, int $n): array
     {
         $request->validate([

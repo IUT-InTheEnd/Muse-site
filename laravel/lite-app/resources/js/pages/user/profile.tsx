@@ -95,13 +95,10 @@ export default function Profile({
             <Head title={`${user.name} - Profil`} />
 
             <div className="flex flex-col gap-6 pb-8">
-                {/* Hero Section - Spotify-like header */}
                 <div className="relative">
-                    {/* Gradient Background */}
                     <div className="absolute inset-0 bg-gradient-to-b from-primary/30 via-primary/10 to-transparent" />
 
                     <div className="relative flex flex-col items-center gap-6 px-6 py-12 md:flex-row md:items-end md:gap-8 md:px-8 md:py-16">
-                        {/* Profile Avatar */}
                         <Avatar className="h-40 w-40 shadow-2xl ring-4 ring-background md:h-56 md:w-56">
                             <AvatarImage
                                 src={imageSrc || user.avatar}
@@ -113,7 +110,6 @@ export default function Profile({
                             </AvatarFallback>
                         </Avatar>
 
-                        {/* Profile Info */}
                         <div className="flex flex-col items-center gap-4 text-center md:items-start md:text-left">
                             <span className="text-sm font-medium tracking-wider text-muted-foreground uppercase">
                                 Profil
@@ -122,7 +118,6 @@ export default function Profile({
                                 {user.name}
                             </h1>
 
-                            {/* Stats */}
                             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                                 {playlists.length > 0 && (
                                     <span className="flex items-center gap-1">
@@ -156,9 +151,7 @@ export default function Profile({
                     </div>
                 </div>
 
-                {/* Content Sections */}
                 <div className="flex flex-col gap-8 px-4 md:px-8">
-                    {/* Recent Tracks Section */}
                     {recent_tracks.length > 0 && (
                         <TrackList
                             title="Titres récents"
@@ -177,6 +170,7 @@ export default function Profile({
                                             track_duration:
                                                 track.track_duration,
                                             track_listens: track.track_listens,
+                                            track_favorites: 0,
                                         },
                                         artist: artist
                                             ? {
@@ -192,7 +186,6 @@ export default function Profile({
                         />
                     )}
 
-                    {/* Playlists Section */}
                     {playlists.length > 0 && (
                         <section>
                             <div className="mb-4 flex items-center justify-between">
@@ -204,7 +197,6 @@ export default function Profile({
                             </div>
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                                 {playlists.map((playlist) => {
-                                    // Determine the image to show
                                     const playlistImage =
                                         playlist.playlist_image_file
                                             ? `/image/${playlist.playlist_image_file}`
@@ -263,7 +255,6 @@ export default function Profile({
                         </section>
                     )}
 
-                    {/* Followed Artists Section */}
                     {followed_artists.length > 0 && (
                         <section>
                             <div className="mb-4 flex items-center justify-between">
@@ -305,7 +296,6 @@ export default function Profile({
                         </section>
                     )}
 
-                    {/* Empty State */}
                     {playlists.length === 0 &&
                         recent_tracks.length === 0 &&
                         followed_artists.length === 0 && (

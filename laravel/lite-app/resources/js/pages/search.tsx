@@ -21,10 +21,10 @@ export default function search({ listeMusiques, listeArtistes, langues, genres, 
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
     const [showFilters, setShowFilters] = useState(false);
-    
+
     const [selectedGenres, setSelectedGenres] = useState<string[]>(() => (testGenres || []).map(String));
     const [selectedLangues, setSelectedLangues] = useState<string[]>(() => (testLangues || []).map(String));
-    
+
     useEffect(() => {
         setSelectedGenres((testGenres || []).map(String));
     }, [testGenres]);
@@ -98,13 +98,7 @@ export default function search({ listeMusiques, listeArtistes, langues, genres, 
 
     return (
         <>
-            <Head title="Recherche">
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
-                    rel="stylesheet"
-                />
-            </Head>
+            <Head title="Recherche"></Head>
             <div className="flex min-h-screen flex-col items-center lg:justify-center">
                 <form method="get" action="/search" className="w-full flex flex-col items-center mt-20">
                     {/* Ligne principale : icône + champ + bouton */}

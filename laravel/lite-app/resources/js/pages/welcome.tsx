@@ -5,13 +5,7 @@ import { login, register } from '@/routes';
 export default function Welcome() {
     return (
         <>
-            <Head title="Welcome">
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
-                    rel="stylesheet"
-                />
-            </Head>
+            <Head title="Welcome"></Head>
             <div className="flex flex-col items-center lg:justify-center">
                 <div className="relative flex w-full min-h-[calc(100vh-5rem-11rem)] items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/guy2.jpg')" }}>
                     <div className="absolute inset-0 bg-black/70 pointer-events-none"></div>

@@ -23,9 +23,7 @@ type InfoItemProps = {
     value: string | number | null | undefined;
 };
 
-/**
- * Parse une valeur qui peut être un JSON array stringifié, un array Python-style, ou une string simple
- */
+
 function parseArrayValue(value: string | null | undefined): string[] | null {
     if (!value) return null;
 

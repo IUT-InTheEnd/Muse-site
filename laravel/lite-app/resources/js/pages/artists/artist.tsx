@@ -57,7 +57,7 @@ interface ArtistProps {
 }
 
 export default function Artist({ artist, tracks, albums, isFollowing }: ArtistProps) {
-    
+
     const { playTrack } = useMusicPlayer();
 
     const sorted_tracks =  Array.isArray(tracks) ? [...tracks].sort((a, b) => (b.listens ?? 0) - (a.listens ?? 0)) : [];
@@ -92,13 +92,7 @@ export default function Artist({ artist, tracks, albums, isFollowing }: ArtistPr
 
     return (
         <>
-            <Head title={artist.artist_name}>
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
-                    rel="stylesheet"
-                />
-            </Head>
+            <Head title={artist.artist_name}></Head>
         <div className="flex flex-col relative min-h-screen p-4 md:p-8 lg:p-36">
             <div className="backgroundimg-container">
                 <div className="gradient"></div>

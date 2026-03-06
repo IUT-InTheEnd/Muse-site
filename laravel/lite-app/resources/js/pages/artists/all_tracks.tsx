@@ -61,13 +61,7 @@ export default function AllTracks({ artist, albums }: AllTracksProps) {
 
     return (
         <>
-            <Head title={artist.artist_name + ' - Discographie'}>
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
-                    rel="stylesheet"
-                />
-            </Head>
+            <Head title={artist.artist_name + ' - Discographie'}></Head>
             <div className="relative min-h-screen p-4 md:p-10">
                 <h1
                     onClick={() => router.visit(show(artist.artist_id))}
@@ -130,8 +124,8 @@ export default function AllTracks({ artist, albums }: AllTracksProps) {
                                 <div className="w-28 text-right">DURÉE</div>
                                 <div className="flex items-center gap-1 w-20"></div>
                             </div>
-                            <TrackList 
-                                tracks={album.tracks.map((track: Track) => ({ 
+                            <TrackList
+                                tracks={album.tracks.map((track: Track) => ({
                                     track: {
                                         track_id: track.id,
                                         track_title: track.title,
@@ -146,7 +140,7 @@ export default function AllTracks({ artist, albums }: AllTracksProps) {
                                               artist_name: track.artist.name,
                                           }
                                         : undefined,
-                                }))} 
+                                }))}
                                 showIndex={true}
                             />
                         </div>

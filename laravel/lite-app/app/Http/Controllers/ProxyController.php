@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class ProxyController extends Controller
 {
-    // Domaines qu'on proxy pour éviter les problèmes de CORS
+    // Domaines autorisés
     private array $allowedDomains = [
         'freemusicarchive.org',
         'files.freemusicarchive.org',
@@ -74,33 +75,26 @@ class ProxyController extends Controller
         'upload.wikimedia.org',
         'wikimedia.org',
         'wp.com',
-        'www.bigissue.com',
-        'www.concertandco.com',
-        'www.radiofrance.fr',
-        'www.rocknfolk.com',
-        'www.rollingstone.com',
-        'www.rollingstone.fr',
         'yt3.googleusercontent.com',
         'ytimg.com',
     ];
 
-    // Types de contenu autorisés
+    // Contenus autorisés
     private array $allowedContentTypes = [
-        // Audio
         'audio/mpeg',
         'audio/wav',
         'audio/ogg',
         'audio/mp4',
-        // Images
+
         'image/jpeg',
         'image/png',
         'image/gif',
         'image/webp',
-        // JSON (pour les API)
+
         'application/json',
     ];
 
-    // Placeholders par type de contenu
+    // placeholders pour les contenus qui marche pas
     private array $placeholders = [
         'audio' => [
             'path' => 'placeholders/audio-placeholder.mp3',
@@ -112,42 +106,45 @@ class ProxyController extends Controller
         ],
     ];
 
+    // Proxy méthode principale
     public function stream(Request $request)
     {
-        // 1. Récupérer et valider l'URL
         $url = $request->query('url');
 
         if (! $url || ! filter_var($url, FILTER_VALIDATE_URL)) {
             return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
-        // 2. Vérifier que le domaine est autorisé
         $host = parse_url($url, PHP_URL_HOST);
 
-        if (! in_array($host, $this->allowedDomains)) {
+        if (! $host || ! $this->isAllowedDomain($host)) {
             return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
-        // 3. Préparer les headers à transmettre au serveur distant
         $forwardHeaders = [
-            // Certains serveurs bloquent les requêtes sans User-Agent
             'User-Agent' => 'Mozilla/5.0 (compatible; LITE-Proxy/1.0)',
         ];
 
-        // Transmettre le header Range pour le seeking audio/vidéo
+        // Support du seeking audio
         if ($request->hasHeader('Range')) {
             $forwardHeaders['Range'] = $request->header('Range');
         }
 
-        // 4. Récupérer la ressource distante en streaming (ne charge pas le fichier en mémoire)
         try {
             $response = Http::withHeaders($forwardHeaders)
+                ->retry(2, 200)
                 ->withOptions([
                     'stream' => true,
+                    'connect_timeout' => 5,
                     'timeout' => 30,
                 ])
                 ->get($url);
         } catch (\Exception $e) {
+            Log::warning('Proxy request failed', [
+                'url' => $url,
+                'error' => $e->getMessage(),
+            ]);
+
             return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
@@ -157,37 +154,46 @@ class ProxyController extends Controller
             return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
-        // 5. Vérifier le Content-Type
         $contentType = $response->header('Content-Type') ?? 'application/octet-stream';
         $baseContentType = trim(explode(';', $contentType)[0]);
 
         if (! in_array($baseContentType, $this->allowedContentTypes)) {
-            return $this->returnPlaceholder($this->guessTypeFromContentType($baseContentType));
+            return $this->returnPlaceholder(
+                $this->guessTypeFromContentType($baseContentType)
+            );
         }
 
-        // 6. Construire les headers de réponse
         $responseHeaders = [
             'Content-Type' => $contentType,
-            'Cache-Control' => 'public, max-age=86400',
-            'Accept-Ranges' => 'bytes', // Indique au client qu'il peut faire du seeking
+            'Cache-Control' => 'public, max-age=86400, stale-while-revalidate=604800',
+            'Accept-Ranges' => 'bytes',
         ];
 
-        if ($contentLength = $response->header('Content-Length')) {
-            $responseHeaders['Content-Length'] = $contentLength;
+        if ($length = $response->header('Content-Length')) {
+            $responseHeaders['Content-Length'] = $length;
         }
 
-        // Retransmettre Content-Range pour les réponses 206 Partial Content
-        if ($contentRange = $response->header('Content-Range')) {
-            $responseHeaders['Content-Range'] = $contentRange;
+        if ($range = $response->header('Content-Range')) {
+            $responseHeaders['Content-Range'] = $range;
         }
 
-        // 7. Streamer chunk par chunk (évite de charger tout le fichier en mémoire)
+        // HEAD request (optimisation)
+        if ($request->isMethod('HEAD')) {
+            return response('', $statusCode, $responseHeaders);
+        }
+
         $stream = $response->toPsrResponse()->getBody();
 
         return response()->stream(
             function () use ($stream) {
                 while (! $stream->eof()) {
-                    echo $stream->read(8192);
+
+                    echo $stream->read(65536);
+
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
+
                     flush();
                 }
             },
@@ -196,10 +202,21 @@ class ProxyController extends Controller
         );
     }
 
-    /**
-     * Retourne le placeholder selon le type
-     */
-    private function returnPlaceholder(string $type): \Illuminate\Http\Response
+    // Verifie si le domaine est autorise (exact ou sous-domaine)
+    private function isAllowedDomain(string $host): bool
+    {
+        foreach ($this->allowedDomains as $domain) {
+
+            if ($host === $domain || str_ends_with($host, '.'.$domain)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Retourne un placeholder selon le type (audio ou image)
+    private function returnPlaceholder(string $type): BinaryFileResponse
     {
         $placeholder = $this->placeholders[$type] ?? $this->placeholders['image'];
         $path = public_path($placeholder['path']);
@@ -208,22 +225,22 @@ class ProxyController extends Controller
             abort(404, 'Placeholder non trouvé');
         }
 
-        return response(file_get_contents($path), 200, [
+        return response()->file($path, [
             'Content-Type' => $placeholder['content_type'],
-            'Cache-Control' => 'public, max-age=3600', // Cache 1h pour les placeholders
+            'Cache-Control' => 'public, max-age=86400',
         ]);
     }
 
-    /**
-     * Devine le type de ressource à partir de l'URL
-     */
+    // Trouve le type selon l'extension
     private function guessTypeFromUrl(?string $url): string
     {
         if (! $url) {
             return 'image';
         }
 
-        $extension = strtolower(pathinfo(parse_url($url, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION));
+        $extension = strtolower(
+            pathinfo(parse_url($url, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION)
+        );
 
         return match ($extension) {
             'mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac' => 'audio',
@@ -231,9 +248,7 @@ class ProxyController extends Controller
         };
     }
 
-    /**
-     * Devine le type de ressource à partir du Content-Type
-     */
+    // Trouve le type selon le content-type
     private function guessTypeFromContentType(string $contentType): string
     {
         if (str_starts_with($contentType, 'audio/')) {

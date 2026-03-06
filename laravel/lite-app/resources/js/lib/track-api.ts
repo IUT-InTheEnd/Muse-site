@@ -1,6 +1,6 @@
 import { proxyUrl } from '@/components/proxy';
 
-// Structurally matches Track from music-player-context (TypeScript structural typing)
+// Structure de données d'une piste telle que renvoyée par l'API. (api interne hein)
 export type TrackData = {
     id?: number;
     src: string;
@@ -30,10 +30,7 @@ function mapRawTrack(d: RawTrackData): TrackData {
     };
 }
 
-/**
- * Fetch one or more tracks in a single HTTP request.
- * Returns an array matching the order of the resolved IDs.
- */
+// Fetch plusieurs pistes par leurs IDs. Renvoie un tableau de TrackData.
 export async function fetchTracks(ids: number[]): Promise<TrackData[]> {
     if (ids.length === 0) return [];
     const res = await fetch(`/tracks?ids=${ids.join(',')}`);
@@ -42,9 +39,7 @@ export async function fetchTracks(ids: number[]): Promise<TrackData[]> {
     return data.map(mapRawTrack);
 }
 
-/**
- * Fetch a single track. Convenience wrapper around fetchTracks.
- */
+// Fetch une piste par son ID. Renvoie une TrackData ou lance une erreur si la piste n'existe pas.
 export async function fetchTrack(id: number): Promise<TrackData> {
     const tracks = await fetchTracks([id]);
     if (tracks.length === 0) throw new Error(`Track ${id} not found`);
