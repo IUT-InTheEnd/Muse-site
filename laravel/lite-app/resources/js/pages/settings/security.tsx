@@ -21,6 +21,7 @@ import type { BreadcrumbItem } from '@/types';
 type Props = {
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
+    userid?: number;
 };
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -33,6 +34,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Security({
     requiresConfirmation = false,
     twoFactorEnabled = false,
+    userid,
 }: Props) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
@@ -268,6 +270,75 @@ export default function Security({
                     fetchSetupData={fetchSetupData}
                     errors={errors}
                 />
+
+                {/* API key section */}
+                <div className="space-y-6">
+                    <Heading
+                        variant="small"
+                        title="Clé API"
+                        description="Gérez votre clé API pour accéder à nos services de manière sécurisée."
+                    />
+
+                    <p className="w-1/2 text-muted-foreground">
+                        Votre clé API vous permettent d'accéder à nos services
+                        de manière sécurisée.
+                        <br />
+                        Vous pouvez créer ou régénérer votre clé API à tout
+                        moment.
+                        <br />
+                        <span className="text-red-400">
+                            Et n'est affichée qu'une seule fois lors de sa création pour des raisons de sécurité.
+                        </span>{' '}
+                        <br />
+                        La documentation de l'API est disponible à l'adresse
+                        suivante :{' '}
+                        <a
+                            href={'/docs/api'}
+                            className="text-purple-500 underline"
+                        >
+                            /docs/api
+                        </a>
+                        .
+                    </p>
+
+                    {/* Zone for the API Key when generated */}
+                    <Input
+                        readOnly
+                        placeholder="Votre clé API apparaîtra ici après régénération"
+                        className="mt-1 block w-150"
+                    />
+
+                    {/* Button */}
+                    <Button
+                        onClick={() => {
+                            /* Call regenerate API key action */
+                            fetch('/settings/api-token', {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                            })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    const input = document.querySelector(
+                                        'input[placeholder="Votre clé API apparaîtra ici après régénération"]',
+                                    ) as HTMLInputElement;
+                                    if (input) {
+                                        input.value = data.token;
+                                    }
+                                })
+                                .catch((error) => {
+                                    // Handle error
+                                    console.error(
+                                        'Error regenerating API key:',
+                                        error,
+                                    );
+                                });
+                        }}
+                    >
+                        Régénérer la clé API
+                    </Button>
+                </div>
             </SettingsLayout>
         </AppLayout>
     );
