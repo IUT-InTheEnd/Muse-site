@@ -28,7 +28,7 @@ docker compose up -d
 ensuite installer les packages python de la manière que vous préférez
 et run le `main.py` attention ça prends du temps à se lancer donc c'est l'heure du café !!!!
 
-### mise en place de l'environnement de développement
+### mise en place de l'environnement python
 
 ```bash
 cd <repo>/laravel/lite-app
