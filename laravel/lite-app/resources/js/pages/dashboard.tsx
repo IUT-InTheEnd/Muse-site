@@ -88,7 +88,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                                         <CardCover src={proxyUrl(track.cover)} />
                                         <CardContent>
                                             <CardTitle>{track.title}</CardTitle>
-                                            <CardSubtitle>{track.artist?.artist_name}</CardSubtitle>
+                                            <CardSubtitle><Link href={`/artiste/${track.artist?.artist_id}`}>{track.artist?.artist_name}</Link></CardSubtitle>
                                         </CardContent>
                                     </MusicCard>
                                 ))}
@@ -125,13 +125,13 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                                     <CardCover src={proxyUrl(track.cover)} />
                                     <CardContent>
                                         <CardTitle>{track.title}</CardTitle>
-                                        <CardSubtitle>{track.artist?.artist_name}</CardSubtitle>
+                                        <CardSubtitle><Link href={`/artiste/${track.artist?.artist_id}`}>{track.artist?.artist_name}</Link></CardSubtitle>
                                     </CardContent>
                                 </MusicCard>
                             ))}
                         </MusicSlider>
 
-                        <ArtistSlider title='Artistes favoris'>
+                        <ArtistSlider title='Artistes que vous pourriez aimer'>
                             {artists?.filter(Boolean).map((artist) => (
                                 <ArtistCard className="rounded-full" key={artist.id}>
                                     <Link href={`/artiste/${artist.id}`}>
@@ -176,7 +176,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                                     <CardCover src={proxyUrl(track.cover)} />
                                     <CardContent>
                                         <CardTitle>{track.title}</CardTitle>
-                                        <CardSubtitle>{track.artist?.artist_name}</CardSubtitle>
+                                        <CardSubtitle><Link href={`/artiste/${track.artist?.artist_id}`}>{track.artist?.artist_name}</Link></CardSubtitle>
                                     </CardContent>
                                 </MusicCard>
                             ))}
