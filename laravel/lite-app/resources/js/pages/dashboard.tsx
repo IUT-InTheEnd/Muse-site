@@ -131,7 +131,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                             ))}
                         </MusicSlider>
 
-                        <ArtistSlider title='Artistes que vous pourriez aimer'>
+                        <ArtistSlider title='Artistes favoris'>
                             {artists?.filter(Boolean).map((artist) => (
                                 <ArtistCard className="rounded-full" key={artist.id}>
                                     <Link href={`/artiste/${artist.id}`}>
