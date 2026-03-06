@@ -192,7 +192,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                             className={`relative aspect-square overflow-hidden cursor-pointer border-3 transition-all group ${isSelected ? 'border-primary' : 'border-transparent hover:border-primary'}`}
                                         >
                                             <img 
-                                                src={`https://images.weserv.nl/?url=${encodeURIComponent(art.artist_image_file)}&w=400&h=400&fit=cover`}
+                                                src={proxyUrl(art.artist_image_file)}
                                                 className="absolute inset-0 w-full h-full object-cover z-0" 
                                                 alt={art.artist_name}
                                                 onError={(e) => {
