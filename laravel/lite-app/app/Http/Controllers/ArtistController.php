@@ -37,6 +37,7 @@ class ArtistController extends Controller
                 'url'      => $track->track_file,
                 'artwork'  => $track->track_image_file, 
                 'duration' => $track->track_duration,
+                'favorites' => $track->track_favorites,
                 'listens' => $track->track_listens,
                 'date' => $track->track_date_created ?? ""
             ];
@@ -77,6 +78,7 @@ class ArtistController extends Controller
                         'artwork'  => $realiser->track->track_image_file, 
                         'duration' => $realiser->track->track_duration,
                         'listens' => $realiser->track->track_listens,
+                        'favorites' => $realiser->track->track_favorites,
                         'date' => $realiser->track->track_date_created ?? "",
                         'artist' => [
                             'id' => $realiser->artist->artist_id,

@@ -9,6 +9,7 @@ use App\Models\UserPrefereArtiste;
 use App\Services\RecommendationService;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {

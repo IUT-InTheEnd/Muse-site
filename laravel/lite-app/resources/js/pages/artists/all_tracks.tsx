@@ -5,8 +5,43 @@ import { fetchTrack } from '@/lib/track-api';
 import { Head, router } from '@inertiajs/react';
 import { LoaderIcon, PauseIcon, PlayIcon } from 'lucide-react';
 import React from 'react';
+import {
+    TrackList,
+} from '@/components/musecomponents/TrackList';
 
-export default function AllTracks({ artist, albums }: never) {
+type Track = {
+    id: number;
+    title: string;
+    duration?: number;
+    listens?: number;
+    artwork?: string;
+    artist?: {
+        id: number;
+        name: string;
+    };
+    [key: string]: any;
+};
+
+type Album = {
+    id: number;
+    title: string;
+    date: string;
+    type: string;
+    artwork: string;
+    tracks: Track[];
+};
+
+type Artist = {
+    artist_id: number;
+    artist_name: string;
+};
+
+interface AllTracksProps {
+    artist: Artist;
+    albums: Album[];
+}
+
+export default function AllTracks({ artist, albums }: AllTracksProps) {
     const { playTrack, isLoading, playing } = useMusicPlayer();
     const [currentTrackId, setCurrentTrackId] = React.useState<number | null>(
         null,
@@ -33,52 +68,36 @@ export default function AllTracks({ artist, albums }: never) {
                     rel="stylesheet"
                 />
             </Head>
-            <div className="relative min-h-screen p-10">
+            <div className="relative min-h-screen p-4 md:p-10">
                 <h1
                     onClick={() => router.visit(show(artist.artist_id))}
-                    className="mb-6 cursor-pointer text-4xl font-bold hover:underline"
+                    className="hover:underline cursor-pointer text-2xl md:text-4xl font-bold mb-6"
                 >
                     {artist.artist_name}
                 </h1>
 
                 {(() => {
-                    return Array.isArray(albums)
-                        ? [...albums].sort(
-                              (a, b) =>
-                                  (b.date.substring(0, 4) ?? 0) -
-                                  (a.date.substring(0, 4) ?? 0),
-                          )
-                        : [];
-                })().map((album: never) => (
-                    <div key={album.id} className="mb-20">
-                        <div className="mb-8 flex">
+                                return Array.isArray(albums)
+                                    ? [...albums].sort((a, b) => parseInt(b.date.substring(0, 4) ?? '0') - parseInt(a.date.substring(0, 4) ?? '0'))
+                                    : [];
+                            })().map((album: Album) => (
+                    <div key={album.id} className="mb-12 md:mb-20">
+                        <div className="flex flex-col md:flex-row mb-8 gap-4 md:gap-8">
                             <img
-                                className="mr-8 size-60 rounded-lg object-cover"
+                                className="size-40 md:size-60 rounded-lg object-cover"
                                 src={proxyUrl(album.artwork)}
                                 alt={album.title}
                             />
-                            <div>
-                                <h2
-                                    onClick={() =>
-                                        router.visit(`/album/${album.id}`)
-                                    }
-                                    className="mb-2 cursor-pointer text-3xl font-bold hover:underline"
-                                >
+                            <div className="flex-1">
+                                <h2 onClick={() => router.visit(`/album/${album.id}`)} className="hover:underline cursor-pointer text-xl md:text-3xl font-bold mb-2">
                                     {album.title.toUpperCase()}
                                 </h2>
-                                <div className="mb-4 flex gap-1">
-                                    <span className="text-gray-400">
-                                        {album.type} •
-                                    </span>
-                                    <span className="text-gray-400">
-                                        {album.date.substring(0, 4)} •
-                                    </span>
-                                    <span className="text-gray-400">
-                                        {album.tracks.length}{' '}
-                                        {album.tracks.length > 1
-                                            ? 'titres'
-                                            : 'titre'}
-                                    </span>
+                                <div className="flex flex-wrap gap-1 mb-4 text-sm md:text-base">
+                                    <span className="text-gray-400">{album.type}</span>
+                                    <span className="text-gray-400">•</span>
+                                    <span className="text-gray-400">{album.date.substring(0, 4)}</span>
+                                    <span className="text-gray-400">•</span>
+                                    <span className="text-gray-400">{album.tracks.length} {album.tracks.length > 1 ? "titres" : "titre"}</span>
                                 </div>
                                 <button
                                     onClick={() =>
@@ -102,66 +121,35 @@ export default function AllTracks({ artist, albums }: never) {
                             </div>
                         </div>
 
-                        <table className="mb-8 w-full text-left">
-                            <thead>
-                                <tr className="border-b border-gray-700 text-gray-400">
-                                    <th className="pb-2">#</th>
-                                    <th className="pb-2">TITRE</th>
-                                    <th className="pb-2">LECTURES</th>
-                                    <th className="pb-2 text-right">DURÉE</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {album.tracks
-                                    .sort(
-                                        (a: never, b: never) =>
-                                            (b.listens ?? 0) - (a.listens ?? 0),
-                                    )
-                                    .map((track: never, trackIndex: number) => (
-                                        <tr
-                                            key={track.id}
-                                            className="group cursor-pointer transition hover:bg-white/10"
-                                            onClick={() => playTracks(track.id)}
-                                        >
-                                            <td className="rounded-l-lg p-3">
-                                                {trackIndex + 1}
-                                            </td>
-                                            <td className="flex items-center gap-3 p-3">
-                                                <img
-                                                    src={proxyUrl(
-                                                        track.artwork,
-                                                    )}
-                                                    className="h-10 w-10 rounded bg-gray-800 object-cover"
-                                                    alt={track.title}
-                                                />
-                                                <div className="flex flex-col">
-                                                    <span className="font-medium">
-                                                        {track.title}
-                                                    </span>
-                                                    <span
-                                                        onClick={() =>
-                                                            router.visit(
-                                                                `/artiste/${track.artist.id}`,
-                                                            )
-                                                        }
-                                                        className="cursor-pointer text-gray-500 hover:underline"
-                                                    >
-                                                        {track.artist.name}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td className="p-3">
-                                                {track.listens}
-                                            </td>
-                                            <td className="rounded-r-lg p-3 text-right font-mono text-sm">
-                                                {track.duration
-                                                    ? `${Math.floor(track.duration / 60)}:${String(Math.floor(track.duration % 60)).padStart(2, '0')}`
-                                                    : '-'}
-                                            </td>
-                                        </tr>
-                                    ))}
-                            </tbody>
-                        </table>
+                        <div className="mb-8 max-w-5xl">
+                            <div className="hidden md:flex items-center gap-4 border-b border-gray-700 mb-4 text-left pb-2 p-3 text-xs md:text-sm">
+                                <div className="w-8">#</div>
+                                <div className="flex-1">TITRE</div>
+                                <div className="hidden md:block">LECTURES</div>
+                                <div className="w-28 text-right">FAVORITES</div>
+                                <div className="w-28 text-right">DURÉE</div>
+                                <div className="flex items-center gap-1 w-20"></div>
+                            </div>
+                            <TrackList 
+                                tracks={album.tracks.map((track: Track) => ({ 
+                                    track: {
+                                        track_id: track.id,
+                                        track_title: track.title,
+                                        track_duration: track.duration,
+                                        track_favorites: track.favorites,
+                                        track_listens: track.listens,
+                                        track_image_file: track.artwork,
+                                    },
+                                    artist: track.artist
+                                        ? {
+                                              artist_id: track.artist.id,
+                                              artist_name: track.artist.name,
+                                          }
+                                        : undefined,
+                                }))} 
+                                showIndex={true}
+                            />
+                        </div>
                     </div>
                 ))}
             </div>

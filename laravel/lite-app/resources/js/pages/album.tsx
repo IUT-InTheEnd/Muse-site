@@ -197,6 +197,22 @@ export default function Album({
                 </div>
                 <div className="mb-10 w-full px-6">
                     <div className="mx-auto mt-10 mb-50 max-w-5xl">
+                        <div className="flex border-b px-3 py-3 text-left text-sm">
+                            <div className="w-10"></div> {/* Espace pour index */}
+                            <div className="ml-15 w-[400px]">
+                                TITRE
+                            </div>
+                            <div className="w-[120px] text-right">
+                                LECTURES
+                            </div>
+                            <div className="w-[130px] text-right">
+                                FAVORITES
+                            </div>
+                            <div className="w-[140px] pr-3 text-right">
+                                DURÉE
+                            </div>
+                            <div className="w-20 pr-3 text-right"></div>
+                        </div>
                         <TrackList
                             tracks={listeMusiques.map(
                                 (element): TrackListItem => ({

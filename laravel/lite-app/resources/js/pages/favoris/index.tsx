@@ -60,7 +60,7 @@ export default function FavoritesPage({ tracks, albums, artists }: FavoritesPage
                         <CardCover src={proxyUrl(track.cover)} />
                         <CardContent>
                             <CardTitle>{track.title}</CardTitle>
-                            <CardSubtitle>{track.artist?.artist_name}</CardSubtitle>
+                            <CardSubtitle><Link href={`/artiste/${track.artist?.artist_id}`}>{track.artist?.artist_name}</Link></CardSubtitle>
                         </CardContent>
                     </MusicCard>
                 ))}
@@ -87,12 +87,12 @@ export default function FavoritesPage({ tracks, albums, artists }: FavoritesPage
         {artists.length !== 0 && (
             <ArtistSlider title='Artistes favoris'>
                 {artists?.filter(Boolean).map((artist) => (
-                    <ArtistCard className="rounded-full" key={artist.id}>
+                    <ArtistCard key={artist.id}>
                         <Link href={`/artiste/${artist.id}`}>
-                        <CardCover src={artist.cover} />
+                        <CardCover className="rounded-full" src={artist.cover} />
                         <CardContent>
                             <CardSubtitle>
-                                <CardTitle>{artist.artist_name}</CardTitle>
+                                <CardTitle>{artist.name}</CardTitle>
                             </CardSubtitle>
                         </CardContent>
                         </Link>

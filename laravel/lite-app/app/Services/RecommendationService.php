@@ -19,7 +19,8 @@ class RecommendationService
      */
     public function runScript(string $scriptPath, array $arguments, int $timeout = 120): array
     {
-        $process = new Process(array_merge(['python3', $scriptPath], $arguments));
+        $python = base_path('python-env/bin/python3');
+        $process = new Process(array_merge([$python, $scriptPath], $arguments));
         $process->setTimeout($timeout);
         $process->run();
 
@@ -56,7 +57,6 @@ class RecommendationService
     public function newUser(int $n = 10): array
     {
         $scriptPath = app_path().'/Http/Controllers/RecommendationScripts/reco_user_based_p1.py';
-
         return $this->runScript($scriptPath, [(string) $n]);
     }
 
@@ -68,7 +68,6 @@ class RecommendationService
     public function itemBasedMatheo(int $userId, int $trackId, int $n = 10, int $mode = 3): array
     {
         $scriptPath = app_path().'/Http/Controllers/RecommendationScripts/reco_item_based_matheo.py';
-
         return $this->runScript($scriptPath, [(string) $userId, (string) $trackId, (string) $n, (string) $mode]);
     }
 
@@ -80,7 +79,6 @@ class RecommendationService
     public function itemBasedMathieu(int $trackId, int $n = 10, float $simRatio = 0.8, float $seuilSim = 0.4): array
     {
         $scriptPath = app_path().'/Http/Controllers/RecommendationScripts/reco_item_based_mathieu.py';
-
         return $this->runScript($scriptPath, [(string) $trackId, (string) $n, (string) $simRatio, (string) $seuilSim]);
     }
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\FavoritesController;
+use App\Http\Controllers\PreferencesController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -110,6 +111,13 @@ Route::middleware(['auth'])->group(function () {
     // route playlist
     Route::get('/user/playlists', [App\Http\Controllers\PlaylistController::class, 'myPlaylists'])->name('my.playlists');
     Route::get('/playlist/{id}', [App\Http\Controllers\PlaylistController::class, 'show'])->name('playlist.show');
+
+
+    // route preferences
+    Route::get('/preferences', [PreferencesController::class, 'index'])
+        ->middleware(['auth', 'verified'])
+        ->name('preferences.index');
+    Route::post('/preferences', [PreferencesController::class, 'store'])->name('preferences.store');
 
     // route profile user publique
     Route::get('/user/{username}', [App\Http\Controllers\UserController::class, 'show'])->name('user.profile');
