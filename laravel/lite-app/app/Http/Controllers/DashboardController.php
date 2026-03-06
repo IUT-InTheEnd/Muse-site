@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Track;
 use App\Models\Artist;
+use App\Models\Track;
 use App\Models\UserEcoute;
 use App\Models\UserPrefereArtiste;
 use App\Services\RecommendationService;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -40,11 +39,7 @@ class DashboardController extends Controller
         $cacheKey = "recommended_tracks_user_{$user->id}";
         $recommendedTracks = Cache::remember($cacheKey, 4 * 60 * 60, function () use ($user) {
             try {
-                $hasHistory = UserEcoute::where('user_id', $user->id)->exists();
-
-                $trackIds = $hasHistory
-                    ? $this->recommendations->userBased($user->id)
-                    : $this->recommendations->newUser();
+                $trackIds = $this->recommendations->userBased($user->id);
             } catch (\Throwable) {
                 return [];
             }

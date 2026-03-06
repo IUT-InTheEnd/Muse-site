@@ -1,0 +1,6 @@
+psycopg2-binary
+langcodes
+pandas
+numpy
+pycountry
+scikit-learn
