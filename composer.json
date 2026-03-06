@@ -1,5 +1,6 @@
 {
     "require": {
-        "laravel/sanctum": "^4.3"
+        "laravel/sanctum": "^4.3",
+        "dedoc/scramble": "^0.13.14"
     }
 }
