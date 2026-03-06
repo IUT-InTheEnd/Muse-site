@@ -34,7 +34,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Security({
     requiresConfirmation = false,
     twoFactorEnabled = false,
-    userid,
 }: Props) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
