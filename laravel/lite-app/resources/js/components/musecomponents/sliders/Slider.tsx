@@ -84,7 +84,7 @@ export function Slider({
             transform: `translateX(-${(100 / visible) * index}%)`,
           }}
         >
-          {children.map((child, i) => (
+          {React.Children.map(children, (child, i) => (
             <div key={i} className="flex-shrink-0 px-3 w-[80%] sm:w-[45%] lg:w-[23%]">
               {child}
             </div>
