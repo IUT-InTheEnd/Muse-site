@@ -403,7 +403,7 @@ export function TrackRow({
                     </span>
                     {artist && (
                         <span className="line-clamp-1 text-sm text-muted-foreground">
-                            {artist.artist_name}
+                            <a href={`/artiste/${artist.artist_id}`} className="hover:underline">{artist.artist_name}</a>
                         </span>
                     )}
                 </div>
