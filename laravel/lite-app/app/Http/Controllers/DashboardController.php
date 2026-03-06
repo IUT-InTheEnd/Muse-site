@@ -37,7 +37,6 @@ class DashboardController extends Controller
 
         // Recommandations personnalisées — mises en cache 4 heures
         $cacheKey = "recommended_tracks_user_{$user->id}";
-        Cache::forget($cacheKey);
         $recommendedTracks = Cache::remember($cacheKey, 4 * 60 * 60, function () use ($user) {
             try {
                 $trackIds = $this->recommendations->userBased($user->id);
