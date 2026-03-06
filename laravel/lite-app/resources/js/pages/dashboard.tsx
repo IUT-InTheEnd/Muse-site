@@ -1,19 +1,19 @@
 import { Head, Link } from '@inertiajs/react';
+import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard';
+import {
+    CardCover,
+    CardSubtitle,
+} from '@/components/musecomponents/cards/Card';
+import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
+import { ArtistSlider } from '@/components/musecomponents/sliders/ArtistSlider';
+import { MusicSlider } from '@/components/musecomponents/sliders/MusicSlider';
 import { proxyUrl } from '@/components/proxy';
-import { Button } from '@/components/ui/button';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
+import { CardContent, CardTitle } from '@/components/ui/card';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 import AppLayout from '@/layouts/app-layout';
-import { fetchTrack } from '@/lib/track-api';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
-import { MusicSlider } from '@/components/musecomponents/sliders/MusicSlider';
-import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
-import { CardContent, CardTitle } from '@/components/ui/card';
-import { CardCover, CardSubtitle } from '@/components/musecomponents/cards/Card';
-import Artist from './artists/artist';
-import { ArtistSlider } from '@/components/musecomponents/sliders/ArtistSlider';
-import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard';
+import type Artist from './artists/artist';
 
 type Track = {
   id: number
@@ -53,7 +53,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Accueil" />
                 <div className='flex flex-col items-center justify-center '>
-                    <div className='flex flex-col lg:justify-center w-full max-w-xl sm:max-w-2xl lg:max-w-4xl gap-6 px-6 py-10'>         
+                    <div className='flex flex-col lg:justify-center w-full max-w-xl sm:max-w-2xl lg:max-w-4xl gap-6 px-6 py-10'>
                         <h1 className="text-lg font-semibold mb-6">
                             Bonjour {user.name}
                         </h1>

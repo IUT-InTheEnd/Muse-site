@@ -30,6 +30,7 @@ class MusicController extends Controller
                 return response()->json(['url' => $musiquedef,
                     'title' => $musique->track_title,
                     'artist' => $musique->realisers->map(fn ($r) => $r->artist->artist_name)->implode(', '),
+                    'artistid' => $musique->realisers->pluck('artist_id')->implode(', '),
                     'artwork' => $musique->track_image_file]);
             }
         }
@@ -74,6 +75,7 @@ class MusicController extends Controller
                 'url' => $musiquedef,
                 'title' => $musique->track_title,
                 'artist' => $musique->realisers->map(fn ($r) => $r->artist->artist_name)->implode(', '),
+                'artistid' => $musique->realisers->pluck('artist_id')->implode(', '),
                 'artwork' => $musique->track_image_file,
             ];
         }

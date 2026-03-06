@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\AlbumResource;
 use App\Models\Album;
-use App\Models\Artist;
 use App\Models\Realiser;
+use App\Models\Artist;
 use App\Models\Track;
 use Inertia\Inertia;
 

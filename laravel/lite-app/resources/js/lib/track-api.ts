@@ -6,6 +6,7 @@ export type TrackData = {
     src: string;
     title?: string;
     artist?: string;
+    artistid?: number;
     artwork?: string;
 };
 
@@ -14,6 +15,7 @@ type RawTrackData = {
     url: string;
     title: string;
     artist: string;
+    artistid: number;
     artwork: string;
 };
 
@@ -23,6 +25,7 @@ function mapRawTrack(d: RawTrackData): TrackData {
         src: proxyUrl(d.url) ?? '',
         title: d.title,
         artist: d.artist,
+        artistid: d.artistid,
         artwork: proxyUrl(d.artwork),
     };
 }
