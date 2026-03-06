@@ -53,6 +53,18 @@ class UserController extends Controller
         return User::findOrFail($id)->createToken($name)->plainTextToken;
     }
 
+    public function createToken(int $id)
+    {
+        return User::findOrFail($id)->createToken('api_token')->plainTextToken;
+    }
+
+    public function regenerateToken(int $id)
+    {
+        $user = User::findOrFail($id);
+        $user->tokens()->delete();
+        return $this->createToken($id);
+    }
+
     public function getUser(Request $request)
     {
         return new UserResource($request->user());
