@@ -60,7 +60,7 @@ export default function FavoritesPage({ tracks, albums, artists }: FavoritesPage
                         <CardCover src={proxyUrl(track.cover)} />
                         <CardContent>
                             <CardTitle>{track.title}</CardTitle>
-                            <CardSubtitle>{track.artist?.artist_name}</CardSubtitle>
+                            <CardSubtitle><Link href={`/artiste/${track.artist?.artist_id}`}>{track.artist?.artist_name}</Link></CardSubtitle>
                         </CardContent>
                     </MusicCard>
                 ))}
