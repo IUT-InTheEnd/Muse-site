@@ -30,6 +30,11 @@ class AjouteGenreFavori extends Model
 		'genre_id' => 'int'
 	];
 
+	protected $fillable = [
+        'user_id',
+        'genre_id'
+    ];
+
 	public function user()
 	{
 		return $this->belongsTo(User::class);
