@@ -27,12 +27,12 @@ export default function Welcome() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md">
                             <Button className="w-full">
                                 <Link href={register()}>
-                                    Je me crée un compte
+                                    Créer un compte
                                 </Link>
                             </Button>
                             <Button className="w-full border-white" variant={"secondary"}>
                                 <Link href={login()} className="text-white">
-                                    Je me connecte
+                                    Se connecter
                                 </Link>
                             </Button>
                         </div>
