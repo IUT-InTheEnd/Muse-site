@@ -137,7 +137,7 @@ export default function Album({
                     <div className="pointer-events-none absolute inset-0 bg-black/70"></div>
                     <main className="relative z-10 ml-8 flex flex-col gap-6 px-6 py-10 text-left">
                         <div className="flex flex-col gap-2">
-                            <h1 className="!text-6xl font-bold">
+                            <h1 className="!text-6xl font-bold text-white">
                                 {album.album_title}
                             </h1>
                             <h2 className="text-lg font-semibold text-white">

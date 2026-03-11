@@ -176,7 +176,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                                     <CardCover src={proxyUrl(track.cover)} />
                                     <CardContent>
                                         <CardTitle>{track.title}</CardTitle>
-                                        <CardSubtitle><Link href={`/artiste/${track.artist?.artist_id}`}>{track.artist?.artist_name}</Link></CardSubtitle>
+                                        <CardSubtitle><Link href={`/artiste/${track.artist}`}>{track.artist}</Link></CardSubtitle>
                                     </CardContent>
                                 </MusicCard>
                             ))}

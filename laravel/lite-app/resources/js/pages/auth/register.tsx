@@ -14,7 +14,7 @@ export default function Register() {
     return (
         <AuthLayout
             title="Créer un compte"
-            description="Entrez votre pseudonyme, adresse e-mail et mot de passe pour créer un compte."
+            description="Entrez votre pseudonyme, adresse e-mail et mot de passe pour créer un compte (* obligatoires)."
         >
             <Head title="S'inscrire" />
             <Form
@@ -27,7 +27,7 @@ export default function Register() {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Pseudonyme</Label>
+                                <Label htmlFor="name">Pseudonyme*</Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -45,7 +45,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Adresse e-mail</Label>
+                                <Label htmlFor="email">Adresse e-mail*</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -59,7 +59,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Mot de passe</Label>
+                                <Label htmlFor="password">Mot de passe*</Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -74,7 +74,7 @@ export default function Register() {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password_confirmation">
-                                    Confirmez le mot de passe
+                                    Confirmez le mot de passe*
                                 </Label>
                                 <Input
                                     id="password_confirmation"

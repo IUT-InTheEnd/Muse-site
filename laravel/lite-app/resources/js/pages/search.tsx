@@ -103,14 +103,14 @@ export default function search({ listeMusiques, listeArtistes, langues, genres, 
                 <form method="get" action="/search" className="w-full flex flex-col items-center mt-20">
                     {/* Ligne principale : icône + champ + bouton */}
                     <div className="flex items-center mb-2">
-                        <img src="/images/filtre.png" className="w-8 mr-2 cursor-pointer" onClick={() => setShowFilters(!showFilters)} />
-                        <input type="text" name="q" placeholder="ex : Linkin Park" className="w-100 rounded border px-4 py-2" defaultValue={filters?.q || ''} />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" onClick={() => setShowFilters(!showFilters)} className="dark:fill-white light:fill-dark mr-3 cursor-pointer lucide lucide-funnel-icon lucide-funnel"><path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"/></svg>
+                        <input type="text" name="q" placeholder="ex : Linkin Park" className="w-100 rounded border px-4 py-2 dark:border-white" defaultValue={filters?.q || ''} />
                         <Button type="submit" className="ml-2">Rechercher</Button>
                     </div>
 
                     {/* Bloc filtres, sous la ligne principale */}
                     {showFilters && (
-                        <div className="border rounded p-4 w-250 bg-gray-50 grid grid-cols-5 gap-2">
+                        <div className="border rounded p-4 w-250 light:bg-gray-50 dark:bg-gray-800 grid grid-cols-5 gap-2 dark:border-white">
                         {genres.map((genre) => (
                             <label key={genre.genre_id} className="flex items-center gap-2">
                                 <input
@@ -126,7 +126,7 @@ export default function search({ listeMusiques, listeArtistes, langues, genres, 
                         </div>
                     )}
                     {showFilters && (
-                        <div className="border rounded p-4 w-250 bg-gray-50 grid grid-cols-5 gap-2">
+                        <div className="border rounded p-4 w-250 dark:bg-gray-800 dark:border-white grid grid-cols-5 gap-2">
                         {langues.map((langue) => (
                             <label key={langue.language_id} className="flex items-center gap-2">
                                 <input
