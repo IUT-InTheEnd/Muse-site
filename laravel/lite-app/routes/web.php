@@ -137,5 +137,8 @@ Route::get('/apy', function () {
 Route::get('/valr', function () {
     return view('validationTest');
 });
+Route::get('/rds', function () {
+    return view('redisTest');
+});
 
 require __DIR__.'/settings.php';
