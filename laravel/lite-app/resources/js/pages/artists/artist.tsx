@@ -37,7 +37,7 @@ type Track = {
 type Album = {
     id: number;
     title: string;
-    date: string;
+    date: string | null;
     artwork: string;
 };
 
@@ -206,10 +206,12 @@ export default function Artist({
                                     ? [...albums].sort(
                                           (a, b) =>
                                               parseInt(
-                                                  b.date.substring(0, 4) ?? '0',
+                                                  b.date?.substring(0, 4) ??
+                                                      '0',
                                               ) -
                                               parseInt(
-                                                  a.date.substring(0, 4) ?? '0',
+                                                  a.date?.substring(0, 4) ??
+                                                      '0',
                                               ),
                                       )
                                     : [];
