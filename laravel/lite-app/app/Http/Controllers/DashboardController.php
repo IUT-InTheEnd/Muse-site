@@ -79,7 +79,7 @@ class DashboardController extends Controller
                 'id' => $track->track_id,
                 'title' => $track->track_title,
                 'cover' => $track->track_image_file,
-                'artist' => optional($track->realisers->first()?->artist)->artist_name,
+                'artist' => $track->realisers->first()?->artist
             ]);
 
         return Inertia::render('dashboard', [
