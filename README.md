@@ -51,15 +51,21 @@ composer run dev
 php artisan 
 ```
 
-# A faire au premier lancement du projet/main.py
+## A faire au premier lancement du projet/main.py
+
 une fois ça fait il faut générer les mots de passes car bcrypt qui a été utilisé utilise pas le même standard que celui de laravel, du coup il faut faire ça à la main :
 
-se rendre sur le lien http://localhost:8000/genpassword[http://localhost:8000/genpassword] et attenez un petit moment.
+se rendre sur le lien <http://localhost:8000/genpassword[http://localhost:8000/genpassword> et attenez un petit moment.
 A l'écran sera affiché le couple email/mot de passe qui est utilisé pour se connecter en tant qu'utilisateur.
 
 ## utilisation
+
 Vous l'avez déjà run juste avant mais si vous avez fermé le serveur ou que vous voulez juste le relancer, voici la commande à utiliser (n'oubliez de lancer la database avant) :
 
 ```bash
 composer run dev
 ```
+
+## scripts
+
+scripts/psql Se connecter à la base de données avec psql

@@ -29,3 +29,37 @@
 - afficher quand une clé d'API existe déjà pour l'utilisateur
 - mettre en avant les recommendations actuellement ce n'est pas très clair, peut être via une page dédiée "mon feed musical?"
 - interface administrateur
+
+## prof
+
+Points prof à valider (Teams)
+
+### Fonctionnalités
+
+- Améliorer le lecteur de musique (stabilité, égaliseur, lecture linéaire/aléatoire, navigation entre musiques)
+- Like / Dislike et favoris (artistes, albums)
+- Ajouter visuels et recommandations pour utilisateurs non connectés
+
+### Playlists
+
+- Création, modification (titre, description, image)
+- Ajout / suppression de musiques et d’albums
+- Drag & drop (playlist et file d’attente)
+- Génération de playlists via recommandation
+- Lecture aléatoire & linéaire
+
+#### Recommandation
+
+- Corriger et optimiser le script de recommandation
+
+### Administration
+
+- Interface admin
+- Gestion des utilisateurs (ajout, suppression, modification)
+- Rôles admin
+
+### Technique
+
+- Corriger intégration API et documentation Swagger
+- Nettoyage du code
+- Optimisation Lighthouse (Minimum 100 Bonne pratique - Vert pour l'ensemble [Perf - Accessibilité])
