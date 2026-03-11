@@ -16,7 +16,7 @@
 
 - suite de tests, smoke/p95
 - checkbox restez connecté => cookie?
-- ID serial naturels => problèmes de sécurité / infos confiendielles via url enumération => profils?
+- ID serial naturels => problèmes de sécurité / infos confidentielles via url énumération => profils?
 - lighthouse en prod
 - intégrer l'API via surface externe ou interne
 
@@ -43,8 +43,8 @@ Points prof à valider (Teams)
 ### Playlists
 
 - Création, modification (titre, description, image)
-- Ajout / suppression de musiques et d’albums
-- Drag & drop (playlist et file d’attente)
+- Ajout / suppression de musiques et d'albums
+- Drag & drop (playlist et file d'attente)
 - Génération de playlists via recommandation
 - Lecture aléatoire & linéaire
 
