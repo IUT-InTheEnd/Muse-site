@@ -10,7 +10,7 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
             ssr: 'resources/js/ssr.tsx',
             refresh: true,
-            buildDirectory: 'public/build',
+            buildDirectory: 'build',
         }),
         react({
             babel: { plugins: ['babel-plugin-react-compiler'] },
@@ -23,16 +23,11 @@ export default defineConfig({
         target: 'esnext',
         minify: 'esbuild',
         cssCodeSplit: true,
-        assetsInlineLimit: 0,
+        assetsInlineLimit: 8,
         rollupOptions: {
             output: {
                 manualChunks(id) {
                     if (id.includes('node_modules')) {
-                        if (id.includes('react') || id.includes('react-dom'))
-                            return 'react-vendor';
-                        if (id.includes('@inertiajs/react'))
-                            return 'inertia-vendor';
-                        if (id.includes('lucide-react')) return 'icons-vendor';
                         return 'vendor';
                     }
                 },
