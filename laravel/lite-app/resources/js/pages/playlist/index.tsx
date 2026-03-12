@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { MusicIcon, PlusIcon, TrashIcon } from 'lucide-react';
+import { MusicIcon, PlusIcon, TrashIcon, LockIcon } from 'lucide-react';
 import { useState } from 'react';
 import {
     CardContent,
@@ -188,7 +188,11 @@ export default function PlaylistsPage({ playlists }: PlaylistsPageProps) {
                                             </CardContent>
                                         </Link>
                                     </PlaylistCard>
-
+                                    {!playlist.playlist_public && (
+                                        <div className="absolute top-2 left-2 rounded-full bg-white/10 px-3 py-1 text-sm text-white transition hover:bg-white/20 disabled:opacity-50">
+                                            <LockIcon size={16} />
+                                        </div>
+                                    )}                  
                                     {playlist.playlist_deletable && (
                                         <button
                                             onClick={() =>
