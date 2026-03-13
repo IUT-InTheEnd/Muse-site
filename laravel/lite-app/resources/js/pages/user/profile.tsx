@@ -16,6 +16,7 @@ import { type PlaylistData } from '@/components/musecomponents/TrackRow';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem, User } from '@/types';
+import { proxyUrl } from '@/components/proxy';
 
 type Playlist = {
     playlist_id: number;
@@ -30,7 +31,7 @@ type Playlist = {
 type Artist = {
     artist_id: number;
     artist_name: string;
-    artist_image?: string;
+    artist_image_file: string;
 };
 
 type Track = {
@@ -209,7 +210,9 @@ export default function Profile({
                                               ? playlist.playlist_cover
                                               : !playlist.playlist_deletable
                                                 ? '/images/default-fav-image.jpg'
-                                                : '/images/default-playlist.jpg';
+                                                : '/placeholders/image-placeholder.png';
+                                    
+                                    console.log(playlistImage)
 
                                     return (
                                         <PlaylistCard
@@ -268,7 +271,10 @@ export default function Profile({
                                 </h2>
                             </div>
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                                {followed_artists.map((artist) => (
+                                {followed_artists.map((artist) => {
+                                    console.log(artist)
+
+                                    return (
                                     <ArtistCard
                                         key={artist.artist_id}
                                         className="p-4 transition-colors hover:bg-accent/50"
@@ -279,8 +285,7 @@ export default function Profile({
                                         >
                                             <CardCover
                                                 src={
-                                                    artist.artist_image ||
-                                                    '/images/default-artist.jpg'
+                                                    proxyUrl(artist.artist_image_file) || '/images/default-artist.jpg'
                                                 }
                                                 alt={artist.artist_name}
                                                 rounded
@@ -296,7 +301,8 @@ export default function Profile({
                                             </CardContent>
                                         </Link>
                                     </ArtistCard>
-                                ))}
+                                    )
+                                })}
                             </div>
                         </section>
                     )}

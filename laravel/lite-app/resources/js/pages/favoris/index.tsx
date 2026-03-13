@@ -74,9 +74,7 @@ export default function FavoritesPage({ tracks, albums, artists }: FavoritesPage
                         <Link href={`/album/${album.id}`}>
                         <CardCover src={album.cover} />
                         <CardContent>
-                            <CardSubtitle>
-                                <CardTitle>{album.title}</CardTitle>
-                            </CardSubtitle>
+                            <CardTitle>{album.title}</CardTitle>
                         </CardContent>
                         </Link>
                     </AlbumCard>
@@ -89,7 +87,7 @@ export default function FavoritesPage({ tracks, albums, artists }: FavoritesPage
                 {artists?.filter(Boolean).map((artist) => (
                     <ArtistCard key={artist.id}>
                         <Link href={`/artiste/${artist.id}`}>
-                        <CardCover className="rounded-full" src={artist.cover} />
+                        <CardCover className="rounded-full" src={proxyUrl(artist.cover) || '/images/default-artist.jpg'} />
                         <CardContent>
                             <CardSubtitle>
                                 <CardTitle>{artist.name}</CardTitle>

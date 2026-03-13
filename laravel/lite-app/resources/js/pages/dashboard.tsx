@@ -136,7 +136,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                             {artists?.filter(Boolean).map((artist) => (
                                 <ArtistCard key={artist.id}>
                                     <Link href={`/artiste/${artist.id}`}>
-                                    <CardCover className="rounded-full"  src={artist.cover} />
+                                    <CardCover className="rounded-full"  src={proxyUrl(artist.cover) || '/images/default-artist.jpg'} />
                                     <CardContent>
                                         <CardSubtitle>
                                             <CardTitle>{artist.name}</CardTitle>
