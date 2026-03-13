@@ -334,7 +334,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                     <button
                                         onClick={handleToggleVisibility}
                                         disabled={isUpdating}
-                                        className="flex items-center gap-1 rounded-full bg-foreground/10 px-3 py-1 text-sm text-foreground transition hover:bg-foreground/20 disabled:opacity-50"
+                                        className="flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-sm text-white transition hover:bg-white/20 disabled:opacity-50"
                                     >
                                         {playlist.playlist_public ? (
                                             <>
@@ -360,7 +360,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                         onChange={(e) =>
                                             setEditedName(e.target.value)
                                         }
-                                        className="border-b-2 border-foreground bg-transparent text-4xl font-bold text-foreground outline-none"
+                                        className="border-b-2 border-white bg-transparent text-4xl font-bold text-white outline-none"
                                         autoFocus
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter')
@@ -395,7 +395,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                 </div>
                             ) : (
                                 <div className="mb-4 flex items-center gap-3">
-                                    <h1 className="text-4xl font-bold text-foreground">
+                                    <h1 className="text-4xl font-bold text-white">
                                         {playlist.playlist_name}
                                     </h1>
                                     {isEditable && (
@@ -403,7 +403,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                             onClick={() =>
                                                 setIsEditingName(true)
                                             }
-                                            className="rounded-full p-2 text-foreground/70 transition hover:bg-white/10 hover:text-foreground"
+                                            className="rounded-full p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
                                         >
                                             <PencilIcon size={18} />
                                         </button>
@@ -412,7 +412,7 @@ export default function PlaylistShow({ playlist }: Props) {
                             )}
 
                             {/* Infos */}
-                            <p className="mb-6 text-foreground/70">
+                            <p className="mb-6 text-white/70">
                                 {playlist.user?.name &&
                                     `Par ${playlist.user.name} • `}
                                 {playlist.tracks.length}{' '}
