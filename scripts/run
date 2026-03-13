@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -eu
+cd "$(dirname "${BASH_SOURCE[0]}")"
+cd ..
+pushd database
+sudo docker-compose up -d
+popd
+pushd laravel/lite-app
+composer run dev
+popd
