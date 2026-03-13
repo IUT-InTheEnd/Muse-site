@@ -73,7 +73,6 @@ class UserController extends Controller
     public function updateUserInfo(Request $request)
     {
         $user = auth()->user();
-
         $validatedData = $request->validate([
             'user_age' => 'nullable|numeric|between:0,200',
             'user_job' => 'nullable|string|max:255',

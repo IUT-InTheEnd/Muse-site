@@ -78,14 +78,13 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-
         transform((formData) => ({
             user_age: formData.user_age ? parseFloat(formData.user_age) : null,
             user_gender: formData.user_gender || null,
             user_job: formData.user_job || null,
             user_plays_music: formData.user_plays_music || null,
-            user_instruments: JSON.stringify(formData.user_instruments),
-            user_music_contexts: JSON.stringify(formData.user_music_contexts),
+            user_instruments: formData.user_instruments,
+            user_music_contexts: formData.user_music_contexts,
         }));
 
         patch('/user/info', {
@@ -109,11 +108,13 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
     ) => {
         const current = data[field];
         if (current.includes(item)) {
+            // remove item
             setData(
                 field,
-                current.filter((i) => i !== item),
+                current.filter(i => i !== item),
             );
         } else {
+            // add it
             setData(field, [...current, item]);
         }
     };
