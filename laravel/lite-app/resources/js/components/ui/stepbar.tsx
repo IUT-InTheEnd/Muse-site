@@ -38,7 +38,7 @@ const StepBar: React.FC<StepBarProps> = ({ currentStep }) => {
                 `}
                 style={{ color: 'var(--foreground)' }}
               >
-                {step.id}
+              <p>{step.id}</p>
               </div>
               <span className="mt-5 font-bold transition-all duration-300 opacity-100 var(--foreground)">
                 {step.label}
