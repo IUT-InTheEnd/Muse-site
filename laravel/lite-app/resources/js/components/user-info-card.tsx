@@ -160,12 +160,12 @@ export default function UserInfoCard() {
                 <InfoItem
                     icon={<Music className="h-4 w-4" />}
                     label="Pratique musicale"
-                    value={user.user_plays_music}
+                    value={user.user_plays_music == '1' ? "Oui" : "Non"}
                 />
                 <InfoItemArray
                     icon={<Guitar className="h-4 w-4" />}
                     label="Instruments"
-                    value={user.user_instruments}
+                    value={(user.user_instruments == "nan") ?  "Aucun" : user.user_instruments}
                 />
                 <InfoItemArray
                     icon={<Headphones className="h-4 w-4" />}
