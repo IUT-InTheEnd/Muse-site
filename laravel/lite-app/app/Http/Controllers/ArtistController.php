@@ -7,8 +7,8 @@ use App\Models\Artist;
 use App\Models\Track;
 use App\Models\Album;
 use App\Models\Realiser;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia; 
-use Illuminate\Support\Facades\DB;
 
 
 class ArtistController extends Controller
@@ -125,8 +125,10 @@ class ArtistController extends Controller
             });
     }
 
-    public function follow(string $id)
+    public function follow(string $id): RedirectResponse
     {
+        Artist::findOrFail($id);
+
         $user = auth()->user();
         if ($user) {
             $user->artists()->syncWithoutDetaching([$id]);
@@ -144,8 +146,10 @@ class ArtistController extends Controller
         return response()->json($albums);
     }
 
-    public function unfollow(string $id)
+    public function unfollow(string $id): RedirectResponse
     {
+        Artist::findOrFail($id);
+
         $user = auth()->user();
         if ($user) {
             $user->artists()->detach($id);

@@ -212,8 +212,6 @@ export default function Profile({
                                                 ? '/images/default-fav-image.jpg'
                                                 : '/placeholders/image-placeholder.png';
                                     
-                                    console.log(playlistImage)
-
                                     return (
                                         <PlaylistCard
                                             key={playlist.playlist_id}
@@ -272,15 +270,13 @@ export default function Profile({
                             </div>
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                                 {followed_artists.map((artist) => {
-                                    console.log(artist)
-
                                     return (
                                     <ArtistCard
                                         key={artist.artist_id}
                                         className="p-4 transition-colors hover:bg-accent/50"
                                     >
                                         <Link
-                                            href={`/artists/${artist.artist_id}`}
+                                            href={`/artiste/${artist.artist_id}`}
                                             className="flex flex-col items-center"
                                         >
                                             <CardCover

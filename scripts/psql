@@ -4,4 +4,4 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 . ../laravel/lite-app/.env
 echo "$DB_HOST:$DB_PORT:$DB_DATABASE:$DB_USERNAME:$DB_PASSWORD" > .pgpass
 chmod 0600 .pgpass
-PGPASSFILE=.pgpass psql -h "$DB_HOST" -p "$DB_PORT" "$DB_DATABASE" "$DB_USERNAME"
+PGPASSFILE=.pgpass psql -h "$DB_HOST" -p "$DB_PORT" "$DB_DATABASE" "$DB_USERNAME" "$@"
