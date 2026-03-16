@@ -64,6 +64,14 @@ function parseArrayValue(value: string | null | undefined): string[] {
     }
 }
 
+function toBooleanSelectValue(value: string | null | undefined): string {
+    if (value === null || value === undefined || value === '') {
+        return '';
+    }
+
+    return value === '1' ? '1' : '0';
+}
+
 export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
     const [open, setOpen] = useState(false);
 
@@ -71,7 +79,7 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
         user_age: user.user_age?.toString() || '',
         user_gender: user.user_gender || '',
         user_job: user.user_job || '',
-        user_plays_music: user.user_plays_music || '',
+        user_plays_music: toBooleanSelectValue(user.user_plays_music),
         user_instruments: parseArrayValue(user.user_instruments),
         user_music_contexts: parseArrayValue(user.user_music_contexts),
     });
@@ -82,7 +90,10 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
             user_age: formData.user_age ? parseFloat(formData.user_age) : null,
             user_gender: formData.user_gender || null,
             user_job: formData.user_job || null,
-            user_plays_music: formData.user_plays_music || null,
+            user_plays_music:
+                formData.user_plays_music === ''
+                    ? null
+                    : formData.user_plays_music === '1',
             user_instruments: formData.user_instruments,
             user_music_contexts: formData.user_music_contexts,
         }));
@@ -213,8 +224,11 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
                             </SelectTrigger>
                             <SelectContent>
                                 {PLAYS_MUSIC_OPTIONS.map((option) => (
-                                    <SelectItem key={option} value={option}>
-                                        {option}
+                                    <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

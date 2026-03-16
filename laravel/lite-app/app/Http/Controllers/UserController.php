@@ -73,6 +73,8 @@ class UserController extends Controller
     public function updateUserInfo(Request $request)
     {
         $user = auth()->user();
+        $isInertiaRequest = $request->header('X-Inertia') === 'true';
+
         $validatedData = $request->validate([
             'user_age' => 'nullable|numeric|between:0,200',
             'user_job' => 'nullable|string|max:255',
@@ -109,6 +111,10 @@ class UserController extends Controller
         $user->user_plays_music = $validatedData['user_plays_music'] ?? $user->user_plays_music;
         $user->save();
 
-        return new UserResource($user);
+        if ($isInertiaRequest) {
+            return redirect()->back(303);
+        }
+
+        return new UserResource($user->fresh());
     }
 }
