@@ -31,15 +31,30 @@ et run le `main.py` attention ça prends du temps à se lancer donc c'est l'heur
 ### mise en place de l'environnement python
 
 ```bash
-cd <repo>/laravel/lite-app
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+cd <repo>
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r database/requirements.txt
+pip install -r laravel/lite-app/app/Http/Controllers/RecommendationScripts/requirements.txt
 ```
+
+Le venv Python utilisé par l'application pour les scripts de recommandation est `./.venv` à la racine du repo.
+
+Les dépendances Python des recommandations ne sont pas couvertes par les dépendances Laravel / Node. Elles doivent être installées explicitement dans ce venv, sinon les endpoints `/recommendations` peuvent échouer avec des erreurs du type `ModuleNotFoundError`.
+
+### import / préparation des données
+
+```bash
+cd <repo>/database
+../.venv/bin/python3 main.py
+```
+
+Si vous devez régénérer complètement les données préparées, utilisez les options prévues par `main.py`. L'import peut prendre un certain temps.
 
 ### laravel
 
 ```bash
+cd <repo>/laravel/lite-app
 cp .env.example .env
 composer install
 php artisan optimize
