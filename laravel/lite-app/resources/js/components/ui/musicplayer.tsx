@@ -64,9 +64,13 @@ export default function MusicPlayer() {
                             {track?.title || 'No track'}
                         </div>
                         <div className="text-base text-neutral-500 dark:text-white/60 truncate">
-                            <a href={`/artiste/${track?.artistid}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                {track?.artist || '—'}
-                            </a>
+                            {track?.artistid ? (
+                                <a href={`/artiste/${track.artistid}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                    {track?.artist || '—'}
+                                </a>
+                            ) : (
+                                <span>{track?.artist || '—'}</span>
+                            )}
                         </div>
                         {error && (
                             <div className="flex items-center gap-1 text-sm text-red-500 mt-1">

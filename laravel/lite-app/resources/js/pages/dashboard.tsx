@@ -13,19 +13,21 @@ import { useMusicPlayer } from '@/hooks/use-music-player';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
-import type Artist from './artists/artist';
 
 type Track = {
   id: number
   title: string
-  artist: string
+  artist?: {
+    artist_id: number
+    artist_name: string
+  } | null
   cover: string
 }
 
 type Artist = {
   id: number
-  artist_name: string
-  artist_image_file: string
+  name: string
+  cover: string
 }
 
 type Props = {
@@ -48,6 +50,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Dashboard({user, recentTracks, recommendedTracks, newTracks, artists}: Props) {
     const { playTrack } = useMusicPlayer();
+
+    const renderArtistLink = (artist?: Track['artist']) => {
+        if (!artist) {
+            return '—';
+        }
+
+        return (
+            <Link href={`/artiste/${artist.artist_id}`}>
+                {artist.artist_name}
+            </Link>
+        );
+    };
 
 
     return (
@@ -78,6 +92,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                                                 src: proxyUrl(data.url) ?? '',
                                                 title: data.title,
                                                 artist: data.artist,
+                                                artistid: data.artistid,
                                                 artwork: proxyUrl(data.artwork),
                                             });
                                             } catch (err) {
@@ -89,7 +104,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                                         <CardCover src={proxyUrl(track.cover)} />
                                         <CardContent>
                                             <CardTitle>{track.title}</CardTitle>
-                                            <CardSubtitle><Link href={`/artiste/${track.artist?.artist_id}`}>{track.artist?.artist_name}</Link></CardSubtitle>
+                                            <CardSubtitle>{renderArtistLink(track.artist)}</CardSubtitle>
                                         </CardContent>
                                     </MusicCard>
                                 ))}
@@ -115,6 +130,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                                             src: proxyUrl(data.url) ?? '',
                                             title: data.title,
                                             artist: data.artist,
+                                            artistid: data.artistid,
                                             artwork: proxyUrl(data.artwork),
                                         });
                                         } catch (err) {
@@ -126,7 +142,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                                     <CardCover src={proxyUrl(track.cover)} />
                                     <CardContent>
                                         <CardTitle>{track.title}</CardTitle>
-                                        <CardSubtitle><Link href={`/artiste/${track.artist?.artist_id}`}>{track.artist?.artist_name}</Link></CardSubtitle>
+                                        <CardSubtitle>{renderArtistLink(track.artist)}</CardSubtitle>
                                     </CardContent>
                                 </MusicCard>
                             ))}
@@ -166,6 +182,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                                             src: proxyUrl(data.url) ?? '',
                                             title: data.title,
                                             artist: data.artist,
+                                            artistid: data.artistid,
                                             artwork: proxyUrl(data.artwork),
                                         });
                                         } catch (err) {
@@ -177,7 +194,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                                     <CardCover src={proxyUrl(track.cover)} />
                                     <CardContent>
                                         <CardTitle>{track.title}</CardTitle>
-                                        <CardSubtitle><Link href={`/artiste/${track.artist.artist_id}`}>{track.artist.artist_name}</Link></CardSubtitle>
+                                        <CardSubtitle>{renderArtistLink(track.artist)}</CardSubtitle>
                                     </CardContent>
                                 </MusicCard>
                             ))}

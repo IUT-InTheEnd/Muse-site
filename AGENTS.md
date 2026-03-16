@@ -30,6 +30,8 @@ Use 4 spaces in PHP and the existing TypeScript formatting in `resources/js/`. F
 
 Format PHP with `composer lint` (`pint`) and frontend code with `npm run format` and `npm run lint`. Prefer descriptive branchless fixes over broad refactors.
 
+Avoid code duplication. Avoid multiple source of truths. Avoid encoding assumptions that can drift (code rot).
+
 ## Testing Guidelines
 
 PHP tests use Laravel’s test runner with PHPUnit. Add feature tests in `laravel/lite-app/tests/Feature/` and name them `*Test.php`. Run `composer test` before committing.
