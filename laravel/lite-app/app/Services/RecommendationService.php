@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -19,7 +20,7 @@ class RecommendationService
      */
     public function runScript(string $scriptPath, array $arguments, int $timeout = 120): array
     {
-        $python = base_path('python-env/bin/python3');
+        $python = $this->resolvePythonBinary();
         $process = new Process(array_merge([$python, $scriptPath], $arguments));
         $process->setTimeout($timeout);
         $process->run();
@@ -35,6 +36,25 @@ class RecommendationService
         }
 
         return $trackIds ?? [];
+    }
+
+    private function resolvePythonBinary(): string
+    {
+        $candidates = [
+            base_path('python-env/bin/python3'),
+            base_path('venv/bin/python3'),
+            base_path('../../.venv/bin/python3'),
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (File::exists($candidate)) {
+                return $candidate;
+            }
+        }
+
+        throw new \RuntimeException(
+            'Python environment not found. Expected one of: '.implode(', ', $candidates)
+        );
     }
 
     /**

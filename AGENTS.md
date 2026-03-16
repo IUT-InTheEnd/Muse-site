@@ -21,7 +21,7 @@ Run commands from `laravel/lite-app/` unless noted otherwise.
 - `composer test`: run Pint checks and PHPUnit/Laravel tests.
 - `npm run lint`: auto-fix ESLint issues in the frontend.
 - `npm run format`: format `resources/` with Prettier.
-- `python3 main.py` from `database/`: rebuild prepared CSVs (if --rebuild is specified, but unnecessary unless missing or source data has changed) and import them into PostgreSQL.
+- `python3 main.py` from `database/`: rebuild prepared CSVs (if --rebuild is specified, but unnecessary unless missing or source data has changed) and import them into PostgreSQL. For running python, there is a virtual environment in .venv in the project root directory.
 - `./scripts/psql` from repo root: open a `psql` session using project `.env` settings.
 
 ## Coding Style & Naming Conventions

@@ -6,5 +6,6 @@ pushd database
 sudo docker-compose up -d
 popd
 pushd laravel/lite-app
+php artisan migrate
 composer run dev
 popd
