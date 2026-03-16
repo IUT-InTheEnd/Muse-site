@@ -1,7 +1,6 @@
 import {
     allTracks,
     follow,
-    show,
     unfollow,
 } from '@/actions/App/Http/Controllers/ArtistController';
 import { AlbumCard } from '@/components/musecomponents/cards/AlbumCard';
@@ -123,23 +122,25 @@ export default function Artist({
                                 size="lg"
                                 className="cursor-pointer"
                                 variant="secondary"
-                                onClick={async () => {
-                                    try {
-                                        if (isFollowing) {
-                                            await router.delete(
-                                                unfollow({
-                                                    id: artist.artist_id,
-                                                }).url,
-                                            );
-                                        } else {
-                                            await router.post(
-                                                follow({ id: artist.artist_id })
-                                                    .url,
-                                            );
-                                        }
-                                        router.visit(show(artist.artist_id));
-                                    } catch (e) {
-                                        console.error(e);
+                                onClick={() => {
+                                    if (isFollowing) {
+                                        router.delete(
+                                            unfollow({
+                                                id: artist.artist_id,
+                                            }).url,
+                                            {
+                                                preserveScroll: true,
+                                            },
+                                        );
+                                    } else {
+                                        router.post(
+                                            follow({ id: artist.artist_id })
+                                                .url,
+                                            {},
+                                            {
+                                                preserveScroll: true,
+                                            },
+                                        );
                                     }
                                 }}
                             >

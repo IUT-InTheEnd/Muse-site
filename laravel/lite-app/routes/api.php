@@ -20,11 +20,11 @@ Route::middleware('db_api')->group(function () {
         ->name('getProfile')
         ->middleware('auth:sanctum');
 
-    Route::patch('/user', [UserController::class, 'updateUserInfo'])
+    Route::patch('/user', [UserController::class, 'updateUserInfoApi'])
         ->name('updateInfo')
         ->middleware('auth:sanctum');
 
-    Route::patch('/user/profile', [UserProfileController::class, 'updateUserProfile'])
+    Route::patch('/user/profile', [UserProfileController::class, 'updateUserProfileApi'])
         ->name('updateProfile')
         ->middleware('auth:sanctum');
     // }}}

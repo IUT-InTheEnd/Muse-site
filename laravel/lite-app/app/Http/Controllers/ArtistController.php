@@ -131,7 +131,7 @@ class ArtistController extends Controller
         if ($user) {
             $user->artists()->syncWithoutDetaching([$id]);
         }
-        return response()->json(['success' => true]);
+        return redirect()->back(303);
     }
 
     // public function getArtist($id){
@@ -150,7 +150,7 @@ class ArtistController extends Controller
         if ($user) {
             $user->artists()->detach($id);
         }
-        return response()->json(['success' => true]);
+        return redirect()->back(303);
     }
     
     /**

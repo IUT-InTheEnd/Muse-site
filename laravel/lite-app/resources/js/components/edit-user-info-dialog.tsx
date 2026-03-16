@@ -73,7 +73,7 @@ function toBooleanSelectValue(value: string | null | undefined): string {
 }
 
 export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
-    const [open, setOpen] = useState(false);
+    const [open, setOpenBase] = useState(false);
 
     const { data, setData, patch, processing, reset, transform } = useForm({
         user_age: user.user_age?.toString() || '',
@@ -83,6 +83,11 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
         user_instruments: parseArrayValue(user.user_instruments),
         user_music_contexts: parseArrayValue(user.user_music_contexts),
     });
+
+    const setOpen = (open: boolean) => {
+        setOpenBase(open);
+        if (!open) reset();
+    }
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -106,13 +111,6 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
         });
     };
 
-    const handleOpenChange = (isOpen: boolean) => {
-        setOpen(isOpen);
-        if (!isOpen) {
-            reset();
-        }
-    };
-
     const toggleArrayItem = (
         field: 'user_instruments' | 'user_music_contexts',
         item: string,
@@ -131,7 +129,7 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Pencil className="h-4 w-4" />
