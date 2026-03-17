@@ -26,6 +26,7 @@ export type MusicPlayerState = {
     playlist: Track[];
     currentIndex: number;
     hasListenBeenCounted: boolean;
+    showWaitingList: boolean;
 };
 
 export type MusicPlayerActions = {
@@ -49,6 +50,7 @@ export type MusicPlayerActions = {
     clearQueue: () => void;
     playNext: () => void;
     playPrevious: () => void;
+    waitingList: () => void;
 };
 
 export type MusicPlayerContextType = MusicPlayerState & MusicPlayerActions;
@@ -70,6 +72,7 @@ const initialState: MusicPlayerState = {
     playlist: [],
     currentIndex: -1,
     hasListenBeenCounted: false,
+    showWaitingList: false,
 };
 
 function loadPersistedState(): Partial<MusicPlayerState> {
@@ -233,6 +236,13 @@ export function MusicPlayerProvider({
         }
         playTrackAtIndex(prevIdx);
     }, [playTrackAtIndex]);
+
+    const waitingList = React.useCallback(() => {
+        dispatch({
+            type: 'UPDATE_STATE',
+            payload: { showWaitingList: !stateRef.current.showWaitingList},
+        });
+    }, []);
 
     React.useEffect(() => {
         const audio = new Audio();
@@ -472,6 +482,7 @@ export function MusicPlayerProvider({
             },
             playNext: skipForward,
             playPrevious: skipBack,
+            waitingList: waitingList,
         }),
         [skipForward, skipBack, playTrackAtIndex],
     );

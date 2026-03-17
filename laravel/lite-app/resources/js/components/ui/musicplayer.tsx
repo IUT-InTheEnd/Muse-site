@@ -1,5 +1,6 @@
-import { PlayIcon, PauseIcon, SkipForwardIcon, SkipBackIcon, ShuffleIcon, RepeatIcon, Repeat1Icon, VolumeIcon, Volume1Icon, Volume2Icon, VolumeXIcon, MusicIcon, ChevronDownIcon, LoaderIcon, AlertCircleIcon, XIcon } from 'lucide-react';
+import { PlayIcon, PauseIcon, SkipForwardIcon, SkipBackIcon, ShuffleIcon, RepeatIcon, Repeat1Icon, VolumeIcon, Volume1Icon, Volume2Icon, VolumeXIcon, MusicIcon, ChevronDownIcon, LoaderIcon, AlertCircleIcon, XIcon, ListMusic } from 'lucide-react';
 import { useMusicPlayer } from '@/hooks/use-music-player';
+import MusicWaitingList from '@/components/ui/music-waiting-list';
 
 function formatTime(s: number): string {
     if (!isFinite(s)) return '0:00';
@@ -11,7 +12,7 @@ function formatTime(s: number): string {
 }
 
 export default function MusicPlayer() {
-    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError } = useMusicPlayer();
+    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError, waitingList, showWaitingList } = useMusicPlayer();
 
     // État minimisé : afficher un bouton flottant avec l'icône de musique
     if (minimized) {
@@ -36,7 +37,14 @@ export default function MusicPlayer() {
     }
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-neutral-100 dark:bg-[#0b1220] text-neutral-900 dark:text-white border-t border-neutral-200 dark:border-white/10 px-8 py-4">
+        <div className="fixed inset-x-0 bottom-0 z-50 pointer-events-none">
+            {showWaitingList && (
+                <div className="pointer-events-auto absolute right-0 bottom-full">
+                    <MusicWaitingList />
+                </div>
+            )}
+
+            <div className="pointer-events-auto bg-neutral-100 dark:bg-[#0b1220] text-neutral-900 dark:text-white border-t border-neutral-200 dark:border-white/10 px-8 py-4">
             {/* Bouton minimiser */}
             <button
                 onClick={toggleMinimized}
@@ -183,7 +191,12 @@ export default function MusicPlayer() {
                         aria-label="Volume"
                         className="w-40 accent-purple-500"
                     />
+                    {/* File d'attente */}
+                    <button onClick={waitingList}>
+                        <ListMusic size={32} className="text-neutral-600 dark:text-white/80 cursor-pointer duration-200 transition-all" />
+                    </button>
                 </div>
+            </div>
             </div>
         </div>
     );
