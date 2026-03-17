@@ -17,6 +17,7 @@
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
+        "predis/predis": "^3.4",
         "symfony/process": "^7.4"
     },
     "require-dev": {

@@ -27,6 +27,8 @@ class TrackResource extends JsonResource
             'publisher' => $this->track_publisher,
             'listens' => $this->track_listens,
             'favorites' => $this->track_favorites,
+            'likes' => $this->track_likes,
+            'dislikes' => $this->track_dislikes,
             'comments' => $this->track_comments,
             'interest' => $this->track_interest,
             'copyright_c' => $this->track_copyright_c,

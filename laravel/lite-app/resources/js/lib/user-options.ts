@@ -18,10 +18,8 @@ export const JOB_OPTIONS = [
 ] as const;
 
 export const PLAYS_MUSIC_OPTIONS = [
-    'Oui, régulièrement',
-    'Oui, occasionnellement',
-    "Non, mais j'aimerais",
-    'Non',
+    { value: '1', label: 'Oui' },
+    { value: '0', label: 'Non' },
 ] as const;
 
 export const INSTRUMENT_OPTIONS = [

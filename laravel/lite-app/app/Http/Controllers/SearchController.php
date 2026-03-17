@@ -11,10 +11,13 @@ use App\Models\Genre;
 use App\Models\ArtisteChante;
 use App\Models\TrackChanterEn;
 use App\Models\ContientGenre;
+use App\Services\ReactionService;
 use Inertia\Inertia;
 
 class SearchController extends Controller
 {
+    public function __construct(private ReactionService $reactions) {}
+
     public function view(Request $request)
     {
         $search = $request->input('q');
@@ -70,7 +73,7 @@ class SearchController extends Controller
         }
 
         $tracks = Track::query()
-            ->select('track_id', 'track_title','track_image_file','track_listens','track_favorites','track_duration')
+            ->select('track_id', 'track_title','track_image_file','track_listens','track_favorites','track_likes','track_dislikes','track_duration')
             ->where('track_title','ilike',"%{$search}%");
 
         if(count($listTracksFromBoth) > 0){
@@ -114,6 +117,8 @@ class SearchController extends Controller
             $tracks[$i]->artist = Artist::find($temp[0]['artist_id']);
         }
 
+        $trackReactions = $this->reactions->trackReactionsFor($request, $tracks->pluck('track_id'));
+
         return Inertia::render('search', [
             'listeMusiques' => $tracks,
             'listeArtistes' => $artists,
@@ -124,6 +129,7 @@ class SearchController extends Controller
             'filters' => [
                 'q' => $search,
             ],
+            'trackReactions' => $trackReactions,
         ]);
     }   
 }   

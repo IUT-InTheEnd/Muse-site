@@ -9,6 +9,26 @@ use Illuminate\Validation\Rule;
 
 class MusicController extends Controller
 {
+    private function buildTrackPayload(Track $track): array
+    {
+        $primaryArtist = $track->realisers->first()?->artist;
+        $audioUrl = blank($track->track_file)
+            ? asset('placeholders/audio-placeholder.mp3')
+            : $track->track_file;
+
+        return [
+            'id' => $track->track_id,
+            'url' => $audioUrl,
+            'title' => $track->track_title,
+            'artist' => $track->realisers
+                ->map(fn ($realiser) => $realiser->artist?->artist_name)
+                ->filter()
+                ->implode(', '),
+            'artistid' => $primaryArtist?->artist_id,
+            'artwork' => $track->track_image_file,
+        ];
+    }
+
     public function playMusic(Request $request)
     {
         $validated = $request->validate([
@@ -22,16 +42,9 @@ class MusicController extends Controller
         if ($validated) {
             $musique = Track::find($request->id);
             if ($musique) {
-                $musiquedef = $musique->track_file;
-                if ($musique->track_file === '') {
-                    $musiquedef = asset('placeholders/audio-placeholder.mp3');
-                }
+                $musique->loadMissing('realisers.artist');
 
-                return response()->json(['url' => $musiquedef,
-                    'title' => $musique->track_title,
-                    'artist' => $musique->realisers->map(fn ($r) => $r->artist->artist_name)->implode(', '),
-                    'artistid' => $musique->realisers->pluck('artist_id')->implode(', '),
-                    'artwork' => $musique->track_image_file]);
+                return response()->json($this->buildTrackPayload($musique));
             }
         }
 
@@ -65,19 +78,7 @@ class MusicController extends Controller
                 continue;
             }
 
-            $musiquedef = $musique->track_file;
-            if ($musique->track_file === '') {
-                $musiquedef = asset('placeholders/audio-placeholder.mp3');
-            }
-
-            $result[] = [
-                'id' => $id,
-                'url' => $musiquedef,
-                'title' => $musique->track_title,
-                'artist' => $musique->realisers->map(fn ($r) => $r->artist->artist_name)->implode(', '),
-                'artistid' => $musique->realisers->pluck('artist_id')->implode(', '),
-                'artwork' => $musique->track_image_file,
-            ];
+            $result[] = $this->buildTrackPayload($musique);
         }
 
         return response()->json($result);

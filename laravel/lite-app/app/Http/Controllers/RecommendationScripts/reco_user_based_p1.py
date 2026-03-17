@@ -3,7 +3,10 @@ import psycopg2
 import pandas as pd
 import numpy as np
 import ast
+import sys
 from collections import Counter
+
+log = lambda x: print(x, file=sys.stderr)
 
 # ----- Connexion à la DB -----
 def connection_db():
@@ -27,7 +30,7 @@ columns = [
 
 numeric_cols = [
     "user_age", "music_preference", "music_style_preference", "attend_live_concert",
-    "explicit_ok", "current_music_type", "repeat_listening", 
+    "explicit_ok", "current_music_type", "repeat_listening",
     "avg_daily_listen_time", "feeling", "usual_listening_mode", "likes_discovery",
     "user_plays_music"
 ]
@@ -95,9 +98,9 @@ def pull_data_user(cursor):
             if col in d:
                 d[col] = ensure_list(d[col])
         user_dicts.append(d)
-    
+
     df = pd.DataFrame(user_dicts)
-    
+
     # Convertir les colonnes numériques en float (coerce les valeurs invalides en NaN)
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors='coerce')
@@ -135,7 +138,7 @@ def complete_user(new_user, df, numeric_cols, categorical_cols, multilabel_cols)
 
     if len(provided) == 0:
         # new_user vide -> utiliser tous les utilisateurs pour le calcul
-        print("[complete_user] new_user vide -> utilisation de tous les utilisateurs pour le calcul")
+        log("[complete_user] new_user vide -> utilisation de tous les utilisateurs pour le calcul")
         filtered = df.copy()
     else:
         # on conserve user_keep (OR) pour debug/fallback et on calcule aussi le filtre >=50%
@@ -173,12 +176,12 @@ def complete_user(new_user, df, numeric_cols, categorical_cols, multilabel_cols)
         # logging OR-result (existant)
         n_selected_or = int(user_keep.sum())
         total = len(df)
-        print(f"[complete_user] users retenus par OR (au moins 1 attribut) : {n_selected_or}/{total}")
+        log(f"[complete_user] users retenus par OR (au moins 1 attribut) : {n_selected_or}/{total}")
 
         # calcul du filtre >=50%
         n_provided = len(meaningful_cols)
         if n_provided == 0:
-            print("[complete_user] aucune colonne significative fournie -> utilisation du dataset complet")
+            log("[complete_user] aucune colonne significative fournie -> utilisation du dataset complet")
             filtered = df.copy()
             final_mask = pd.Series(True, index=df.index)
         else:
@@ -188,20 +191,20 @@ def complete_user(new_user, df, numeric_cols, categorical_cols, multilabel_cols)
             final_mask = matches >= threshold
 
             n_selected = int(final_mask.sum())
-            print(f"[complete_user] utilisateurs retenus >=50% : {n_selected}/{total}")
+            log(f"[complete_user] utilisateurs retenus >=50% : {n_selected}/{total}")
 
             if n_selected < 5:
                 # fallback : si personne n'atteint 50%, utiliser user_keep (si non vide) sinon tout le dataset
                 if n_selected_or > 0:
-                    print("[complete_user] pas assez d'utilisateur >=50% -> fallback sur OR (au moins 1 attribut)")
+                    log("[complete_user] pas assez d'utilisateur >=50% -> fallback sur OR (au moins 1 attribut)")
                     filtered = df[user_keep].copy()
                 else:
-                    print("[complete_user] aucun utilisateur trouvé -> utilisation du dataset complet")
+                    log("[complete_user] aucun utilisateur trouvé -> utilisation du dataset complet")
                     filtered = df.copy()
                     final_mask = pd.Series(True, index=df.index)
             else:
                 filtered = df.loc[final_mask].copy()
-            
+
     # compléter uniquement les colonnes non fournies
     for col in numeric_cols:
         if col in user_completed and not is_provided(user_completed[col]):
@@ -231,7 +234,7 @@ def complete_user(new_user, df, numeric_cols, categorical_cols, multilabel_cols)
                         if isinstance(items, (list, tuple, set)):
                             counter.update(items)
                 user_completed[col] = [item for item, _ in counter.most_common(TOP_K)]
-    
+
     final_cols = [c for c in df.columns if c not in ("user_id", "profile_id")] # retirer les ids
     completed_df = pd.DataFrame([user_completed], columns=final_cols)
 
@@ -263,12 +266,12 @@ def complete_user(new_user, df, numeric_cols, categorical_cols, multilabel_cols)
 
 # ----- Fonction pour afficher un utilisateur -----
 def afficher_user(completed_df):
-    print("--------------")
-    print("Completed user (DataFrame):")
+    log("--------------")
+    log("Completed user (DataFrame):")
 
     for col in completed_df.columns:
-        print(f"- {col}: {completed_df.at[0, col]}")
-    print("--------------")
+        log(f"- {col}: {completed_df.at[0, col]}")
+    log("--------------")
 
 # ----- Fonction pour récupérer les tracks correspondants aux critères de l'utilisateur -----
 def tracks_recommendation(cursor, completed_df):
@@ -331,17 +334,17 @@ def tracks_recommendation(cursor, completed_df):
 
 # ----- Fonction pour afficher les tracks recommandés -----
 def afficher_tracks(tracks):
-    print("Recommended Tracks:")
+    log("Recommended Tracks:")
     for track in tracks:
-        print(f"- (ID: {track[0]}) {track[1]} by {track[2]}")
-    print("--------------")
+        log(f"- (ID: {track[0]}) {track[1]} by {track[2]}")
+    log("--------------")
 
 def main():
     conn = connection_db()
     cursor = conn.cursor()
-    
+
     df = pull_data_user(cursor)
-    
+
     # Nouvel utilisateur
     new_user = {
         "user_age": None,
@@ -367,7 +370,7 @@ def main():
         "preference_language" : [],
         "genres_favoris": []
     }
-    
+
     completed_user = complete_user(new_user, df, numeric_cols, categorical_cols, multilabel_cols)
     afficher_user(completed_user)
 
@@ -375,15 +378,15 @@ def main():
     afficher_tracks(tracks)
 
 
-def get_recommendations_json(user_id, n, user_profile=None):
+def get_recommendations_json(n, user_profile=None):
     """Retourne une liste de track_ids en JSON"""
     import json
-    
+
     conn = connection_db()
     cursor = conn.cursor()
-    
+
     df = pull_data_user(cursor)
-    
+
     # Charger le profil utilisateur existant ou utiliser celui fourni
     if user_profile:
         new_user = user_profile
@@ -413,13 +416,13 @@ def get_recommendations_json(user_id, n, user_profile=None):
             "preference_language": [],
             "genres_favoris": []
         }
-    
+
     completed_user = complete_user(new_user, df, numeric_cols, categorical_cols, multilabel_cols)
     tracks = tracks_recommendation(cursor, completed_user)
-    
+
     cursor.close()
     conn.close()
-    
+
     # Extraire uniquement les track_ids (limité à n)
     track_ids = [int(track[0]) for track in tracks[:n]]
     return track_ids
@@ -428,14 +431,13 @@ def get_recommendations_json(user_id, n, user_profile=None):
 if __name__ == "__main__":
     import sys
     import json
-    
+
     if len(sys.argv) < 2:
         print(json.dumps([]))
         sys.exit(1)
-    
-    user_id = int(sys.argv[1])
-    n = int(sys.argv[2]) if len(sys.argv) > 2 else 10
-    user_profile = json.loads(sys.argv[3]) if len(sys.argv) > 3 and sys.argv[3] != '{}' else None
-    
-    track_ids = get_recommendations_json(user_id, n, user_profile)
+
+    n = int(sys.argv[1])
+    user_profile = json.loads(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2] != '{}' else None
+
+    track_ids = get_recommendations_json(n, user_profile)
     print(json.dumps(track_ids))

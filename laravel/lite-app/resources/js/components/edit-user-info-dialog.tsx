@@ -64,28 +64,43 @@ function parseArrayValue(value: string | null | undefined): string[] {
     }
 }
 
+function toBooleanSelectValue(value: string | null | undefined): string {
+    if (value === null || value === undefined || value === '') {
+        return '';
+    }
+
+    return value === '1' ? '1' : '0';
+}
+
 export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
-    const [open, setOpen] = useState(false);
+    const [open, setOpenBase] = useState(false);
 
     const { data, setData, patch, processing, reset, transform } = useForm({
         user_age: user.user_age?.toString() || '',
         user_gender: user.user_gender || '',
         user_job: user.user_job || '',
-        user_plays_music: user.user_plays_music || '',
+        user_plays_music: toBooleanSelectValue(user.user_plays_music),
         user_instruments: parseArrayValue(user.user_instruments),
         user_music_contexts: parseArrayValue(user.user_music_contexts),
     });
 
+    const setOpen = (open: boolean) => {
+        setOpenBase(open);
+        if (!open) reset();
+    }
+
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-
         transform((formData) => ({
             user_age: formData.user_age ? parseFloat(formData.user_age) : null,
             user_gender: formData.user_gender || null,
             user_job: formData.user_job || null,
-            user_plays_music: formData.user_plays_music || null,
-            user_instruments: JSON.stringify(formData.user_instruments),
-            user_music_contexts: JSON.stringify(formData.user_music_contexts),
+            user_plays_music:
+                formData.user_plays_music === ''
+                    ? null
+                    : formData.user_plays_music === '1',
+            user_instruments: formData.user_instruments,
+            user_music_contexts: formData.user_music_contexts,
         }));
 
         patch('/user/info', {
@@ -96,30 +111,25 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
         });
     };
 
-    const handleOpenChange = (isOpen: boolean) => {
-        setOpen(isOpen);
-        if (!isOpen) {
-            reset();
-        }
-    };
-
     const toggleArrayItem = (
         field: 'user_instruments' | 'user_music_contexts',
         item: string,
     ) => {
         const current = data[field];
         if (current.includes(item)) {
+            // remove item
             setData(
                 field,
-                current.filter((i) => i !== item),
+                current.filter(i => i !== item),
             );
         } else {
+            // add it
             setData(field, [...current, item]);
         }
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Pencil className="h-4 w-4" />
@@ -212,8 +222,11 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
                             </SelectTrigger>
                             <SelectContent>
                                 {PLAYS_MUSIC_OPTIONS.map((option) => (
-                                    <SelectItem key={option} value={option}>
-                                        {option}
+                                    <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

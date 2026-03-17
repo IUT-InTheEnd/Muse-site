@@ -10,9 +10,25 @@ import { proxyUrl } from '@/components/proxy';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 
 type FavoritesPageProps = {
-  tracks: []
-  albums: []
-  artists: []
+  tracks: {
+    id: number
+    title: string
+    cover?: string
+    artist?: {
+      artist_id: number
+      artist_name: string
+    } | null
+  }[]
+  albums: {
+    id: number
+    title: string
+    cover?: string
+  }[]
+  artists: {
+    id: number
+    name: string
+    cover?: string
+  }[]
 }
 
 
@@ -49,6 +65,7 @@ export default function FavoritesPage({ tracks, albums, artists }: FavoritesPage
                                 src: proxyUrl(data.url) ?? '',
                                 title: data.title,
                                 artist: data.artist,
+                                artistid: data.artistid,
                                 artwork: proxyUrl(data.artwork),
                             });
                             } catch (err) {
@@ -74,9 +91,7 @@ export default function FavoritesPage({ tracks, albums, artists }: FavoritesPage
                         <Link href={`/album/${album.id}`}>
                         <CardCover src={album.cover} />
                         <CardContent>
-                            <CardSubtitle>
-                                <CardTitle>{album.title}</CardTitle>
-                            </CardSubtitle>
+                            <CardTitle>{album.title}</CardTitle>
                         </CardContent>
                         </Link>
                     </AlbumCard>
@@ -89,7 +104,7 @@ export default function FavoritesPage({ tracks, albums, artists }: FavoritesPage
                 {artists?.filter(Boolean).map((artist) => (
                     <ArtistCard key={artist.id}>
                         <Link href={`/artiste/${artist.id}`}>
-                        <CardCover className="rounded-full" src={artist.cover} />
+                        <CardCover className="rounded-full" src={proxyUrl(artist.cover) || '/images/default-artist.jpg'} />
                         <CardContent>
                             <CardSubtitle>
                                 <CardTitle>{artist.name}</CardTitle>

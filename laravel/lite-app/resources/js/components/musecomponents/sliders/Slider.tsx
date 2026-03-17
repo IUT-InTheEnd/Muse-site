@@ -78,6 +78,15 @@ export function Slider({
 
       {/* Carousel */}
       <div className="relative w-full max-w-7xl mx-auto overflow-hidden">
+        {/* BLUR */}
+        {!isFirst && (
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-background to-transparent z-10" />
+        )}
+
+        {!isLast && (
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-background to-transparent z-10" />
+        )}
+
         <div
           className="flex transition-transform duration-500 ease-out"
           style={{

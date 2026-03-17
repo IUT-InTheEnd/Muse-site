@@ -97,7 +97,9 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
 
     return (
         <div className="w-full max-w-5xl mx-auto py-12 px-4">
-            <StepBar currentStep={step} />
+            <div className='text-white'>
+                <StepBar currentStep={step} />
+            </div>
 
             <div className="mt-12">
                 {step === 1 && (

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Stop database container.
+set -eu
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+pushd database
+docker compose down
+popd

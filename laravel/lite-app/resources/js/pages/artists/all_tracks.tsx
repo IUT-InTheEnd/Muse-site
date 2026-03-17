@@ -2,7 +2,8 @@ import { show } from '@/actions/App/Http/Controllers/ArtistController';
 import { proxyUrl } from '@/components/proxy';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 import { fetchTrack } from '@/lib/track-api';
-import { Head, router } from '@inertiajs/react';
+import type { SharedData } from '@/types';
+import { Head, router, usePage } from '@inertiajs/react';
 import { LoaderIcon, PauseIcon, PlayIcon } from 'lucide-react';
 import React from 'react';
 import {
@@ -14,6 +15,9 @@ type Track = {
     title: string;
     duration?: number;
     listens?: number;
+    favorites?: number;
+    likes?: number;
+    dislikes?: number;
     artwork?: string;
     artist?: {
         id: number;
@@ -39,9 +43,11 @@ type Artist = {
 interface AllTracksProps {
     artist: Artist;
     albums: Album[];
+    trackReactions?: Record<number, 'like' | 'dislike' | null>;
 }
 
-export default function AllTracks({ artist, albums }: AllTracksProps) {
+export default function AllTracks({ artist, albums, trackReactions = {} }: AllTracksProps) {
+    const { auth } = usePage<SharedData>().props;
     const { playTrack, isLoading, playing } = useMusicPlayer();
     const [currentTrackId, setCurrentTrackId] = React.useState<number | null>(
         null,
@@ -49,6 +55,10 @@ export default function AllTracks({ artist, albums }: AllTracksProps) {
 
     const playTracks = async (trackId: number) => {
         if (trackId == null) return;
+        if (!auth?.user) {
+            alert('Connectez-vous pour écouter cette musique.');
+            return;
+        }
         setCurrentTrackId(trackId);
         try {
             const track = await fetchTrack(trackId);
@@ -131,6 +141,10 @@ export default function AllTracks({ artist, albums }: AllTracksProps) {
                                         track_title: track.title,
                                         track_duration: track.duration,
                                         track_favorites: track.favorites,
+                                        track_likes: track.likes,
+                                        track_dislikes: track.dislikes,
+                                        viewer_reaction:
+                                            trackReactions[track.id] ?? null,
                                         track_listens: track.listens,
                                         track_image_file: track.artwork,
                                     },

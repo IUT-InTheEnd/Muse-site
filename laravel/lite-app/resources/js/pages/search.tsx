@@ -14,9 +14,10 @@ type Props = {
     genres: Array<Record<string, any>>;
     testLangues: Array<string>;
     testGenres: Array<string>;
+    trackReactions?: Record<number, 'like' | 'dislike' | null>;
 };
 
-export default function search({ listeMusiques, listeArtistes, langues, genres, testLangues, testGenres }: Props) {
+export default function search({ listeMusiques, listeArtistes, langues, genres, testLangues, testGenres, trackReactions = {} }: Props) {
     const [sortColumn, setSortColumn] = useState<SortColumn>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
@@ -87,6 +88,9 @@ export default function search({ listeMusiques, listeArtistes, langues, genres, 
             track_duration: element.track_duration,
             track_listens: element.track_listens,
             track_favorites: element.track_favorites,
+            track_likes: element.track_likes,
+            track_dislikes: element.track_dislikes,
+            viewer_reaction: trackReactions[element.track_id] ?? null,
         },
         artist: element.artist
             ? {

@@ -7,13 +7,17 @@ use App\Models\Artist;
 use App\Models\Track;
 use App\Models\Album;
 use App\Models\Realiser;
+use App\Services\ReactionService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia; 
-use Illuminate\Support\Facades\DB;
 
 
 class ArtistController extends Controller
 {
-    public function show(string $id)
+    public function __construct(private ReactionService $reactions) {}
+
+    public function show(Request $request, string $id)
     {
         $artist = Artist::findOrFail($id);
 
@@ -38,22 +42,26 @@ class ArtistController extends Controller
                 'artwork'  => $track->track_image_file, 
                 'duration' => $track->track_duration,
                 'favorites' => $track->track_favorites,
+                'likes' => $track->track_likes,
+                'dislikes' => $track->track_dislikes,
                 'listens' => $track->track_listens,
                 'date' => $track->track_date_created ?? ""
             ];
         });
 
         $albums = $this->albumsForArtist($id);
+        $trackReactions = $this->reactions->trackReactionsFor($request, $tracks->pluck('id'));
 
         return Inertia::render('artists/artist', [
             'artist' => $artist,
             'tracks' => $tracks, 
             'albums' => $albums,
             'isFollowing' => $isFollowing,
+            'trackReactions' => $trackReactions,
         ]);
     }
     
-    public function allTracks(string $id)
+    public function allTracks(Request $request, string $id)
     {
         $artist = Artist::findOrFail($id);
 
@@ -79,6 +87,8 @@ class ArtistController extends Controller
                         'duration' => $realiser->track->track_duration,
                         'listens' => $realiser->track->track_listens,
                         'favorites' => $realiser->track->track_favorites,
+                        'likes' => $realiser->track->track_likes,
+                        'dislikes' => $realiser->track->track_dislikes,
                         'date' => $realiser->track->track_date_created ?? "",
                         'artist' => [
                             'id' => $realiser->artist->artist_id,
@@ -97,9 +107,15 @@ class ArtistController extends Controller
                 ];
             });
 
+        $trackReactions = $this->reactions->trackReactionsFor(
+            $request,
+            $albums->flatMap(fn ($album) => collect($album['tracks'])->pluck('id')),
+        );
+
         return Inertia::render('artists/all_tracks', [
             'artist' => $artist,
             'albums' => $albums,
+            'trackReactions' => $trackReactions,
         ]);
     }
 
@@ -125,13 +141,15 @@ class ArtistController extends Controller
             });
     }
 
-    public function follow(string $id)
+    public function follow(string $id): RedirectResponse
     {
+        Artist::findOrFail($id);
+
         $user = auth()->user();
         if ($user) {
             $user->artists()->syncWithoutDetaching([$id]);
         }
-        return response()->json(['success' => true]);
+        return redirect()->back(303);
     }
 
     // public function getArtist($id){
@@ -144,13 +162,15 @@ class ArtistController extends Controller
         return response()->json($albums);
     }
 
-    public function unfollow(string $id)
+    public function unfollow(string $id): RedirectResponse
     {
+        Artist::findOrFail($id);
+
         $user = auth()->user();
         if ($user) {
             $user->artists()->detach($id);
         }
-        return response()->json(['success' => true]);
+        return redirect()->back(303);
     }
     
     /**

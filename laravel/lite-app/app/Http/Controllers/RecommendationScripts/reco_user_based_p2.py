@@ -36,7 +36,7 @@ def load_user_favorites(user_id, conn):
     cursor.execute("""SELECT genre_id FROM ajoute_genre_favoris WHERE user_id = %s""", (user_id,))
     genre_fav = cursor.fetchall()
 
-    cursor.execute("""SELECT language_id FROM user_parle langue WHERE user_id = %s""", (user_id,))
+    cursor.execute("""SELECT language_id FROM user_parle WHERE user_id = %s""", (user_id,))
     language_fav = cursor.fetchall()
 
     cursor.execute("""SELECT up.explicit_ok FROM user_profile up JOIN "user" u ON u.profile_id = up.user_profile_id WHERE u.id = %s""", (user_id,))
@@ -180,7 +180,7 @@ def recommend_based_on_similar_users(target_user_id, similar_users, tracks_df, g
                 cursor.execute("""SELECT track_explicit FROM track WHERE track_id = %s""", (track_id,))
                 result = cursor.fetchone()
                 is_explicit = result[0] if result else False
-                if not is_explicit or sim_user_favs["explicit"]:
+                if not is_explicit or target_favs["explicit"]:
                     track_scores[track_id] += similarity_score
     
     # Obtenir les top-k recommandations

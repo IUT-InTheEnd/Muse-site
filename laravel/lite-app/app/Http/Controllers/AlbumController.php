@@ -7,11 +7,15 @@ use App\Models\Album;
 use App\Models\Realiser;
 use App\Models\Artist;
 use App\Models\Track;
+use App\Services\ReactionService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class AlbumController extends Controller
 {
-    public function view($id)
+    public function __construct(private ReactionService $reactions) {}
+
+    public function view(Request $request, $id)
     {
         $album = Album::findOrFail($id);
 
@@ -27,12 +31,16 @@ class AlbumController extends Controller
         }
 
         $artistes = Artist::find($toutRealiser->pluck('artist_id'));
+        $trackReactions = $this->reactions->trackReactionsFor($request, collect($listeTracks)->pluck('track.track_id'));
+        $albumReaction = $this->reactions->albumReactionsFor($request, [$album->album_id]);
 
         return Inertia::render('album', [
             'album' => $album,
             'artistes' => $artistes,
             'nombreMusiques' => $nombre,
             'listeMusiques' => $listeTracks,
+            'albumReaction' => $albumReaction[$album->album_id] ?? null,
+            'trackReactions' => $trackReactions,
         ]);
     }
 

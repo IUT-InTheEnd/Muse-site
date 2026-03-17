@@ -8,6 +8,7 @@ use App\Models\UserEcoute;
 use App\Models\UserPrefereArtiste;
 use App\Services\RecommendationService;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -37,28 +38,39 @@ class DashboardController extends Controller
 
         // Recommandations personnalisées — mises en cache 4 heures
         $cacheKey = "recommended_tracks_user_{$user->id}";
-        $recommendedTracks = Cache::remember($cacheKey, 4 * 60 * 60, function () use ($user) {
+        $recommendedTracks = Cache::get($cacheKey);
+
+        if ($recommendedTracks === null) {
             try {
                 $trackIds = $this->recommendations->userBased($user->id);
-            } catch (\Throwable) {
-                return [];
+            } catch (\Throwable $e) {
+                Log::warning('Failed to build dashboard recommendations', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage(),
+                ]);
+
+                $trackIds = [];
             }
 
             if (empty($trackIds)) {
-                return [];
+                $recommendedTracks = [];
+            } else {
+                $recommendedTracks = Track::with(['realisers.artist'])
+                    ->whereIn('track_id', $trackIds)
+                    ->get()
+                    ->map(fn ($track) => [
+                        'id' => $track->track_id,
+                        'title' => $track->track_title,
+                        'cover' => $track->track_image_file,
+                        'artist' => $track->realisers->first()?->artist,
+                    ])
+                    ->toArray();
             }
 
-            return Track::with(['realisers.artist'])
-                ->whereIn('track_id', $trackIds)
-                ->get()
-                ->map(fn ($track) => [
-                    'id' => $track->track_id,
-                    'title' => $track->track_title,
-                    'cover' => $track->track_image_file,
-                    'artist' => optional($track->realisers->first()?->artist)->artist_name,
-                ])
-                ->toArray();
-        });
+            if (! empty($recommendedTracks)) {
+                Cache::put($cacheKey, $recommendedTracks, 4 * 60 * 60);
+            }
+        }
 
         // Artistes recommandés
         $artists = Artist::whereIn('artist_id', UserPrefereArtiste::where('user_id', $user->id)->pluck('artist_id'))
@@ -79,7 +91,7 @@ class DashboardController extends Controller
                 'id' => $track->track_id,
                 'title' => $track->track_title,
                 'cover' => $track->track_image_file,
-                'artist' => optional($track->realisers->first()?->artist)->artist_name,
+                'artist' => $track->realisers->first()?->artist
             ]);
 
         return Inertia::render('dashboard', [

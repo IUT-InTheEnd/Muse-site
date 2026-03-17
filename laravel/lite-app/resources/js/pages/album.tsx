@@ -2,6 +2,7 @@ import {
     TrackList,
     type TrackListItem,
 } from '@/components/musecomponents/TrackList';
+import { ReactionButtons } from '@/components/reaction-buttons';
 import {
     type ArtistData,
     type TrackData,
@@ -21,6 +22,8 @@ type Props = {
         album_title: string;
         album_image_file: string;
         album_date_created: string;
+        album_likes?: number;
+        album_dislikes?: number;
     };
     artistes: {
         artist_name: string;
@@ -30,6 +33,8 @@ type Props = {
         track: TrackData;
         artist: ArtistData;
     }[];
+    albumReaction?: 'like' | 'dislike' | null;
+    trackReactions?: Record<number, 'like' | 'dislike' | null>;
 };
 
 export default function Album({
@@ -37,6 +42,8 @@ export default function Album({
     artistes,
     nombreMusiques,
     listeMusiques,
+    albumReaction = null,
+    trackReactions = {},
 }: Props) {
     const { auth } = usePage<SharedData>().props;
     const { setPlaylist } = useMusicPlayer();
@@ -147,10 +154,15 @@ export default function Album({
                             </h2>
                         </div>
 
-                        <div className="flex max-w-sm gap-2">
+                        <div className="flex max-w-4xl flex-wrap gap-2">
                             <Button
                                 className="flex-1"
                                 onClick={async () => {
+                                    if (!auth?.user) {
+                                        alert('Connectez-vous pour écouter cet album.');
+                                        return;
+                                    }
+
                                     try {
                                         const tracks = await fetchTracks(
                                             listeMusiques.map(
@@ -168,6 +180,15 @@ export default function Album({
                             >
                                 Écouter
                             </Button>
+                            <ReactionButtons
+                                resource="albums"
+                                resourceId={album.album_id}
+                                initialReaction={albumReaction}
+                                initialLikes={album.album_likes ?? 0}
+                                initialDislikes={album.album_dislikes ?? 0}
+                                size="default"
+                                showLabels={true}
+                            />
                             <Button
                                 className="flex-1"
                                 variant={isInLibrary ? 'secondary' : 'default'}
@@ -210,7 +231,12 @@ export default function Album({
                         <TrackList
                             tracks={listeMusiques.map(
                                 (element): TrackListItem => ({
-                                    track: element.track as TrackData,
+                                    track: {
+                                        ...(element.track as TrackData),
+                                        viewer_reaction:
+                                            trackReactions[element.track.track_id] ??
+                                            null,
+                                    },
                                     artist: element.artist as ArtistData,
                                 }),
                             )}

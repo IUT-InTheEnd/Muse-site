@@ -1,7 +1,6 @@
 import {
     allTracks,
     follow,
-    show,
     unfollow,
 } from '@/actions/App/Http/Controllers/ArtistController';
 import { AlbumCard } from '@/components/musecomponents/cards/AlbumCard';
@@ -18,7 +17,8 @@ import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 import { fetchTrack } from '@/lib/track-api';
-import { Head, Link, router } from '@inertiajs/react';
+import type { SharedData } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 
 type Track = {
     id: number;
@@ -26,6 +26,8 @@ type Track = {
     duration?: number;
     listens?: number;
     favorites?: any;
+    likes?: number;
+    dislikes?: number;
     artwork?: string;
     artist?: {
         id: number;
@@ -52,6 +54,7 @@ interface ArtistProps {
     tracks: Track[];
     albums: Album[];
     isFollowing: boolean;
+    trackReactions?: Record<number, 'like' | 'dislike' | null>;
 }
 
 export default function Artist({
@@ -59,7 +62,9 @@ export default function Artist({
     tracks,
     albums,
     isFollowing,
+    trackReactions = {},
 }: ArtistProps) {
+    const { auth } = usePage<SharedData>().props;
     const { playTrack } = useMusicPlayer();
 
     const sorted_tracks = Array.isArray(tracks)
@@ -73,6 +78,9 @@ export default function Artist({
             track_image_file: element.artwork,
             track_duration: element.duration,
             track_favorites: element.favorites,
+            track_likes: element.likes,
+            track_dislikes: element.dislikes,
+            viewer_reaction: trackReactions[element.id] ?? null,
             track_listens: element.listens,
         },
         artist: element.artist
@@ -84,6 +92,11 @@ export default function Artist({
     }));
 
     const playTracks = async (trackId: number) => {
+        if (!auth?.user) {
+            alert('Connectez-vous pour écouter cette musique.');
+            return;
+        }
+
         try {
             const track = await fetchTrack(trackId);
             playTrack(track);
@@ -115,6 +128,7 @@ export default function Artist({
                             <Button
                                 size="lg"
                                 className="cursor-pointer"
+                                disabled={!auth?.user}
                                 onClick={() => playTracks(tracks[0]?.id)}
                             >
                                 Écouter
@@ -123,23 +137,30 @@ export default function Artist({
                                 size="lg"
                                 className="cursor-pointer"
                                 variant="secondary"
-                                onClick={async () => {
-                                    try {
-                                        if (isFollowing) {
-                                            await router.delete(
-                                                unfollow({
-                                                    id: artist.artist_id,
-                                                }).url,
-                                            );
-                                        } else {
-                                            await router.post(
-                                                follow({ id: artist.artist_id })
-                                                    .url,
-                                            );
-                                        }
-                                        router.visit(show(artist.artist_id));
-                                    } catch (e) {
-                                        console.error(e);
+                                onClick={() => {
+                                    if (!auth?.user) {
+                                        alert('Connectez-vous pour suivre cet artiste.');
+                                        return;
+                                    }
+
+                                    if (isFollowing) {
+                                        router.delete(
+                                            unfollow({
+                                                id: artist.artist_id,
+                                            }).url,
+                                            {
+                                                preserveScroll: true,
+                                            },
+                                        );
+                                    } else {
+                                        router.post(
+                                            follow({ id: artist.artist_id })
+                                                .url,
+                                            {},
+                                            {
+                                                preserveScroll: true,
+                                            },
+                                        );
                                     }
                                 }}
                             >

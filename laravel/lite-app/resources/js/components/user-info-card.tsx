@@ -56,6 +56,14 @@ function parseArrayValue(value: string | null | undefined): string[] | null {
     }
 }
 
+function formatPlaysMusic(value: string | null | undefined): string | null {
+    if (value === null || value === undefined || value === '') {
+        return null;
+    }
+
+    return value === '1' ? 'Oui' : 'Non';
+}
+
 function InfoItem({ icon, label, value }: InfoItemProps) {
     if (!value) return null;
 
@@ -160,12 +168,12 @@ export default function UserInfoCard() {
                 <InfoItem
                     icon={<Music className="h-4 w-4" />}
                     label="Pratique musicale"
-                    value={user.user_plays_music}
+                    value={formatPlaysMusic(user.user_plays_music)}
                 />
                 <InfoItemArray
                     icon={<Guitar className="h-4 w-4" />}
                     label="Instruments"
-                    value={user.user_instruments}
+                    value={(user.user_instruments == "nan") ?  "Aucun" : user.user_instruments}
                 />
                 <InfoItemArray
                     icon={<Headphones className="h-4 w-4" />}
