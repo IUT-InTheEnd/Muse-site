@@ -30,7 +30,10 @@ Use 4 spaces in PHP and the existing TypeScript formatting in `resources/js/`. F
 
 Format PHP with `composer lint` (`pint`) and frontend code with `npm run format` and `npm run lint`. Prefer descriptive branchless fixes over broad refactors.
 
-Avoid code duplication. Avoid multiple source of truths. Avoid encoding assumptions that can drift (code rot).
+- Avoid code duplication.
+- Avoid multiple source of truths.
+- Avoid encoding assumptions that can drift (code rot).
+- Only cache successful responses.
 
 ## Testing Guidelines
 

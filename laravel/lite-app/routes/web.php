@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\ArtistController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FavoritesController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImageFileController;
 use App\Http\Controllers\MusicController;
 use App\Http\Controllers\PlaylistController;
@@ -16,13 +16,10 @@ use App\Http\Controllers\UserProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    if (! auth()->check()) {
-        return Inertia::render('welcome');
-    }
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
-    return app(DashboardController::class)->index();
-})->name('home');
+Route::get('/recommendations/new-user', [RecommendationController::class, 'getNewUserRecommendations'])
+    ->name('recommendations.new-user');
 
 Route::get('/mentionslegales', function () {
     return Inertia::render('mentionslegales');

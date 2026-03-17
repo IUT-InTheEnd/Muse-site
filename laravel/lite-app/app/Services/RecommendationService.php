@@ -32,7 +32,7 @@ class RecommendationService
         $trackIds = json_decode(trim($process->getOutput()), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \RuntimeException('Invalid JSON output from recommendation script: '.$process->getOutput());
+            throw new \RuntimeException("Invalid JSON output from recommendation script: $scriptPath: ".$process->getOutput());
         }
 
         return $trackIds ?? [];
