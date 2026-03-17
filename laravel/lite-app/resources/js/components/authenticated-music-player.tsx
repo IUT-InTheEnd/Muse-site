@@ -28,9 +28,9 @@ export function AuthenticatedMusicPlayer({
         };
     }, []);
 
-    if (!isAuthenticated) {
-        return null;
-    }
+    //if (!isAuthenticated) {
+    //    return null;
+    //}
 
     return <MusicPlayer />;
 }
