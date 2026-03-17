@@ -38,7 +38,7 @@ const Footer = () => {
                 <div className='flex flex-col gap-2 text-center sm:text-left'>
                     <p className="font-semibold">Liens externes</p>
                     <div className='flex flex-col text-sm'>
-                        <a href="" className="hover:underline">IUT de Lannion</a>
+                        <a href="https://iut-lannion.univ-rennes.fr/" className="hover:underline">IUT de Lannion</a>
                     </div>
                 </div>
 

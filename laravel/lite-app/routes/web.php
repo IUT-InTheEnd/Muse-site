@@ -9,10 +9,12 @@ use App\Http\Controllers\MusicController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\PreferencesController;
 use App\Http\Controllers\ProxyController;
+use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Middleware\RefreshVisitorCookie;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,6 +30,20 @@ Route::get('/mentionslegales', function () {
 Route::get('/support', function () {
     return Inertia::render('support');
 })->name('support');
+
+Route::middleware([RefreshVisitorCookie::class])->group(function () {
+    Route::get('/artiste/{id}', [ArtistController::class, 'show'])->name('artist');
+    Route::get('/artiste/{id}/all', [ArtistController::class, 'allTracks'])->name('artist/all_song');
+    Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
+    Route::get('/search', [SearchController::class, 'view'])->name('search.view');
+});
+
+Route::post('/reactions/tracks/{track}', [ReactionController::class, 'reactToTrack'])
+    ->middleware(['throttle:30,1'])
+    ->name('reactions.tracks.react');
+Route::post('/reactions/albums/{album}', [ReactionController::class, 'reactToAlbum'])
+    ->middleware(['throttle:30,1'])
+    ->name('reactions.albums.react');
 
 Route::get('/genpassword', function () {
     return view('genpassword');
@@ -72,17 +88,12 @@ Route::middleware(['auth'])->group(function () {
     // Proxy pour les ressources externes (audio, images) - protégé par auth
     Route::get('/proxy', [ProxyController::class, 'stream'])->name('proxy');
 
-    Route::get('/artiste/{id}', [ArtistController::class, 'show'])->name('artist');
-    Route::get('/artiste/{id}/all', [ArtistController::class, 'allTracks'])->name('artist/all_song');
     Route::post('/artiste/{id}/follow', [ArtistController::class, 'follow'])->name('artist.follow');
     Route::delete('/artiste/{id}/follow', [ArtistController::class, 'unfollow'])->name('artist.unfollow');
 
     // User profile
     Route::patch('/user/profile', [UserProfileController::class, 'updateUserProfile'])->name('user.updateProfile');
     Route::patch('/user/info', [UserController::class, 'updateUserInfo'])->name('user.updateInfo');
-
-    Route::get('/album/{id}', [AlbumController::class, 'view'])->name('album.view');
-    Route::get('/search', [SearchController::class, 'view'])->name('search.view');
 
     // Favorites - User
     Route::get('/favorites', [FavoritesController::class, 'index'])->name('favorites.index');

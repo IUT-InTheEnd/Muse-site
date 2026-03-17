@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
+# Start DB (async) and server (sync). Safe to re-run (docker compose up is idempotent)
 set -eu
-cd "$(dirname "${BASH_SOURCE[0]}")"
-cd ..
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
 pushd database
-docker-compose up -d
+docker compose up -d
 popd
 pushd laravel/lite-app
 php artisan migrate

@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $album_date_created
  * @property int|null $album_listens
  * @property int|null $album_favorites
+ * @property int|null $album_likes
+ * @property int|null $album_dislikes
  * @property int|null $album_comments
  * @property string|null $album_type
  * @property string|null $album_url
@@ -45,6 +47,8 @@ class Album extends Model
 		'album_date_created' => 'datetime',
 		'album_listens' => 'int',
 		'album_favorites' => 'int',
+		'album_likes' => 'int',
+		'album_dislikes' => 'int',
 		'album_comments' => 'int',
 		'album_tracks' => 'int'
 	];
@@ -55,6 +59,8 @@ class Album extends Model
 		'album_date_created',
 		'album_listens',
 		'album_favorites',
+		'album_likes',
+		'album_dislikes',
 		'album_comments',
 		'album_type',
 		'album_url',
@@ -74,5 +80,10 @@ class Album extends Model
 	public function realisers()
 	{
 		return $this->hasMany(Realiser::class);
+	}
+
+	public function reactions()
+	{
+		return $this->hasMany(AlbumReaction::class, 'album_id', 'album_id');
 	}
 }

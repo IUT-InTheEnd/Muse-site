@@ -34,6 +34,7 @@ Format PHP with `composer lint` (`pint`) and frontend code with `npm run format`
 - Avoid multiple source of truths.
 - Avoid encoding assumptions that can drift (code rot).
 - Only cache successful responses.
+- Do not write additional DB migrations for schema changes, change the schema instead. We are not in production, we are in dev phase.
 
 ## Testing Guidelines
 
@@ -50,7 +51,7 @@ The commit description should include
 - a short problem/solution summary
 - affected paths or features
 - screenshots for UI changes
-- notes on DB changes, migrations, or manual SQL applied
+- notes on DB changes
 - test or verification steps performed
 
 ## Security & Configuration Tips

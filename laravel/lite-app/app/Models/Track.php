@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $track_publisher
  * @property int|null $track_listens
  * @property int|null $track_favorites
+ * @property int|null $track_likes
+ * @property int|null $track_dislikes
  * @property int|null $track_comments
  * @property int|null $track_interest
  * @property string|null $track_copyright_c
@@ -58,6 +60,8 @@ class Track extends Model
         'track_date_recorded' => 'datetime',
         'track_listens' => 'int',
         'track_favorites' => 'int',
+        'track_likes' => 'int',
+        'track_dislikes' => 'int',
         'track_comments' => 'int',
         'track_interest' => 'int',
         'track_explicit' => 'bool',
@@ -75,6 +79,8 @@ class Track extends Model
         'track_publisher',
         'track_listens',
         'track_favorites',
+        'track_likes',
+        'track_dislikes',
         'track_comments',
         'track_interest',
         'track_copyright_c',
@@ -127,5 +133,10 @@ class Track extends Model
     public function user_ecoutes()
     {
         return $this->hasMany(UserEcoute::class);
+    }
+
+    public function reactions()
+    {
+        return $this->hasMany(TrackReaction::class, 'track_id', 'track_id');
     }
 }
