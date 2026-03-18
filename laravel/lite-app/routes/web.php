@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\HomeController;
@@ -129,6 +130,9 @@ Route::middleware(['auth'])->group(function () {
 
     // route profile user publique
     Route::get('/user/{username}', [UserController::class, 'show'])->name('user.profile');
+
+    // page administrator
+    Route::get('/administrator', [AdministratorController::class, 'show'])->name('administrator');
 
     // Images create/update/delete
     Route::post('/image', [ImageFileController::class, 'uploadImage'])->name('image.upload');
