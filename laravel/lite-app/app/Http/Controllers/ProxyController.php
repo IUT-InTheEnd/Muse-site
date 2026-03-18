@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ProxyMedia\ProxyMediaCacheService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -39,66 +40,42 @@ class ProxyController extends Controller
         'application/json', 'application/octet-stream',
     ];
 
+    public function __construct(
+        private readonly ProxyMediaCacheService $proxyMediaCache,
+    ) {}
+
     public function stream(Request $request)
     {
         $url = $request->query('url');
 
-        if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) {
+        if (! $url || ! filter_var($url, FILTER_VALIDATE_URL)) {
             return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
         $host = parse_url($url, PHP_URL_HOST);
-        if (!$host || !$this->isAllowedDomain($host)) {
+        if (! $host || ! $this->isAllowedDomain($host)) {
             return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
 
-        $isImage = $this->guessTypeFromUrl($url) === 'image';
-        $cacheKey = 'proxy/' . md5($url);
-
-        if ($isImage && Storage::disk('public')->exists($cacheKey)) {
-            return response()->file(Storage::disk('public')->path($cacheKey), [
-                'Cache-Control' => 'public, max-age=604800',
-            ]);
-        }
-
         try {
-            // Do not forward Range requests until partial-content handling is
-            // implemented correctly end-to-end. Chrome rejects malformed 206
-            // responses more aggressively than Firefox.
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            ])
-                ->timeout(10)
-                ->get($url);
-
-            if (!$response->successful()) {
+            $file = $this->proxyMediaCache->getOrFetch($url);
+            if ($file === null) {
                 return $this->returnPlaceholder($this->guessTypeFromUrl($url));
             }
 
-            $upstreamContentType = explode(';', $response->header('Content-Type'))[0];
-            if (! $this->isAllowedContentType($upstreamContentType, $isImage)) {
-                return $this->returnPlaceholder($this->guessTypeFromContentType($upstreamContentType));
-            }
-
-            $contentType = $this->normalizeContentType($url, $upstreamContentType, $isImage);
-
-            // --- OPTIMISATION 2 : ÉCRITURE DANS LE CACHE ET RÉPONSE ---
-            if ($isImage) {
-                $content = $response->body();
-                Storage::disk('public')->put($cacheKey, $content);
-                return response($content)->header('Content-Type', $contentType)
-                    ->header('Cache-Control', 'public, max-age=604800');
-            }
-
-            // Réponse audio bufferisée : plus robuste que le pseudo-streaming
-            // actuel pour les lecteurs HTMLAudioElement.
-            return response($response->body(), 200, [
-                'Content-Type' => $contentType,
-                'Cache-Control' => 'public, max-age=86400',
-                'Content-Length' => $response->header('Content-Length'),
+            $response = response()->file($file->absolutePath, [
+                'Content-Type' => $file->contentType,
+                'Cache-Control' => $file->assetType === 'image'
+                    ? 'public, max-age=604800'
+                    : 'public, max-age=86400',
             ]);
 
-        } catch (\Exception $e) {
+            if ($file->deleteAfterSend) {
+                $response->deleteFileAfterSend(true);
+            }
+
+            return $response;
+        } catch (\Throwable) {
             return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
     }
@@ -106,8 +83,11 @@ class ProxyController extends Controller
     private function isAllowedDomain(string $host): bool
     {
         foreach ($this->allowedDomains as $domain) {
-            if ($host === $domain || str_ends_with($host, '.' . $domain)) return true;
+            if ($host === $domain || str_ends_with($host, '.'.$domain)) {
+                return true;
+            }
         }
+
         return false;
     }
 
@@ -146,17 +126,14 @@ class ProxyController extends Controller
     private function returnPlaceholder(string $type): BinaryFileResponse
     {
         $path = public_path($type === 'audio' ? 'placeholders/audio-placeholder.mp3' : 'placeholders/image-placeholder.png');
+
         return response()->file($path);
     }
 
     private function guessTypeFromUrl(?string $url): string
     {
         $ext = strtolower(pathinfo(parse_url($url, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION));
-        return in_array($ext, ['mp3', 'wav', 'ogg', 'm4a']) ? 'audio' : 'image';
-    }
 
-    private function guessTypeFromContentType(string $contentType): string
-    {
-        return str_contains($contentType, 'audio') ? 'audio' : 'image';
+        return in_array($ext, ['mp3', 'wav', 'ogg', 'm4a']) ? 'audio' : 'image';
     }
 }
