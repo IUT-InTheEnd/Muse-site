@@ -62,16 +62,12 @@ class ProxyController extends Controller
         }
 
         try {
-            $forwardHeaders = [
+            // Do not forward Range requests until partial-content handling is
+            // implemented correctly end-to-end. Chrome rejects malformed 206
+            // responses more aggressively than Firefox.
+            $response = Http::withHeaders([
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            ];
-
-            if ($request->hasHeader('Range')) {
-                $forwardHeaders['Range'] = $request->header('Range');
-            }
-
-            // Utilisation d'une requête plus rapide
-            $response = Http::withHeaders($forwardHeaders)
+            ])
                 ->timeout(10)
                 ->get($url);
 
@@ -79,10 +75,12 @@ class ProxyController extends Controller
                 return $this->returnPlaceholder($this->guessTypeFromUrl($url));
             }
 
-            $contentType = explode(';', $response->header('Content-Type'))[0];
-            if (! $this->isAllowedContentType($contentType, $isImage)) {
-                return $this->returnPlaceholder($this->guessTypeFromContentType($contentType));
+            $upstreamContentType = explode(';', $response->header('Content-Type'))[0];
+            if (! $this->isAllowedContentType($upstreamContentType, $isImage)) {
+                return $this->returnPlaceholder($this->guessTypeFromContentType($upstreamContentType));
             }
+
+            $contentType = $this->normalizeContentType($url, $upstreamContentType, $isImage);
 
             // --- OPTIMISATION 2 : ÉCRITURE DANS LE CACHE ET RÉPONSE ---
             if ($isImage) {
@@ -94,10 +92,9 @@ class ProxyController extends Controller
 
             // Réponse audio bufferisée : plus robuste que le pseudo-streaming
             // actuel pour les lecteurs HTMLAudioElement.
-            return response($response->body(), $response->status(), [
+            return response($response->body(), 200, [
                 'Content-Type' => $contentType,
                 'Cache-Control' => 'public, max-age=86400',
-                'Accept-Ranges' => 'bytes',
                 'Content-Length' => $response->header('Content-Length'),
             ]);
 
@@ -125,6 +122,25 @@ class ProxyController extends Controller
         }
 
         return false;
+    }
+
+    private function normalizeContentType(string $url, string $contentType, bool $isImage): string
+    {
+        if ($isImage && $contentType === 'application/octet-stream') {
+            return 'image/jpeg';
+        }
+
+        if ($isImage || $contentType !== 'application/octet-stream') {
+            return $contentType;
+        }
+
+        return match (strtolower(pathinfo(parse_url($url, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION))) {
+            'mp3' => 'audio/mpeg',
+            'wav' => 'audio/wav',
+            'ogg' => 'audio/ogg',
+            'm4a', 'mp4' => 'audio/mp4',
+            default => 'audio/mpeg',
+        };
     }
 
     private function returnPlaceholder(string $type): BinaryFileResponse

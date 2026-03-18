@@ -380,8 +380,6 @@ def main():
 
 def get_recommendations_json(n, user_profile=None):
     """Retourne une liste de track_ids en JSON"""
-    import json
-
     conn = connection_db()
     cursor = conn.cursor()
 
