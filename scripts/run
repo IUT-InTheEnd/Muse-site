@@ -6,6 +6,9 @@ pushd database
 docker compose up -d
 popd
 pushd laravel/lite-app
+until [ "$(docker inspect --format='{{.State.Health.Status}}' sae5_6_InTheEnd)" = "healthy" ]; do
+    sleep 1
+done
 php artisan migrate
 if [[ "$#" -eq 0 || -z "${1:-}" ]]; then
     composer run dev
