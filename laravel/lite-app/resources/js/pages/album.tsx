@@ -203,9 +203,17 @@ export default function Album({
                                 ) : (
                                     <>
                                         <Plus className="mr-2 h-4 w-4" />
-                                        Ajouter a ma bibliotheque
+                                        Ajouter à ma bibliotheque
                                     </>
                                 )}
+                            </Button>
+                            <Button
+                                className="flex-1"
+                                variant={'default'}
+                                onClick={handleToggleLibrary}
+                                disabled={isLoading}
+                            >
+                                Ajouter à une playlist
                             </Button>
                         </div>
                     </main>

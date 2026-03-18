@@ -29,3 +29,4 @@ yarn-error.log
 /.zed
 /package-lock.json
 __pycache__
+venv
