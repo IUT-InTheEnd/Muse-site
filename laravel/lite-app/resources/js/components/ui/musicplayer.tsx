@@ -21,10 +21,6 @@ export default function MusicPlayer() {
 
     React.useEffect(() => {
     if (track) {
-        // Log ici pour vérifier ce que le serveur envoie réellement au refresh
-        console.log("Track reçue au chargement :", track);
-        
-        // Assure-toi que le champ s'appelle bien is_favorite dans l'objet track
         setIsFavorite(Boolean(track.is_favorite));
     }
     }, [track]);
