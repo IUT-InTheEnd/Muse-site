@@ -10,6 +10,7 @@ import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import { ChangeEvent, useState } from 'react';
 
 type Props = {
     status?: string;
@@ -22,6 +23,9 @@ export default function Login({
     canResetPassword,
     canRegister,
 }: Props) {
+    const [showPassword, setShowPassword] = useState(false);
+    const [passwordValue, setPasswordValue] = useState('');
+
     return (
         <AuthLayout
             title="Se connecter"
@@ -52,29 +56,22 @@ export default function Login({
                                 <InputError message={errors.email} />
                             </div>
 
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Mot de passe</Label>
-                                    {canResetPassword && (
-                                        <TextLink
-                                            href={request()}
-                                            className="ml-auto text-sm"
-                                            tabIndex={5}
-                                        >
-                                            Mot de passe oublié ?
-                                        </TextLink>
+                            <div className="flex items-center gap-2">
+                                <Input id="password" type={showPassword ? 'text' : 'password'} required tabIndex={3} autoComplete="new-password" name="password" placeholder="Mot de passe sécurisé" value={passwordValue} onChange={(e: ChangeEvent<HTMLInputElement>) => setPasswordValue(e.target.value)}/>
+                                <button type="button" aria-label={showPassword ? 'Cacher le mot de passe' : 'Afficher le mot de passe'} className="ml-2 inline-flex items-center p-2 rounded hover:bg-gray-700" onClick={() => setShowPassword((s) => !s)} >
+                                    {showPassword ? (
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9.27-3-11-7 1.06-2.08 2.77-3.86 4.78-5.03M3 3l18 18" />
+                                        </svg>
+                                    ) : (
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7S3.732 16.057 2.458 12z" />
+                                            <circle cx="12" cy="12" r="3" strokeWidth="2" />
+                                        </svg>
                                     )}
-                                </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Mot de passe"
-                                />
+                                </button>
                                 <InputError message={errors.password} />
+
                             </div>
 
                             <div className="flex items-center space-x-3">
