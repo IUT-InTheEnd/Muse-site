@@ -47,10 +47,6 @@ export default function search({ listeMusiques, listeArtistes, langues, genres, 
         });
     };
 
-    console.log(testLangues)
-
-    console.log(testGenres)
-
     const [visibleCount, setVisibleCount] = useState(20);
 
     const { filters } = usePage().props as { filters?: { q?: string } };
