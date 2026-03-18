@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -35,9 +34,9 @@ class ProxyController extends Controller
     ];
 
     private array $allowedContentTypes = [
-        'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4',
+        'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/ogg', 'audio/mp4', 'audio/x-m4a',
         'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-        'application/json',
+        'application/json', 'application/octet-stream',
     ];
 
     public function stream(Request $request)
@@ -74,7 +73,6 @@ class ProxyController extends Controller
             // Utilisation d'une requête plus rapide
             $response = Http::withHeaders($forwardHeaders)
                 ->timeout(10)
-                ->withOptions(['stream' => true])
                 ->get($url);
 
             if (!$response->successful()) {
@@ -82,7 +80,7 @@ class ProxyController extends Controller
             }
 
             $contentType = explode(';', $response->header('Content-Type'))[0];
-            if (!in_array($contentType, $this->allowedContentTypes)) {
+            if (! $this->isAllowedContentType($contentType, $isImage)) {
                 return $this->returnPlaceholder($this->guessTypeFromContentType($contentType));
             }
 
@@ -94,14 +92,9 @@ class ProxyController extends Controller
                     ->header('Cache-Control', 'public, max-age=604800');
             }
 
-            // Streaming pour l'audio
-            return response()->stream(function () use ($response) {
-                $stream = $response->toPsrResponse()->getBody();
-                while (!$stream->eof()) {
-                    echo $stream->read(16384); // Buffer plus petit pour réactivité
-                    flush();
-                }
-            }, $response->status(), [
+            // Réponse audio bufferisée : plus robuste que le pseudo-streaming
+            // actuel pour les lecteurs HTMLAudioElement.
+            return response($response->body(), $response->status(), [
                 'Content-Type' => $contentType,
                 'Cache-Control' => 'public, max-age=86400',
                 'Accept-Ranges' => 'bytes',
@@ -118,6 +111,19 @@ class ProxyController extends Controller
         foreach ($this->allowedDomains as $domain) {
             if ($host === $domain || str_ends_with($host, '.' . $domain)) return true;
         }
+        return false;
+    }
+
+    private function isAllowedContentType(string $contentType, bool $isImage): bool
+    {
+        if (in_array($contentType, $this->allowedContentTypes, true)) {
+            return true;
+        }
+
+        if (! $isImage && $contentType === 'application/octet-stream') {
+            return true;
+        }
+
         return false;
     }
 
