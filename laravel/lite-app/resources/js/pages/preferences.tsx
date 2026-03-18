@@ -1,12 +1,12 @@
-import StepBar from '@/components/ui/stepbar';
+import { router } from '@inertiajs/react';
 import { Clock, Languages, MicVocal, Guitar, Smile, SunMoon, Pencil, Check } from 'lucide-react';
 import { BriefcaseBusiness, Car, Dumbbell, Gamepad2, Sofa, BookOpen, PartyPopper, UtensilsCrossed, MoonStar, Waves, AudioLines } from 'lucide-react';
 import { Cpu, Radio, Piano, Globe, Frown, Flame, Moon, Heart, Zap } from 'lucide-react';
-import { proxyUrl } from '@/components/proxy';
 import React, { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input";
+import StepBar from '@/components/ui/stepbar';
 
 interface Artist {
     artist_id: number;

@@ -1,5 +1,18 @@
-import { ReactionButtons } from '@/components/reaction-buttons';
+import { usePage } from '@inertiajs/react';
+import {
+    Check,
+    Heart,
+    ListMusic,
+    ListPlus,
+    Loader2,
+    Music,
+    Pause,
+    Play,
+    Plus,
+} from 'lucide-react';
+import * as React from 'react';
 import { proxyUrl } from '@/components/proxy';
+import { ReactionButtons } from '@/components/reaction-buttons';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -15,19 +28,6 @@ import { useMusicPlayer } from '@/contexts/music-player-context';
 import { fetchTrack, fetchTracks } from '@/lib/track-api';
 import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
-import { usePage } from '@inertiajs/react';
-import {
-    Check,
-    Heart,
-    ListMusic,
-    ListPlus,
-    Loader2,
-    Music,
-    Pause,
-    Play,
-    Plus,
-} from 'lucide-react';
-import * as React from 'react';
 
 export type TrackData = {
     track_id: number;

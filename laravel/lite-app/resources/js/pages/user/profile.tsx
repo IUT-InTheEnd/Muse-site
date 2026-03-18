@@ -13,10 +13,10 @@ import {
     type TrackListItem,
 } from '@/components/musecomponents/TrackList';
 import { type PlaylistData } from '@/components/musecomponents/TrackRow';
+import { proxyUrl } from '@/components/proxy';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem, User } from '@/types';
-import { proxyUrl } from '@/components/proxy';
 
 type Playlist = {
     playlist_id: number;

@@ -23,6 +23,13 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/recommendations/new-user', [RecommendationController::class, 'getNewUserRecommendations'])
     ->name('recommendations.new-user');
 
+// Music player
+Route::get('/test-music-player', [MusicController::class, 'playMusic'])->name('test-music-player');
+Route::get('/tracks', [MusicController::class, 'playMusicBatch'])->name('tracks.batch');
+
+// Proxy pour les ressources externes (audio, images)
+Route::get('/proxy', [ProxyController::class, 'stream'])->name('proxy');
+
 Route::get('/mentionslegales', function () {
     return Inertia::render('mentionslegales');
 })->name('mentionslegales');
@@ -77,16 +84,10 @@ Route::middleware(['auth'])->group(function () {
         return redirect('/');
     })->name('dashboard');
 
-    // Music player
-    Route::get('/test-music-player', [MusicController::class, 'playMusic'])->name('test-music-player');
-    Route::get('/tracks', [MusicController::class, 'playMusicBatch'])->name('tracks.batch');
     Route::post('/add-listen', [MusicController::class, 'addListen'])->name('add-listen');
 
     // Recommendations
     Route::get('/recommendations', [RecommendationController::class, 'getRecommendations'])->name('recommendations.get');
-
-    // Proxy pour les ressources externes (audio, images) - protégé par auth
-    Route::get('/proxy', [ProxyController::class, 'stream'])->name('proxy');
 
     Route::post('/artiste/{id}/follow', [ArtistController::class, 'follow'])->name('artist.follow');
     Route::delete('/artiste/{id}/follow', [ArtistController::class, 'unfollow'])->name('artist.unfollow');

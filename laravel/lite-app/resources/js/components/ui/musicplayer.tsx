@@ -1,6 +1,6 @@
 import { PlayIcon, PauseIcon, SkipForwardIcon, SkipBackIcon, ShuffleIcon, RepeatIcon, Repeat1Icon, VolumeIcon, Volume1Icon, Volume2Icon, VolumeXIcon, MusicIcon, ChevronDownIcon, LoaderIcon, AlertCircleIcon, XIcon, ListMusic } from 'lucide-react';
-import { useMusicPlayer } from '@/hooks/use-music-player';
 import MusicWaitingList from '@/components/ui/music-waiting-list';
+import { useMusicPlayer } from '@/hooks/use-music-player';
 
 function formatTime(s: number): string {
     if (!isFinite(s)) return '0:00';

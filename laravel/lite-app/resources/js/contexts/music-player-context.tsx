@@ -282,7 +282,7 @@ export function MusicPlayerProvider({
                         type: 'UPDATE_STATE',
                         payload: { hasListenBeenCounted: true },
                     });
-                    if (track?.id) {
+                    if (track?.id && userId) {
                         const csrf =
                             document
                                 .querySelector('meta[name="csrf-token"]')

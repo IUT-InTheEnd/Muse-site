@@ -1,14 +1,14 @@
+import { Head, router, usePage } from '@inertiajs/react';
+import { LoaderIcon, PauseIcon, PlayIcon } from 'lucide-react';
+import React from 'react';
 import { show } from '@/actions/App/Http/Controllers/ArtistController';
+import {
+    TrackList,
+} from '@/components/musecomponents/TrackList';
 import { proxyUrl } from '@/components/proxy';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 import { fetchTrack } from '@/lib/track-api';
 import type { SharedData } from '@/types';
-import { Head, router, usePage } from '@inertiajs/react';
-import { LoaderIcon, PauseIcon, PlayIcon } from 'lucide-react';
-import React from 'react';
-import {
-    TrackList,
-} from '@/components/musecomponents/TrackList';
 
 type Track = {
     id: number;

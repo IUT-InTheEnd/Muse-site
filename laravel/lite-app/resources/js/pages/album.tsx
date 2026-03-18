@@ -1,20 +1,20 @@
+import { Head, usePage } from '@inertiajs/react';
+import { Check, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import {
     TrackList,
     type TrackListItem,
 } from '@/components/musecomponents/TrackList';
-import { ReactionButtons } from '@/components/reaction-buttons';
 import {
     type ArtistData,
     type TrackData,
 } from '@/components/musecomponents/TrackRow';
 import { proxyUrl } from '@/components/proxy';
+import { ReactionButtons } from '@/components/reaction-buttons';
 import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/contexts/music-player-context';
 import { fetchTracks } from '@/lib/track-api';
 import type { SharedData } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
-import { Check, Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 type Props = {
     album: {

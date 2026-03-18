@@ -1,11 +1,11 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import { TrackList, type SortColumn, type SortDirection} from '@/components/musecomponents/TrackList';
-import { Button } from '@/components/ui/button';
-import { ArtistSlider } from '@/components/musecomponents/sliders/ArtistSlider';
 import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard';
 import { CardCover, CardTitle } from '@/components/musecomponents/cards/Card';
+import { ArtistSlider } from '@/components/musecomponents/sliders/ArtistSlider';
+import { TrackList, type SortColumn, type SortDirection} from '@/components/musecomponents/TrackList';
 import { proxyUrl } from '@/components/proxy';
+import { Button } from '@/components/ui/button';
 
 type Props = {
     listeMusiques: Array<Record<string, any>>;

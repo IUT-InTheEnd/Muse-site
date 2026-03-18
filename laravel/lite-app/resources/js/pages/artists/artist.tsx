@@ -1,3 +1,4 @@
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     allTracks,
     follow,
@@ -18,7 +19,6 @@ import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 import { fetchTrack } from '@/lib/track-api';
 import type { SharedData } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
 
 type Track = {
     id: number;
