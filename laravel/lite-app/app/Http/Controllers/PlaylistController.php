@@ -4,21 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\PlaylistResource;
 use App\Models\Playlist;
+use App\Services\PlaylistQueryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PlaylistController extends Controller
 {
+    public function __construct(private PlaylistQueryService $playlists) {}
+
     // Récupère toute les playlists d'un utilisateur (exclut la playlist de favoris)
     public function getUserPlaylists(): JsonResponse
     {
         $user = auth()->user();
-
-        $playlists = Playlist::where('user_id', $user->id)
-            ->where('playlist_deletable', true) // Exclude favorites playlist
-            ->orderBy('playlist_name')
-            ->get(['playlist_id', 'playlist_name', 'playlist_image_file']);
+        $playlists = $this->playlists->userEditablePlaylists($user);
 
         return response()->json([
             'playlists' => $playlists,
@@ -34,18 +33,7 @@ class PlaylistController extends Controller
 
         $user = auth()->user();
         $trackId = $request->input('track_id');
-
-        $playlists = Playlist::where('user_id', $user->id)
-            ->where('playlist_deletable', true)
-            ->orderBy('playlist_name')
-            ->get(['playlist_id', 'playlist_name', 'playlist_image_file'])
-            ->map(function ($playlist) use ($trackId) {
-                $playlist->has_track = $playlist->tracks()
-                    ->where('track.track_id', $trackId)
-                    ->exists();
-
-                return $playlist;
-            });
+        $playlists = $this->playlists->userEditablePlaylistsForTrack($user, $trackId);
 
         return response()->json([
             'playlists' => $playlists,
@@ -66,13 +54,11 @@ class PlaylistController extends Controller
         $selectedPlaylistIds = $request->input('playlist_ids', []);
 
         // Récupérer toutes les playlists de l'utilisateur (sauf favoris)
-        $userPlaylists = Playlist::where('user_id', $user->id)
-            ->where('playlist_deletable', true)
-            ->get();
+        $userPlaylists = $this->playlists->userEditablePlaylists($user, ['playlist_id']);
 
         foreach ($userPlaylists as $playlist) {
             $isSelected = in_array($playlist->playlist_id, $selectedPlaylistIds);
-            $hasTrack = $playlist->tracks()->where('track.track_id', $trackId)->exists();
+            $hasTrack = $this->playlists->playlistContainsTrack($playlist, $trackId);
 
             if ($isSelected && ! $hasTrack) {
                 // Ajouter le track à la playlist
@@ -132,10 +118,7 @@ class PlaylistController extends Controller
         ]);
 
         $user = auth()->user();
-        $playlist = Playlist::where('playlist_id', $request->input('playlist_id'))
-            ->where('user_id', $user->id)
-            ->where('playlist_deletable', true)
-            ->first();
+        $playlist = $this->playlists->userOwnedPlaylist($user, $request->input('playlist_id'), true);
 
         if (! $playlist) {
             return response()->json([
@@ -164,9 +147,7 @@ class PlaylistController extends Controller
         ]);
 
         $user = auth()->user();
-        $playlist = Playlist::where('playlist_id', $request->input('playlist_id'))
-            ->where('user_id', $user->id)
-            ->first();
+        $playlist = $this->playlists->userOwnedPlaylist($user, $request->input('playlist_id'));
 
         if (! $playlist) {
             return response()->json([
@@ -204,9 +185,7 @@ class PlaylistController extends Controller
         ]);
 
         $user = auth()->user();
-        $playlist = Playlist::where('playlist_id', $request->input('playlist_id'))
-            ->where('user_id', $user->id)
-            ->first();
+        $playlist = $this->playlists->userOwnedPlaylist($user, $request->input('playlist_id'));
 
         if (! $playlist) {
             return response()->json([
@@ -216,7 +195,7 @@ class PlaylistController extends Controller
         }
 
         // Verifier si le track n'est pas deja dans la playlist
-        if ($playlist->tracks()->where('track.track_id', $request->input('track_id'))->exists()) {
+        if ($this->playlists->playlistContainsTrack($playlist, $request->input('track_id'))) {
             return response()->json([
                 'success' => false,
                 'message' => 'Ce titre est deja dans la playlist',
@@ -242,9 +221,7 @@ class PlaylistController extends Controller
         ]);
 
         $user = auth()->user();
-        $playlist = Playlist::where('playlist_id', $request->input('playlist_id'))
-            ->where('user_id', $user->id)
-            ->first();
+        $playlist = $this->playlists->userOwnedPlaylist($user, $request->input('playlist_id'));
 
         if (! $playlist) {
             return response()->json([
@@ -266,8 +243,7 @@ class PlaylistController extends Controller
     // Affiche une playlist avec tous ses titres et les infos associées
     public function show($id)
     {
-        $playlist = Playlist::with(['tracks.realisers.artist', 'user'])
-            ->findOrFail($id);
+        $playlist = $this->playlists->playlistForShow($id);
 
         return Inertia::render('playlist/show', [
             'playlist' => $playlist,
@@ -278,12 +254,7 @@ class PlaylistController extends Controller
     public function myPlaylists()
     {
         $user = auth()->user();
-
-        $playlists = Playlist::where('user_id', $user->id)
-            ->with('tracks:track_id')
-            ->withCount('tracks')
-            ->orderBy('playlist_date_updated', 'desc')
-            ->get();
+        $playlists = $this->playlists->userPlaylistsForManagement($user);
 
         return Inertia::render('playlist/index', [
             'playlists' => $playlists,

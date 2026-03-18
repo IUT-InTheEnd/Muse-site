@@ -7,7 +7,7 @@ use App\Models\Track;
 use App\Models\UserEcoute;
 use App\Models\UserPrefereArtiste;
 use App\Services\RecommendationService;
-use App\Services\TrackSelectionService;
+use App\Services\TrackQueryService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -16,7 +16,7 @@ class DashboardController extends Controller
 {
     public function __construct(
         private RecommendationService $recommendations,
-        private TrackSelectionService $tracks,
+        private TrackQueryService $tracks,
     ) {}
 
     public function index()

@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Track;
 
-class TrackSelectionService
+class TrackQueryService
 {
     public function newTracks(int $limit = 10): array
     {
