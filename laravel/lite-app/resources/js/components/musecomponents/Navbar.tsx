@@ -1,6 +1,3 @@
-import { Link } from '@inertiajs/react';
-import { ChevronsUpDown, Menu, Search, X } from 'lucide-react';
-import { useState } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -9,6 +6,9 @@ import {
 import { UserInfo } from '@/components/user-info';
 import { UserMenuContent } from '@/components/user-menu-content';
 import type { User } from '@/types';
+import { Link } from '@inertiajs/react';
+import { ChevronsUpDown, Menu, Search, X } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '../ui/button';
 
 type NavbarProps = {
@@ -27,28 +27,33 @@ const Navbar = ({ user }: NavbarProps) => {
                         <img src="/logo.svg" alt="logo" className="h-8" />
                     </Link>
 
+                    <div className="relative hidden items-center sm:flex">
+                        <form method="get" action="/search" className="w-full">
+                            <input
+                                type="text"
+                                name="q"
+                                placeholder="Rechercher..."
+                                className="w-64 rounded-full border border-gray-300 py-1 pr-3 pl-3 focus:ring-2 focus:ring-primary focus:outline-none"
+                            />
+                        </form>
+                        <Search className="absolute top-1/2 right-1 -translate-y-1/2 p-1" />
+                    </div>
                     {user && (
                         <>
-                            <div className="relative hidden items-center sm:flex">
-                                <form method="get" action="/search" className="w-full">
-                                    <input
-                                        type="text"
-                                        name="q"
-                                        placeholder="Rechercher..."
-                                        className="w-64 rounded-full border border-gray-300 py-1 pl-3 pr-3 focus:ring-2 focus:ring-primary focus:outline-none"
-                                    />
-                                </form>
-                                <Search className="absolute top-1/2 right-1 -translate-y-1/2 p-1" />
-                            </div>
-
                             <div className="hidden gap-4 text-sm sm:flex">
                                 <a href="/" className="hover:underline">
                                     Accueil
                                 </a>
-                                <a href="/favorites" className="hover:underline">
+                                <a
+                                    href="/favorites"
+                                    className="hover:underline"
+                                >
                                     Favoris
                                 </a>
-                                <a href="/user/playlists" className="hover:underline">
+                                <a
+                                    href="/user/playlists"
+                                    className="hover:underline"
+                                >
                                     Playlists
                                 </a>
                             </div>
@@ -115,7 +120,10 @@ const Navbar = ({ user }: NavbarProps) => {
                             <a href="/favorites" className="hover:underline">
                                 Favoris
                             </a>
-                            <a href="/user/playlists" className="hover:underline">
+                            <a
+                                href="/user/playlists"
+                                className="hover:underline"
+                            >
                                 Playlists
                             </a>
                             <DropdownMenu>

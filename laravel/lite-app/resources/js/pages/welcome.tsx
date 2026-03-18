@@ -49,9 +49,8 @@ export default function Welcome({ recommendedTracks = [] }: WelcomeProps) {
                                 </div>
 
                                 <p className="max-w-md text-sm text-white sm:text-base">
-                                    Avant de pouvoir accéder à des millions de
-                                    titres pensez à vous créer un compte ou à vous
-                                    connecter si vous en avez déjà un.
+                                    Accédez à des millions de
+                                    titres &mdash; connectez vous pour une meilleure expérience
                                 </p>
 
                                 <div className="grid w-full max-w-md grid-cols-1 gap-3 sm:grid-cols-2">

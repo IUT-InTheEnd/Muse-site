@@ -94,7 +94,7 @@ export function ReactionButtons({
                     <ThumbsUp className="h-4 w-4" />
                 )}
                 <span className="font-mono text-xs">{likes}</span>
-                {showLabels && <span className="text-xs">Like</span>}
+                {showLabels && <span className="text-xs">J'aime</span>}
             </Button>
 
             <Button
@@ -115,7 +115,7 @@ export function ReactionButtons({
                     <ThumbsDown className="h-4 w-4" />
                 )}
                 <span className="font-mono text-xs">{dislikes}</span>
-                {showLabels && <span className="text-xs">Dislike</span>}
+                {showLabels && <span className="text-xs">Je n'aime pas</span>}
             </Button>
         </div>
     );
