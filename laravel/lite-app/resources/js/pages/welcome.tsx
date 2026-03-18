@@ -1,14 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
-import {
-    CardCover,
-    CardSubtitle,
-} from '@/components/musecomponents/cards/Card';
-import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
-import { MusicSlider } from '@/components/musecomponents/sliders/MusicSlider';
-import { proxyUrl } from '@/components/proxy';
-import { CardContent, CardTitle } from '@/components/ui/card';
+import { NewTracksSection } from '@/components/musecomponents/sliders/NewTracksSection';
+import { TrackSliderSection } from '@/components/musecomponents/sliders/TrackSliderSection';
 import { Button } from '@/components/ui/button';
-import { useMusicPlayer } from '@/hooks/use-music-player';
 import { login, register } from '@/routes';
 
 type RecommendedTrack = {
@@ -20,11 +13,13 @@ type RecommendedTrack = {
 
 type WelcomeProps = {
     recommendedTracks?: RecommendedTrack[];
+    newTracks?: RecommendedTrack[];
 };
 
-export default function Welcome({ recommendedTracks = [] }: WelcomeProps) {
-    const { playTrack } = useMusicPlayer();
-
+export default function Welcome({
+    recommendedTracks = [],
+    newTracks = [],
+}: WelcomeProps) {
     return (
         <>
             <Head title="Welcome"></Head>
@@ -70,65 +65,12 @@ export default function Welcome({ recommendedTracks = [] }: WelcomeProps) {
                                 </div>
                             </div>
 
-                            {recommendedTracks.length > 0 && (
-                                <MusicSlider title="Rien que pour vous">
-                                    {recommendedTracks.map((track) => (
-                                        <MusicCard
-                                            key={track.id}
-                                            trackId={track.id}
-                                            showPlayButton={false}
-                                            className="cursor-pointer"
-                                            onClick={async () => {
-                                                try {
-                                                    const res = await fetch(
-                                                        `/test-music-player?id=${encodeURIComponent(track.id)}`,
-                                                    );
-                                                    if (!res.ok) {
-                                                        throw new Error(
-                                                            `HTTP ${res.status}`,
-                                                        );
-                                                    }
+                            <TrackSliderSection
+                                title="Rien que pour vous"
+                                tracks={recommendedTracks}
+                            />
 
-                                                    const data =
-                                                        await res.json();
-                                                    playTrack({
-                                                        id: track.id,
-                                                        src:
-                                                            proxyUrl(
-                                                                data.url,
-                                                            ) ?? '',
-                                                        title: data.title,
-                                                        artist: data.artist,
-                                                        artistid: data.artistid,
-                                                        artwork: proxyUrl(
-                                                            data.artwork,
-                                                        ),
-                                                    });
-                                                } catch (err) {
-                                                    console.error(err);
-                                                    void alert(
-                                                        'Impossible de charger la musique.',
-                                                    );
-                                                }
-                                            }}
-                                        >
-                                            <CardCover
-                                                src={
-                                                    proxyUrl(track.cover) ||
-                                                    '/images/default-artist.jpg'
-                                                }
-                                            />
-                                            <CardContent>
-                                                <CardTitle>{track.title}</CardTitle>
-                                                <CardSubtitle>
-                                                    {track.artist ||
-                                                        'Artiste inconnu'}
-                                                </CardSubtitle>
-                                            </CardContent>
-                                        </MusicCard>
-                                    ))}
-                                </MusicSlider>
-                            )}
+                            <NewTracksSection tracks={newTracks} />
                         </div>
                     </main>
                 </div>

@@ -4,18 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Track;
 use App\Services\RecommendationService;
+use App\Services\TrackSelectionService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
-// TODO : proxy requier auth, donc pas utilisé : problèmes CORS à l'affichage des images. pas de lecture audio. possibilités
-// 1. rendre proxy public uniquement pour les images. au clic, inviter l'utilisateur à se connecter pour écouter.
-// 2. rendre le proxy public pour images+lecture audio, pouvoir lancer le player sans être connecté. les reco de la page d'accueil deviennent les mêmes cartes que dans l'interface du site.
-
 class HomeController extends Controller
 {
-    public function __construct(private RecommendationService $recommendations) {}
+    public function __construct(
+        private RecommendationService $recommendations,
+        private TrackSelectionService $tracks,
+    ) {}
 
     public function index(): Response
     {
@@ -25,6 +25,7 @@ class HomeController extends Controller
 
         return Inertia::render('welcome', [
             'recommendedTracks' => $this->guestWelcomeRecommendations(),
+            'newTracks' => $this->tracks->newTracks(),
         ]);
     }
 

@@ -7,13 +7,17 @@ use App\Models\Track;
 use App\Models\UserEcoute;
 use App\Models\UserPrefereArtiste;
 use App\Services\RecommendationService;
+use App\Services\TrackSelectionService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    public function __construct(private RecommendationService $recommendations) {}
+    public function __construct(
+        private RecommendationService $recommendations,
+        private TrackSelectionService $tracks,
+    ) {}
 
     public function index()
     {
@@ -82,17 +86,7 @@ class DashboardController extends Controller
             ]);
 
         // Nouveaux titres
-        $newTracks = Track::with(['realisers.artist'])
-            ->whereNotNull('track_date_created')
-            ->orderBy('track_date_created', 'desc')
-            ->limit(10)
-            ->get()
-            ->map(fn ($track) => [
-                'id' => $track->track_id,
-                'title' => $track->track_title,
-                'cover' => $track->track_image_file,
-                'artist' => $track->realisers->first()?->artist
-            ]);
+        $newTracks = $this->tracks->newTracks();
 
         return Inertia::render('dashboard', [
             'user' => ['name' => $user->name],
