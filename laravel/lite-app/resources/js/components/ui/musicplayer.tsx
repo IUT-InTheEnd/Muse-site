@@ -1,7 +1,7 @@
 import { ReactionButtons } from '@/components/reaction-buttons';
 import { PlayIcon, PauseIcon, SkipForwardIcon, SkipBackIcon, ShuffleIcon, RepeatIcon, Repeat1Icon, VolumeIcon, Volume1Icon, Volume2Icon, VolumeXIcon, MusicIcon, ChevronDownIcon, LoaderIcon, AlertCircleIcon, XIcon, ListMusic } from 'lucide-react';
 import MusicWaitingList from '@/components/ui/music-waiting-list';
-import { useMusicPlayer } from '@/hooks/use-music-player';
+import * as React from "react";
 
 function formatTime(s: number): string {
     if (!isFinite(s)) return '0:00';
@@ -14,6 +14,45 @@ function formatTime(s: number): string {
 
 export default function MusicPlayer() {
     const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError, waitingList, showWaitingList } = useMusicPlayer();
+
+    const [isFavorite, setIsFavorite] = React.useState(false);
+    const [isTogglingFavorite, setIsTogglingFavorite] = React.useState(false);
+
+    React.useEffect(() => {
+    if (track) {
+        // Log ici pour vérifier ce que le serveur envoie réellement au refresh
+        console.log("Track reçue au chargement :", track);
+        
+        // Assure-toi que le champ s'appelle bien is_favorite dans l'objet track
+        setIsFavorite(Boolean(track.is_favorite));
+    }
+    }, [track]);
+
+    const handleToggleFavorite = async () => {
+        if (!track?.id && !track?.track_id) return;
+        const trackId = track.id || track.track_id;
+        
+        setIsTogglingFavorite(true);
+        try {
+            const response = await fetch('/favorites/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
+                },
+                body: JSON.stringify({ track_id: trackId }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setIsFavorite(data.is_favorite);
+            }
+        } catch (err) {
+            console.error('Erreur favoris:', err);
+        } finally {
+            setIsTogglingFavorite(false);
+        }
+    };
 
     // État minimisé : afficher un bouton flottant avec l'icône de musique
     if (minimized) {
@@ -127,6 +166,21 @@ export default function MusicPlayer() {
                                         : 'text-neutral-500 dark:text-white/70'
                                 }
                             />
+                        </button>
+                        
+                        <button 
+                            onClick={handleToggleFavorite} 
+                            disabled={isTogglingFavorite || !track}
+                            className="transition-transform active:scale-90 disabled:opacity-50"
+                        >
+                            {isTogglingFavorite ? (
+                                <LoaderIcon size={24} className="animate-spin text-purple-500" />
+                            ) : (
+                                <Heart 
+                                    size={24} 
+                                    className={isFavorite ? 'fill-purple-500 text-purple-500' : 'text-neutral-500 dark:text-white/70'} 
+                                />
+                            )}
                         </button>
 
                         <button onClick={skipBack}>
