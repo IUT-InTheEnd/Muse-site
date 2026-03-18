@@ -470,7 +470,7 @@ export function TrackRow({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 cursor-pointer"
                             onClick={handleToggleFavorite}
                             disabled={isAddingFavorite}
                         >
@@ -493,7 +493,7 @@ export function TrackRow({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 cursor-pointer"
                             onClick={async (e) => {
                                 e.stopPropagation();
                                 try {
@@ -515,7 +515,7 @@ export function TrackRow({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 cursor-pointer"
                             onClick={handleOpenPlaylistDialog}
                         >
                             <ListPlus className="h-4 w-4" />
@@ -562,7 +562,7 @@ export function TrackRow({
                             {/* Bouton Nouvelle playlist */}
                             <Button
                                 variant="outline"
-                                className="w-full justify-start"
+                                className="w-full justify-start cursor-pointer"
                                 onClick={() => setIsCreatingPlaylist(true)}
                             >
                                 <Plus className="mr-2 h-4 w-4" />
@@ -643,6 +643,7 @@ export function TrackRow({
                                         setIsCreatingPlaylist(false);
                                         setNewPlaylistName('');
                                     }}
+                                    className="cursor-pointer"
                                 >
                                     Retour
                                 </Button>
@@ -651,6 +652,7 @@ export function TrackRow({
                                     disabled={
                                         !newPlaylistName.trim() || isSubmitting
                                     }
+                                    className="cursor-pointer"
                                 >
                                     {isSubmitting ? (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -665,12 +667,14 @@ export function TrackRow({
                                     onClick={() =>
                                         setIsPlaylistDialogOpen(false)
                                     }
+                                    className="cursor-pointer"
                                 >
                                     Annuler
                                 </Button>
                                 <Button
                                     onClick={handleSavePlaylistChanges}
                                     disabled={!hasChanges || isSubmitting}
+                                    className="cursor-pointer"
                                 >
                                     {isSubmitting ? (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

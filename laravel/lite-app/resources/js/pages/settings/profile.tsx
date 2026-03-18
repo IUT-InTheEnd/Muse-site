@@ -144,6 +144,7 @@ export default function Profile({
                                             <Button
                                                 disabled={processing}
                                                 data-test="update-profile-button"
+                                                className="cursor-pointer"
                                             >
                                                 Enregistrer
                                             </Button>

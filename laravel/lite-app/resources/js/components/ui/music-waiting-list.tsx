@@ -11,7 +11,7 @@ export default function MusicWaitingList() {
                 <h4 className="mb-4 text-xl font-semibold">File d'attente</h4>
                 <button
                     onClick={waitingList}
-                    className="absolute top-2 right-2 p-1 rounded-full hover:bg-neutral-200 dark:hover:bg-white/10 transition-all duration-200"
+                    className="absolute cursor-pointer top-2 right-2 p-1 rounded-full hover:bg-neutral-200 dark:hover:bg-white/10 transition-all duration-200"
                     aria-label="Minimiser la file d'attente"
                 >
                     <ChevronDownIcon size={20} className="text-neutral-500 dark:text-white/60" />

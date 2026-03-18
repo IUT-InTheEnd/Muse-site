@@ -128,14 +128,14 @@ export default function Support() {
                             <Field orientation="horizontal">
                                 <Button
                                     type="submit"
-                                    className="w-1/2 bg-[#5E00FF] text-white hover:bg-[#C9B6E9] hover:text-black"
+                                    className="w-1/2 bg-[#5E00FF] text-white hover:bg-[#C9B6E9] hover:text-black cursor-pointer"
                                     disabled={canSubmit}
                                 >
                                     Submit
                                 </Button>
                                 <Button
                                     type="button"
-                                    className="w-1/2 bg-[#757575] text-white hover:bg-[#D9D9D9] hover:text-black"
+                                    className="w-1/2 bg-[#757575] text-white hover:bg-[#D9D9D9] hover:text-black cursor-pointer"
                                 >
                                     Cancel
                                 </Button>

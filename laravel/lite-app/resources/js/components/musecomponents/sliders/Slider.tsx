@@ -67,10 +67,10 @@ export function Slider({
         )}
 
         <div className="flex gap-2">
-          <button onClick={prev} disabled={isFirst}>
+          <button onClick={prev} disabled={isFirst} className="cursor-pointer">
             <ChevronLeft />
           </button>
-          <button onClick={next} disabled={isLast}>
+          <button onClick={next} disabled={isLast} className="cursor-pointer">
             <ChevronRight />
           </button>
         </div>

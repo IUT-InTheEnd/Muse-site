@@ -67,7 +67,7 @@ const Navbar = ({ user }: NavbarProps) => {
                         <div className="hidden items-center gap-4 sm:flex">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-100 focus:outline-none dark:hover:bg-muted">
+                                    <button className="flex items-center gap-2 cursor-pointer rounded-lg px-2 py-1.5 hover:bg-gray-100 focus:outline-none dark:hover:bg-muted">
                                         <UserInfo user={user} />
                                         <ChevronsUpDown className="size-4 text-gray-500" />
                                     </button>
@@ -83,11 +83,11 @@ const Navbar = ({ user }: NavbarProps) => {
                         </div>
                     ) : (
                         <div className="hidden items-center gap-4 sm:flex">
-                            <a href="/register" className="hover:underline">
+                            <a href="/register" className="hover:underline cursor-pointer">
                                 Inscription
                             </a>
                             <Button>
-                                <Link href="/login" className="text-white">
+                                <Link href="/login" className="text-white cursor-pointer">
                                     Connexion
                                 </Link>
                             </Button>
@@ -96,7 +96,7 @@ const Navbar = ({ user }: NavbarProps) => {
 
                     {/* bouton menu burger */}
                     <button
-                        className="rounded-md p-2 hover:bg-gray-200 sm:hidden"
+                        className="rounded-md p-2 hover:bg-gray-200 sm:hidden cursor-pointer"
                         onClick={() => setIsOpen(!isOpen)}
                     >
                         {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -128,7 +128,7 @@ const Navbar = ({ user }: NavbarProps) => {
                             </a>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-100 focus:outline-none dark:hover:bg-muted">
+                                    <button className="flex items-center gap-2 cursor-pointer rounded-lg px-2 py-1.5 hover:bg-gray-100 focus:outline-none dark:hover:bg-muted">
                                         <UserInfo user={user} />
                                         <ChevronsUpDown className="size-4 text-gray-500" />
                                     </button>
@@ -145,11 +145,11 @@ const Navbar = ({ user }: NavbarProps) => {
                     )}
                     {!user && (
                         <>
-                            <a href="/register" className="hover:underline">
+                            <a href="/register" className="hover:underline cursor-pointer">
                                 Inscription
                             </a>
                             <Button>
-                                <Link href="/login" className="text-white">
+                                <Link href="/login" className="text-white cursor-pointer">
                                     Connexion
                                 </Link>
                             </Button>

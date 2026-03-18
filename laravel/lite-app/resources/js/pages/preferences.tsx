@@ -242,7 +242,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                 : [...formData.moments, m];
                                             setFormData({...formData, moments: newMoments});
                                         }}
-                                        className="border-none hover:bg-primary"
+                                        className="border-none hover:bg-primary cursor-pointer"
                                     >
                                         <div className="shrink-0">{iconMap[m]}</div>
                                         <h6 className="flex-1 text-center pr-4">{m}</h6>
@@ -261,7 +261,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                         key={p}
                                         variant={formData.preferences === p ? "default" : "secondary"}
                                         onClick={() => setFormData({...formData, preferences: p})}
-                                        className="border-none hover:bg-primary"
+                                        className="border-none hover:bg-primary cursor-pointer"
                                     >
                                         <div className="shrink-0">{preferenceIconMap[p]}</div>
                                         <h6 className="flex-1 text-center pr-4">{p}</h6>
@@ -280,7 +280,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                         key={m}
                                         variant={formData.styles === m ? "default" : "secondary"}
                                         onClick={() => setFormData({...formData, styles: m})}
-                                        className="border-none hover:bg-primary"
+                                        className="border-none hover:bg-primary cursor-pointer"
                                     >
                                         <div className="shrink-0">{styleIconMap[m]}</div>
                                         <h6 className="flex-1 text-center pr-4">{m}</h6>
@@ -304,7 +304,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                 : [...formData.langues, m];
                                             setFormData({ ...formData, langues: newLangues });
                                         }}
-                                        className="border-none hover:bg-primary"
+                                        className="border-none hover:bg-primary cursor-pointer"
                                     >
                                         <div className="shrink-0">{langueIconMap[m]}</div>
                                         <h6 className="flex-1 text-center pr-4">{m}</h6>
@@ -349,7 +349,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                 : [...formData.humeurs, h];
                                             setFormData({ ...formData, humeurs: newHumeurs });
                                         }}
-                                        className="border-none hover:bg-primary"
+                                        className="border-none hover:bg-primary cursor-pointer"
                                     >
                                         <div className="shrink-0">{humeurIconMap[h]}</div>
                                         <h6 className="flex-1 text-center pr-4">{h}</h6>
@@ -367,7 +367,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center border-b border-foreground">
                                     <h2>Genres préférés</h2>
-                                    <Button variant="link" size="icon" onClick={() => setStep(1)} className="text-foreground hover:text-primary">
+                                    <Button variant="link" size="icon" onClick={() => setStep(1)} className="text-foreground hover:text-primary cursor-pointer">
                                         <Pencil />
                                     </Button>
                                 </div>
@@ -380,7 +380,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center border-b border-foreground">
                                     <h2>Artistes préférés</h2>
-                                    <Button variant="link" size="icon" onClick={() => setStep(2)} className="text-foreground hover:text-primary">
+                                    <Button variant="link" size="icon" onClick={() => setStep(2)} className="text-foreground hover:text-primary cursor-pointer">
                                         <Pencil />
                                     </Button>
                                 </div>
@@ -396,7 +396,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center border-b border-foreground">
                                     <h2 className="">Préférences musicales</h2>
-                                    <Button variant="link" size="icon" onClick={() => setStep(3)} className="text-foreground hover:text-primary ">
+                                    <Button variant="link" size="icon" onClick={() => setStep(3)} className="text-foreground hover:text-primary cursor-pointer">
                                         <Pencil />
                                     </Button>
                                 </div>
@@ -419,7 +419,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                     <Button 
                         variant="secondary" 
                         onClick={prevStep} 
-                        className="w-48 border-foregroun py-3"
+                        className="w-48 border-foregroun py-3 cursor-pointer"
                     >
                         Retour
                     </Button>
@@ -428,7 +428,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                     variant="default"
                     onClick={step === 4 ? handleFinish : nextStep} 
                     disabled={(step === 1 && formData.genres.length < 3) || (step === 2 && formData.artists.length < 3)}
-                    className={`w-48 py-3 ${
+                    className={`w-48 py-3 cursor-pointer ${
                         (step === 1 && formData.genres.length < 3) || (step === 2 && formData.artists.length < 3)
                         ? 'opacity-50'
                         : 'bg-primary'

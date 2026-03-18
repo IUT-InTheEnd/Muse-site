@@ -96,7 +96,7 @@ function TwoFactorSetupStep({
                     </div>
 
                     <div className="flex w-full space-x-5">
-                        <Button className="w-full" onClick={onNextStep}>
+                        <Button className="w-full cursor-pointer" onClick={onNextStep}>
                             {buttonText}
                         </Button>
                     </div>
@@ -124,7 +124,7 @@ function TwoFactorSetupStep({
                                     />
                                     <button
                                         onClick={() => copy(manualSetupKey)}
-                                        className="border-l border-border px-3 hover:bg-muted"
+                                        className="border-l border-border px-3 hover:bg-muted cursor-pointer"
                                     >
                                         <IconComponent className="w-4" />
                                     </button>
@@ -205,7 +205,7 @@ function TwoFactorVerificationStep({
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="flex-1"
+                                className="flex-1 cursor-pointer"
                                 onClick={onBack}
                                 disabled={processing}
                             >
@@ -213,7 +213,7 @@ function TwoFactorVerificationStep({
                             </Button>
                             <Button
                                 type="submit"
-                                className="flex-1"
+                                className="flex-1 cursor-pointer"
                                 disabled={
                                     processing || code.length < OTP_MAX_LENGTH
                                 }

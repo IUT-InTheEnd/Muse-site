@@ -44,7 +44,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
                             <div className="my-6 flex items-center justify-start">
                                 <Button
-                                    className="w-full"
+                                    className="w-full cursor-pointer"
                                     disabled={processing}
                                     data-test="email-password-reset-link-button"
                                 >

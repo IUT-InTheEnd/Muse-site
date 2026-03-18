@@ -66,7 +66,7 @@ export default function Privacy() {
                                 par vous.
                             </p>
 
-                            <Button type="submit">
+                            <Button type="submit" className="cursor-pointer">
                                 Enregistrer les modifications
                             </Button>
                         </div>

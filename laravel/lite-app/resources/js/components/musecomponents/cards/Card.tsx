@@ -176,7 +176,7 @@ function CardPlayButton({
             onClick={handlePlay}
             disabled={isLoadingThis}
             className={cn(
-                'absolute right-2 bottom-2 flex items-center justify-center rounded-full',
+                'absolute cursor-pointer right-2 bottom-2 flex items-center justify-center rounded-full',
                 'bg-primary text-primary-foreground shadow-lg',
                 'opacity-0 transition-all duration-200 group-hover:opacity-100',
                 'hover:scale-105 active:scale-95',

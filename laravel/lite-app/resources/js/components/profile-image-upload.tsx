@@ -165,6 +165,7 @@ export default function ProfileImageUpload() {
                     size="sm"
                     onClick={handleFileSelect}
                     disabled={isLoading}
+                    className="cursor-pointer"
                 >
                     <Camera className="mr-2 h-4 w-4" />
                     {currentImage ? 'Changer la photo' : 'Ajouter une photo'}

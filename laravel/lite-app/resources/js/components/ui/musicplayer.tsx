@@ -132,6 +132,19 @@ export default function MusicPlayer() {
                                 </div>
                             )}
                         </div>
+                        {error && (
+                            <div className="flex items-center gap-1 text-sm text-red-500 mt-1">
+                                <AlertCircleIcon size={14} />
+                                <span className="truncate">{error}</span>
+                                <button
+                                    onClick={clearError}
+                                    className="ml-1 hover:text-red-400 cursor-pointer"
+                                    aria-label="Fermer l'erreur"
+                                >
+                                    <XIcon size={14} />
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {track?.id && (

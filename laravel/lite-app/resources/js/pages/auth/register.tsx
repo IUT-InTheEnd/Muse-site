@@ -123,7 +123,19 @@ export default function Register() {
                                     </button>
                                 </div>
                             </div>
-                            <Button type="submit" className="mt-2 w-full" tabIndex={5} data-test="register-user-button" disabled={!isFormValid || processing}>
+
+                            <p className="text-xs text-muted-foreground">
+                                Le mot de passe doit contenir au moins 12
+                                caractères, une lettre majuscule, une lettre
+                                minuscule et un chiffre.
+                            </p>
+
+                            <Button
+                                type="submit"
+                                className="mt-2 w-full cursor-pointer"
+                                tabIndex={5}
+                                data-test="register-user-button"
+                            >
                                 {processing && <Spinner />}
                                 S'inscrire
                             </Button>

@@ -156,7 +156,7 @@ export default function Album({
 
                         <div className="flex max-w-4xl flex-wrap gap-2">
                             <Button
-                                className="flex-1"
+                                className="flex-1 cursor-pointer"
                                 onClick={async () => {
                                     if (!auth?.user) {
                                         alert('Connectez-vous pour écouter cet album.');
@@ -190,7 +190,7 @@ export default function Album({
                                 showLabels={true}
                             />
                             <Button
-                                className="flex-1"
+                                className="flex-1 cursor-pointer"
                                 variant={isInLibrary ? 'secondary' : 'default'}
                                 onClick={handleToggleLibrary}
                                 disabled={isLoading}

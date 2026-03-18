@@ -302,10 +302,11 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
                             type="button"
                             variant="outline"
                             onClick={() => setOpen(false)}
+                            className="cursor-pointer"
                         >
                             Annuler
                         </Button>
-                        <Button type="submit" disabled={processing}>
+                        <Button type="submit" disabled={processing} className="cursor-pointer">
                             {processing ? 'Enregistrement...' : 'Enregistrer'}
                         </Button>
                     </DialogFooter>

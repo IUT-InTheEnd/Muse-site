@@ -153,6 +153,7 @@ export default function Security({
                                         <Button
                                             disabled={processing}
                                             data-test="update-password-button"
+                                            className="cursor-pointer"
                                         >
                                             Enregistrer le mot de passe
                                         </Button>
@@ -206,6 +207,7 @@ export default function Security({
                                                 variant="destructive"
                                                 type="submit"
                                                 disabled={processing}
+                                                className="cursor-pointer"
                                             >
                                                 <ShieldBan /> Désactiver la 2FA
                                             </Button>
@@ -230,6 +232,7 @@ export default function Security({
                                             onClick={() =>
                                                 setShowSetupModal(true)
                                             }
+                                            className="cursor-pointer"
                                         >
                                             <ShieldCheck />
                                             Continuer la configuration
@@ -245,6 +248,7 @@ export default function Security({
                                                 <Button
                                                     type="submit"
                                                     disabled={processing}
+                                                    className="cursor-pointer"
                                                 >
                                                     <ShieldCheck />
                                                     Activer la 2FA
@@ -330,6 +334,7 @@ export default function Security({
                                     );
                                 });
                         }}
+                        className="cursor-pointer"
                     >
                         Régénérer la clé API
                     </Button>

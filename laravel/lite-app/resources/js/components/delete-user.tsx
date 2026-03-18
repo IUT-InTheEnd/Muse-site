@@ -40,6 +40,7 @@ export default function DeleteUser() {
                         <Button
                             variant="destructive"
                             data-test="delete-user-button"
+                            className="cursor-pointer"
                         >
                             Supprimer le compte
                         </Button>

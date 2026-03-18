@@ -304,7 +304,7 @@ export default function PlaylistShow({ playlist }: Props) {
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={isUpdating}
-                                className="absolute top-4 right-4 z-20 rounded-full bg-black/50 p-3 text-white transition hover:bg-black/70 disabled:opacity-50"
+                                className="absolute cursor-pointer top-4 right-4 z-20 rounded-full bg-black/50 p-3 text-white transition hover:bg-black/70 disabled:opacity-50"
                                 aria-label="Changer l'image"
                             >
                                 <CameraIcon size={20} />
@@ -334,7 +334,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                     <button
                                         onClick={handleToggleVisibility}
                                         disabled={isUpdating}
-                                        className="flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-sm text-white transition hover:bg-white/20 disabled:opacity-50"
+                                        className="flex cursor-pointer items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-sm text-white transition hover:bg-white/20 disabled:opacity-50"
                                     >
                                         {playlist.playlist_public ? (
                                             <>
@@ -377,6 +377,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                         size="sm"
                                         onClick={handleUpdateName}
                                         disabled={isUpdating}
+                                        className="cursor-pointer"
                                     >
                                         OK
                                     </Button>
@@ -389,6 +390,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                             );
                                             setIsEditingName(false);
                                         }}
+                                        className="cursor-pointer"
                                     >
                                         <XIcon size={16} />
                                     </Button>
@@ -403,7 +405,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                             onClick={() =>
                                                 setIsEditingName(true)
                                             }
-                                            className="rounded-full p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
+                                            className="rounded-full cursor-pointer p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
                                         >
                                             <PencilIcon size={18} />
                                         </button>
@@ -434,7 +436,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                     size="lg"
                                     onClick={handlePlayAll}
                                     disabled={playlist.tracks.length === 0}
-                                    className="gap-2"
+                                    className="gap-2 cursor-pointer"
                                 >
                                     <PlayIcon size={20} />
                                     Lecture
@@ -446,7 +448,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                         variant="destructive"
                                         onClick={handleDelete}
                                         disabled={isDeleting}
-                                        className="gap-2"
+                                        className="gap-2 cursor-pointer"
                                     >
                                         <TrashIcon size={18} />
                                         Supprimer

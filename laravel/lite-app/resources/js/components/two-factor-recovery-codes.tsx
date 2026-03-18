@@ -70,7 +70,7 @@ export default function TwoFactorRecoveryCodes({
                 <div className="flex flex-col gap-3 select-none sm:flex-row sm:items-center sm:justify-between">
                     <Button
                         onClick={toggleCodesVisibility}
-                        className="w-fit"
+                        className="w-fit cursor-pointer"
                         aria-expanded={codesAreVisible}
                         aria-controls="recovery-codes-section"
                     >
@@ -94,6 +94,7 @@ export default function TwoFactorRecoveryCodes({
                                     type="submit"
                                     disabled={processing}
                                     aria-describedby="regenerate-warning"
+                                    className="cursor-pointer"
                                 >
                                     <RefreshCw /> Régénérer les codes
                                 </Button>

@@ -94,7 +94,7 @@ export default function PlaylistsPage({ playlists }: PlaylistsPageProps) {
                         <h1 className="text-2xl font-bold">Mes playlists</h1>
                         <Button
                             onClick={() => setIsCreating(true)}
-                            className="gap-2"
+                            className="gap-2 cursor-pointer"
                         >
                             <PlusIcon size={18} />
                             Nouvelle playlist
@@ -119,12 +119,13 @@ export default function PlaylistsPage({ playlists }: PlaylistsPageProps) {
                                         setIsCreating(false);
                                 }}
                             />
-                            <Button onClick={handleCreatePlaylist}>
+                            <Button onClick={handleCreatePlaylist} className="cursor-pointer">
                                 Creer
                             </Button>
                             <Button
                                 variant="ghost"
-                                onClick={() => setIsCreating(false)}
+                                onClick={() => setIsCreating(false)} 
+                                className="cursor-pointer"
                             >
                                 Annuler
                             </Button>
@@ -138,6 +139,7 @@ export default function PlaylistsPage({ playlists }: PlaylistsPageProps) {
                             <Button
                                 onClick={() => setIsCreating(true)}
                                 variant="outline"
+                                className="cursor-pointer"
                             >
                                 Creer ma premiere playlist
                             </Button>
@@ -204,7 +206,7 @@ export default function PlaylistsPage({ playlists }: PlaylistsPageProps) {
                                                 deletingId ===
                                                 playlist.playlist_id
                                             }
-                                            className="absolute top-2 right-2 rounded-full bg-destructive p-2 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive/90 disabled:opacity-50"
+                                            className="absolute top-2 right-2 rounded-full bg-destructive p-2 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive/90 disabled:opacity-50 cursor-pointer"
                                             aria-label="Supprimer la playlist"
                                         >
                                             <TrashIcon size={16} />
