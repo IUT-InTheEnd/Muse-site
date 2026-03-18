@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ReactionService;
 use App\Models\Track;
 use App\Models\UserEcoute;
 use Illuminate\Http\Request;
@@ -9,7 +10,9 @@ use Illuminate\Validation\Rule;
 
 class MusicController extends Controller
 {
-    private function buildTrackPayload(Track $track): array
+    public function __construct(private ReactionService $reactions) {}
+
+    private function buildTrackPayload(Track $track, ?string $viewerReaction = null): array
     {
         $primaryArtist = $track->realisers->first()?->artist;
         $audioUrl = blank($track->track_file)
@@ -26,6 +29,9 @@ class MusicController extends Controller
                 ->implode(', '),
             'artistid' => $primaryArtist?->artist_id,
             'artwork' => $track->track_image_file,
+            'likes' => $track->track_likes ?? 0,
+            'dislikes' => $track->track_dislikes ?? 0,
+            'reaction' => $viewerReaction,
         ];
     }
 
@@ -43,8 +49,12 @@ class MusicController extends Controller
             $musique = Track::find($request->id);
             if ($musique) {
                 $musique->loadMissing('realisers.artist');
+                $reactions = $this->reactions->trackReactionsFor($request, [$musique->track_id]);
 
-                return response()->json($this->buildTrackPayload($musique));
+                return response()->json($this->buildTrackPayload(
+                    $musique,
+                    $reactions[$musique->track_id] ?? null,
+                ));
             }
         }
 
@@ -70,6 +80,7 @@ class MusicController extends Controller
             ->with('realisers.artist')
             ->get()
             ->keyBy('track_id');
+        $reactions = $this->reactions->trackReactionsFor($request, $ids);
 
         $result = [];
         foreach ($ids as $id) {
@@ -78,7 +89,10 @@ class MusicController extends Controller
                 continue;
             }
 
-            $result[] = $this->buildTrackPayload($musique);
+            $result[] = $this->buildTrackPayload(
+                $musique,
+                $reactions[$id] ?? null,
+            );
         }
 
         return response()->json($result);

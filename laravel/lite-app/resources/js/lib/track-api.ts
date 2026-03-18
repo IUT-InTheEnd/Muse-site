@@ -8,6 +8,9 @@ export type TrackData = {
     artist?: string;
     artistid?: number;
     artwork?: string;
+    likes?: number;
+    dislikes?: number;
+    reaction?: 'like' | 'dislike' | null;
 };
 
 type RawTrackData = {
@@ -17,6 +20,9 @@ type RawTrackData = {
     artist: string;
     artistid: number;
     artwork: string;
+    likes?: number;
+    dislikes?: number;
+    reaction?: 'like' | 'dislike' | null;
 };
 
 function mapRawTrack(d: RawTrackData): TrackData {
@@ -27,6 +33,9 @@ function mapRawTrack(d: RawTrackData): TrackData {
         artist: d.artist,
         artistid: d.artistid,
         artwork: proxyUrl(d.artwork),
+        likes: d.likes ?? 0,
+        dislikes: d.dislikes ?? 0,
+        reaction: d.reaction ?? null,
     };
 }
 

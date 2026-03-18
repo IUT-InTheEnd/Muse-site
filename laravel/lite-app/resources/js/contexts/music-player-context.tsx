@@ -8,6 +8,9 @@ export type Track = {
     artist?: string;
     artistid?: number;
     artwork?: string;
+    likes?: number;
+    dislikes?: number;
+    reaction?: 'like' | 'dislike' | null;
 };
 
 export type RepeatMode = 'off' | 'all' | 'one';

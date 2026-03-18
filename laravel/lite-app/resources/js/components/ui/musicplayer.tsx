@@ -1,3 +1,4 @@
+import { ReactionButtons } from '@/components/reaction-buttons';
 import { PlayIcon, PauseIcon, SkipForwardIcon, SkipBackIcon, ShuffleIcon, RepeatIcon, Repeat1Icon, VolumeIcon, Volume1Icon, Volume2Icon, VolumeXIcon, MusicIcon, ChevronDownIcon, LoaderIcon, AlertCircleIcon, XIcon, ListMusic } from 'lucide-react';
 import MusicWaitingList from '@/components/ui/music-waiting-list';
 import { useMusicPlayer } from '@/hooks/use-music-player';
@@ -56,44 +57,61 @@ export default function MusicPlayer() {
 
             <div className="flex items-center gap-8">
                 {/* Info de la piste */}
-                <div className="flex items-center gap-5 flex-1 min-w-0">
-                    {track?.artwork ? (
-                        <img
-                            src={track.artwork}
-                            alt={track.title}
-                            className="w-20 h-20 rounded-lg object-cover shrink-0"
-                        />
-                    ) : (
-                        <div className="w-20 h-20 bg-neutral-200 dark:bg-white/10 rounded-lg shrink-0" />
-                    )}
+                <div className="flex items-center gap-6 flex-1 min-w-0">
+                    <div className="flex items-center gap-5 min-w-0">
+                        {track?.artwork ? (
+                            <img
+                                src={track.artwork}
+                                alt={track.title}
+                                className="w-20 h-20 rounded-lg object-cover shrink-0"
+                            />
+                        ) : (
+                            <div className="w-20 h-20 bg-neutral-200 dark:bg-white/10 rounded-lg shrink-0" />
+                        )}
 
-                    <div className="overflow-hidden">
-                        <div className="text-lg font-semibold truncate">
-                            {track?.title || 'No track'}
-                        </div>
-                        <div className="text-base text-neutral-500 dark:text-white/60 truncate">
-                            {track?.artistid ? (
-                                <a href={`/artiste/${track.artistid}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                    {track?.artist || '—'}
-                                </a>
-                            ) : (
-                                <span>{track?.artist || '—'}</span>
+                        <div className="overflow-hidden">
+                            <div className="text-lg font-semibold truncate">
+                                {track?.title || 'No track'}
+                            </div>
+                            <div className="text-base text-neutral-500 dark:text-white/60 truncate">
+                                {track?.artistid ? (
+                                    <a href={`/artiste/${track.artistid}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                        {track?.artist || '—'}
+                                    </a>
+                                ) : (
+                                    <span>{track?.artist || '—'}</span>
+                                )}
+                            </div>
+                            {error && (
+                                <div className="flex items-center gap-1 text-sm text-red-500 mt-1">
+                                    <AlertCircleIcon size={14} />
+                                    <span className="truncate">{error}</span>
+                                    <button
+                                        onClick={clearError}
+                                        className="ml-1 hover:text-red-400"
+                                        aria-label="Fermer l'erreur"
+                                    >
+                                        <XIcon size={14} />
+                                    </button>
+                                </div>
                             )}
                         </div>
-                        {error && (
-                            <div className="flex items-center gap-1 text-sm text-red-500 mt-1">
-                                <AlertCircleIcon size={14} />
-                                <span className="truncate">{error}</span>
-                                <button
-                                    onClick={clearError}
-                                    className="ml-1 hover:text-red-400"
-                                    aria-label="Fermer l'erreur"
-                                >
-                                    <XIcon size={14} />
-                                </button>
-                            </div>
-                        )}
                     </div>
+
+                    {track?.id && (
+                        <ReactionButtons
+                            key={track.id}
+                            resource="tracks"
+                            resourceId={track.id}
+                            initialReaction={track.reaction ?? null}
+                            initialLikes={track.likes ?? 0}
+                            initialDislikes={track.dislikes ?? 0}
+                            size="default"
+                            showCounts={false}
+                            appearance="player"
+                            className="shrink-0"
+                        />
+                    )}
                 </div>
 
                 {/* Contrôles + progression */}

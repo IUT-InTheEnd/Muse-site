@@ -1,5 +1,5 @@
 import { Loader2, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -14,6 +14,8 @@ type ReactionButtonsProps = {
     className?: string;
     size?: 'sm' | 'default';
     showLabels?: boolean;
+    showCounts?: boolean;
+    appearance?: 'default' | 'player';
 };
 
 export function ReactionButtons({
@@ -25,11 +27,19 @@ export function ReactionButtons({
     className,
     size = 'sm',
     showLabels = false,
+    showCounts = true,
+    appearance = 'default',
 }: ReactionButtonsProps) {
     const [reaction, setReaction] = useState<ReactionType>(initialReaction);
     const [likes, setLikes] = useState(initialLikes);
     const [dislikes, setDislikes] = useState(initialDislikes);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        setReaction(initialReaction);
+        setLikes(initialLikes);
+        setDislikes(initialDislikes);
+    }, [resourceId, initialReaction, initialLikes, initialDislikes]);
 
     const submitReaction = async (nextReaction: Exclude<ReactionType, null>) => {
         if (isSubmitting) {
@@ -70,21 +80,45 @@ export function ReactionButtons({
 
     const buttonSize = size === 'default' ? 'default' : 'sm';
     const wrapperClassName =
-        size === 'default'
-            ? 'rounded-full border border-border/70 bg-background/80 p-1 backdrop-blur-sm'
-            : 'rounded-full border border-border/60 bg-background/65 p-0.5 backdrop-blur-sm';
+        appearance === 'player'
+            ? 'gap-2'
+            : size === 'default'
+              ? 'rounded-full border border-border/70 bg-background/80 p-1 backdrop-blur-sm'
+              : 'rounded-full border border-border/60 bg-background/65 p-0.5 backdrop-blur-sm';
+
+    const buttonBaseClassName =
+        appearance === 'player'
+            ? 'h-10 w-10 rounded-full p-0 text-neutral-500 hover:bg-neutral-200/80 hover:text-neutral-800 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white'
+            : 'rounded-full px-2.5';
+
+    const activeLikeClassName =
+        appearance === 'player'
+            ? 'bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400'
+            : 'bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/20';
+
+    const activeDislikeClassName =
+        appearance === 'player'
+            ? 'bg-rose-500/15 text-rose-600 hover:bg-rose-500/20 dark:text-rose-400'
+            : 'bg-rose-500/15 text-rose-600 hover:bg-rose-500/20';
 
     return (
-        <div className={cn('flex items-center gap-1', wrapperClassName, className)}>
+        <div
+            className={cn('flex items-center gap-1', wrapperClassName, className)}
+            onClick={(event) => event.stopPropagation()}
+            onMouseDown={(event) => event.stopPropagation()}
+        >
             <Button
                 type="button"
                 variant="ghost"
                 size={buttonSize}
                 className={cn(
-                    'rounded-full px-2.5',
-                    reaction === 'like' && 'bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/20',
+                    buttonBaseClassName,
+                    reaction === 'like' && activeLikeClassName,
                 )}
-                onClick={() => submitReaction('like')}
+                onClick={(event) => {
+                    event.stopPropagation();
+                    void submitReaction('like');
+                }}
                 disabled={isSubmitting}
                 aria-pressed={reaction === 'like'}
             >
@@ -93,7 +127,7 @@ export function ReactionButtons({
                 ) : (
                     <ThumbsUp className="h-4 w-4" />
                 )}
-                <span className="font-mono text-xs">{likes}</span>
+                {showCounts && <span className="font-mono text-xs">{likes}</span>}
                 {showLabels && <span className="text-xs">J'aime</span>}
             </Button>
 
@@ -102,10 +136,13 @@ export function ReactionButtons({
                 variant="ghost"
                 size={buttonSize}
                 className={cn(
-                    'rounded-full px-2.5',
-                    reaction === 'dislike' && 'bg-rose-500/15 text-rose-600 hover:bg-rose-500/20',
+                    buttonBaseClassName,
+                    reaction === 'dislike' && activeDislikeClassName,
                 )}
-                onClick={() => submitReaction('dislike')}
+                onClick={(event) => {
+                    event.stopPropagation();
+                    void submitReaction('dislike');
+                }}
                 disabled={isSubmitting}
                 aria-pressed={reaction === 'dislike'}
             >
@@ -114,7 +151,9 @@ export function ReactionButtons({
                 ) : (
                     <ThumbsDown className="h-4 w-4" />
                 )}
-                <span className="font-mono text-xs">{dislikes}</span>
+                {showCounts && (
+                    <span className="font-mono text-xs">{dislikes}</span>
+                )}
                 {showLabels && <span className="text-xs">Je n'aime pas</span>}
             </Button>
         </div>
