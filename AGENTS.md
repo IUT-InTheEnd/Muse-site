@@ -35,6 +35,7 @@ Format PHP with `composer lint` (`pint`) and frontend code with `npm run format`
 - Avoid encoding assumptions that can drift (code rot).
 - Only cache successful responses.
 - Do not write additional DB migrations for schema changes, change the schema instead. We are not in production, we are in dev phase.
+- Write robust, idiomatic code. If you can choose between a solution that works now and a solution that will scale, choose the solution that will cale.
 
 ## Testing Guidelines
 

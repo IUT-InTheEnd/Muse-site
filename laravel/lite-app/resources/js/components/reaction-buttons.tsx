@@ -1,9 +1,11 @@
-import { Loader2, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+    type ReactionType,
+    useReactionContext,
+} from '@/contexts/reaction-context';
 import { cn } from '@/lib/utils';
-
-type ReactionType = 'like' | 'dislike' | null;
+import { Loader2, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 type ReactionButtonsProps = {
     resource: 'tracks' | 'albums';
@@ -30,23 +32,55 @@ export function ReactionButtons({
     showCounts = true,
     appearance = 'default',
 }: ReactionButtonsProps) {
-    const [reaction, setReaction] = useState<ReactionType>(initialReaction);
-    const [likes, setLikes] = useState(initialLikes);
-    const [dislikes, setDislikes] = useState(initialDislikes);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const {
+        getReaction,
+        seedReaction,
+        startRequest,
+        finishRequest,
+        failRequest,
+    } = useReactionContext();
+    const lastSeededKeyRef = useRef<string | null>(null);
 
     useEffect(() => {
-        setReaction(initialReaction);
-        setLikes(initialLikes);
-        setDislikes(initialDislikes);
-    }, [resourceId, initialReaction, initialLikes, initialDislikes]);
+        const nextSeedKey = `${resource}:${resourceId}`;
 
-    const submitReaction = async (nextReaction: Exclude<ReactionType, null>) => {
-        if (isSubmitting) {
+        if (lastSeededKeyRef.current === nextSeedKey) {
             return;
         }
 
-        const desiredReaction = reaction === nextReaction ? 'none' : nextReaction;
+        seedReaction(resource, resourceId, {
+            reaction: initialReaction,
+            likes: initialLikes,
+            dislikes: initialDislikes,
+        });
+        lastSeededKeyRef.current = nextSeedKey;
+    }, [
+        resource,
+        resourceId,
+        seedReaction,
+    ]);
+
+    const currentState = getReaction(resource, resourceId) ?? {
+        reaction: initialReaction,
+        likes: initialLikes,
+        dislikes: initialDislikes,
+    };
+    const reaction = currentState.reaction;
+    const likes = currentState.likes;
+    const dislikes = currentState.dislikes;
+    const isPending = currentState.pending;
+
+    const submitReaction = async (
+        nextReaction: Exclude<ReactionType, null>,
+    ) => {
+        if (isSubmitting || isPending) {
+            return;
+        }
+
+        const desiredReaction =
+            reaction === nextReaction ? 'none' : nextReaction;
+        const requestVersion = startRequest(resource, resourceId);
 
         setIsSubmitting(true);
 
@@ -68,11 +102,14 @@ export function ReactionButtons({
             }
 
             const data = await response.json();
-            setReaction(data.reaction ?? null);
-            setLikes(data.likes ?? 0);
-            setDislikes(data.dislikes ?? 0);
+            finishRequest(resource, resourceId, requestVersion, {
+                reaction: data.reaction ?? null,
+                likes: data.likes ?? 0,
+                dislikes: data.dislikes ?? 0,
+            });
         } catch (error) {
             console.error('Erreur reaction:', error);
+            failRequest(resource, resourceId, requestVersion);
         } finally {
             setIsSubmitting(false);
         }
@@ -119,7 +156,7 @@ export function ReactionButtons({
                     event.stopPropagation();
                     void submitReaction('like');
                 }}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isPending}
                 aria-pressed={reaction === 'like'}
             >
                 {isSubmitting && reaction !== 'dislike' ? (
@@ -127,7 +164,9 @@ export function ReactionButtons({
                 ) : (
                     <ThumbsUp className="h-4 w-4" />
                 )}
-                {showCounts && <span className="font-mono text-xs">{likes}</span>}
+                {showCounts && (
+                    <span className="font-mono text-xs">{likes}</span>
+                )}
                 {showLabels && <span className="text-xs">J'aime</span>}
             </Button>
 
@@ -143,7 +182,7 @@ export function ReactionButtons({
                     event.stopPropagation();
                     void submitReaction('dislike');
                 }}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isPending}
                 aria-pressed={reaction === 'dislike'}
             >
                 {isSubmitting && reaction !== 'like' ? (

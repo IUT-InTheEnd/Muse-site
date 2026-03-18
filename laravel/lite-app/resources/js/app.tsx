@@ -6,6 +6,7 @@ import '../css/app.css';
 import { AuthenticatedMusicPlayer } from './components/authenticated-music-player';
 import Footer from './components/musecomponents/Footer';
 import Navbar from './components/musecomponents/Navbar';
+import { ReactionProvider } from './contexts/reaction-context';
 import { MusicPlayerProvider } from './contexts/music-player-context';
 import { initializeTheme } from './hooks/use-appearance';
 import type { SharedData, User } from './types';
@@ -35,29 +36,31 @@ function AppWrapper({
 
     return (
         <div className="min-h-screen">
-            <MusicPlayerProvider userId={user?.id}>
-                {/* Header */}
-                <header className="w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
-                    <div className="mx-auto w-full max-w-168.75 text-sm lg:max-w-4xl">
-                        <Navbar user={user} />
+            <ReactionProvider>
+                <MusicPlayerProvider userId={user?.id}>
+                    {/* Header */}
+                    <header className="w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+                        <div className="mx-auto w-full max-w-168.75 text-sm lg:max-w-4xl">
+                            <Navbar user={user} />
+                        </div>
+                    </header>
+
+                    {/* Page Content */}
+                    <div className='my-2'>
+                        {children}
                     </div>
-                </header>
 
-                {/* Page Content */}
-                <div className='my-2'>
-                    {children}
-                </div>
+                    {/* Footer */}
+                    <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+                        <div className="mx-auto w-full max-w-168.75 py-6 text-sm lg:max-w-4xl">
+                            <Footer />
+                        </div>
+                    </footer>
 
-                {/* Footer */}
-                <footer className="w-full shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
-                    <div className="mx-auto w-full max-w-168.75 py-6 text-sm lg:max-w-4xl">
-                        <Footer />
-                    </div>
-                </footer>
-
-                {/* Player */}
-                <AuthenticatedMusicPlayer initialAuth={!!user} />
-            </MusicPlayerProvider>
+                    {/* Player */}
+                    <AuthenticatedMusicPlayer initialAuth={!!user} />
+                </MusicPlayerProvider>
+            </ReactionProvider>
         </div>
     );
 }
