@@ -104,7 +104,7 @@ export function TrackRow({
     const [selectedPlaylistIds, setSelectedPlaylistIds] = React.useState<number[]>([]);
     const [initialSelectedIds, setInitialSelectedIds] = React.useState<number[]>([]);
     const canUseLibrary = Boolean(auth?.user);
-    const canPlayTrack = Boolean(auth?.user);
+    const canPlayTrack = true; // todo: remove entirely (temporary to avoid conflict)
 
     // Determiner si cette piste est en cours de lecture
     const isCurrentTrack = currentTrack?.title === track.track_title;
