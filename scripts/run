@@ -7,5 +7,9 @@ docker compose up -d
 popd
 pushd laravel/lite-app
 php artisan migrate
-composer run dev
+if [[ "$#" -eq 0 || -z "${1:-}" ]]; then
+    composer run dev
+else
+    composer run "$@"
+fi
 popd
