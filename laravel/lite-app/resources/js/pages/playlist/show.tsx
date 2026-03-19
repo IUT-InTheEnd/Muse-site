@@ -321,12 +321,13 @@ export default function PlaylistShow({ playlist }: Props) {
                                         onDragStart={() => handleDragStart(index)}
                                         onDragOver={(e) => handleDragOver(e, index)}
                                         onDragEnd={handleDragEnd}
-                                        className={`transition-all duration-150 ${isEditable ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedItemIndex === index ? 'opacity-40 bg-white/5' : 'opacity-100 hover:bg-white/5'}`}
+                                        className={`transition-all duration-150 first:rounded-t-lg last:rounded-b-lg overflow-hidden ${isEditable ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedItemIndex === index ? 'opacity-40 bg-white/5' : 'opacity-100 hover:bg-white/5'}`}
                                     >
                                         <TrackList
                                             tracks={[item]}
                                             showIndex={true}
                                             indexOffset={index}
+                                            listClassName="rounded-none bg-card/50"
                                         />
                                     </div>
                                 ))}
