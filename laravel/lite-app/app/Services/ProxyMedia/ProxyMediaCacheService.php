@@ -5,6 +5,7 @@ namespace App\Services\ProxyMedia;
 use App\Services\ProxyMedia\Contracts\ProxyCacheIndex;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
@@ -34,19 +35,30 @@ class ProxyMediaCacheService
     {
         $hash = sha1($url);
 
-        if ($cached = $this->findCached($hash)) {
-            return $cached;
-        }
-
-        $lock = $this->index->lock("download:{$hash}", (int) config('proxy_cache.lock_seconds', 120));
-
-        return $lock->block((int) config('proxy_cache.lock_wait_seconds', 10), function () use ($hash, $url) {
+        try {
             if ($cached = $this->findCached($hash)) {
                 return $cached;
             }
 
-            return $this->downloadAndStore($hash, $url);
-        });
+            $lock = $this->index->lock("download:{$hash}", (int) config('proxy_cache.lock_seconds', 120));
+
+            return $lock->block((int) config('proxy_cache.lock_wait_seconds', 10), function () use ($hash, $url) {
+                if ($cached = $this->findCached($hash)) {
+                    return $cached;
+                }
+
+                return $this->downloadAndStore($hash, $url);
+            });
+        } catch (\Throwable $exception) {
+            Log::warning('Proxy cache index unavailable, bypassing cache.', [
+                'url' => $url,
+                'exception_class' => $exception::class,
+                'message' => $exception->getMessage(),
+                'exception' => $exception,
+            ]);
+
+            return $this->downloadWithoutCache($hash, $url);
+        }
     }
 
     private function findCached(string $hash): ?ProxyCachedFile
@@ -74,37 +86,19 @@ class ProxyMediaCacheService
 
     private function downloadAndStore(string $hash, string $url): ?ProxyCachedFile
     {
-        $diskName = (string) config('proxy_cache.disk', 'local');
-        $disk = Storage::disk($diskName);
-
-        $tempRelativePath = $this->temporaryRelativePath($hash);
-        $this->ensureDirectoryExists(dirname($tempRelativePath));
-        $tempAbsolutePath = $disk->path($tempRelativePath);
-
-        $response = $this->downloadTo($url, $tempAbsolutePath);
-        if (! $response->successful()) {
-            $disk->delete($tempRelativePath);
-
+        $download = $this->downloadToTemporaryFile($hash, $url);
+        if ($download === null) {
             return null;
         }
 
-        $contentType = $this->normalizeContentType($response);
-        if ($contentType === null || ! in_array($contentType, $this->allowedContentTypes, true)) {
-            $disk->delete($tempRelativePath);
+        $diskName = $download['disk_name'];
+        $disk = $download['disk'];
+        $tempRelativePath = $download['temp_relative_path'];
+        $tempAbsolutePath = $download['temp_absolute_path'];
+        $contentType = $download['content_type'];
+        $assetType = $download['asset_type'];
+        $sizeBytes = $download['size_bytes'];
 
-            return null;
-        }
-
-        clearstatcache(true, $tempAbsolutePath);
-        $sizeBytes = filesize($tempAbsolutePath);
-
-        if ($sizeBytes === false || $sizeBytes <= 0) {
-            $disk->delete($tempRelativePath);
-
-            return null;
-        }
-
-        $assetType = $this->guessTypeFromContentType($contentType);
         if ($sizeBytes > (int) config('proxy_cache.max_file_size_bytes', 50 * 1024 * 1024)) {
             return new ProxyCachedFile(
                 absolutePath: $tempAbsolutePath,
@@ -136,6 +130,21 @@ class ProxyMediaCacheService
             absolutePath: $disk->path($finalRelativePath),
             contentType: $contentType,
             assetType: $assetType,
+        );
+    }
+
+    private function downloadWithoutCache(string $hash, string $url): ?ProxyCachedFile
+    {
+        $download = $this->downloadToTemporaryFile($hash, $url);
+        if ($download === null) {
+            return null;
+        }
+
+        return new ProxyCachedFile(
+            absolutePath: $download['temp_absolute_path'],
+            contentType: $download['content_type'],
+            assetType: $download['asset_type'],
+            deleteAfterSend: true,
         );
     }
 
@@ -176,6 +185,60 @@ class ProxyMediaCacheService
                 }
             }
         });
+    }
+
+    /**
+     * @return array{
+     *     disk_name: string,
+     *     disk: \Illuminate\Contracts\Filesystem\Filesystem,
+     *     temp_relative_path: string,
+     *     temp_absolute_path: string,
+     *     content_type: string,
+     *     asset_type: string,
+     *     size_bytes: int
+     * }|null
+     */
+    private function downloadToTemporaryFile(string $hash, string $url): ?array
+    {
+        $diskName = (string) config('proxy_cache.disk', 'local');
+        $disk = Storage::disk($diskName);
+
+        $tempRelativePath = $this->temporaryRelativePath($hash);
+        $this->ensureDirectoryExists(dirname($tempRelativePath));
+        $tempAbsolutePath = $disk->path($tempRelativePath);
+
+        $response = $this->downloadTo($url, $tempAbsolutePath);
+        if (! $response->successful()) {
+            $disk->delete($tempRelativePath);
+
+            return null;
+        }
+
+        $contentType = $this->normalizeContentType($response);
+        if ($contentType === null || ! in_array($contentType, $this->allowedContentTypes, true)) {
+            $disk->delete($tempRelativePath);
+
+            return null;
+        }
+
+        clearstatcache(true, $tempAbsolutePath);
+        $sizeBytes = filesize($tempAbsolutePath);
+
+        if ($sizeBytes === false || $sizeBytes <= 0) {
+            $disk->delete($tempRelativePath);
+
+            return null;
+        }
+
+        return [
+            'disk_name' => $diskName,
+            'disk' => $disk,
+            'temp_relative_path' => $tempRelativePath,
+            'temp_absolute_path' => $tempAbsolutePath,
+            'content_type' => $contentType,
+            'asset_type' => $this->guessTypeFromContentType($contentType),
+            'size_bytes' => $sizeBytes,
+        ];
     }
 
     private function downloadTo(string $url, string $destination): Response

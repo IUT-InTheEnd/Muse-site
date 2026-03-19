@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\ProxyMedia\ProxyMediaCacheService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProxyController extends Controller
@@ -75,7 +74,16 @@ class ProxyController extends Controller
             }
 
             return $response;
-        } catch (\Throwable) {
+        } catch (\Throwable $exception) {
+            Log::warning('Proxy media request failed.', [
+                'url' => $url,
+                'host' => $host,
+                'expected_type' => $this->guessTypeFromUrl($url),
+                'exception_class' => $exception::class,
+                'message' => $exception->getMessage(),
+                'exception' => $exception,
+            ]);
+
             return $this->returnPlaceholder($this->guessTypeFromUrl($url));
         }
     }
@@ -89,38 +97,6 @@ class ProxyController extends Controller
         }
 
         return false;
-    }
-
-    private function isAllowedContentType(string $contentType, bool $isImage): bool
-    {
-        if (in_array($contentType, $this->allowedContentTypes, true)) {
-            return true;
-        }
-
-        if (! $isImage && $contentType === 'application/octet-stream') {
-            return true;
-        }
-
-        return false;
-    }
-
-    private function normalizeContentType(string $url, string $contentType, bool $isImage): string
-    {
-        if ($isImage && $contentType === 'application/octet-stream') {
-            return 'image/jpeg';
-        }
-
-        if ($isImage || $contentType !== 'application/octet-stream') {
-            return $contentType;
-        }
-
-        return match (strtolower(pathinfo(parse_url($url, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION))) {
-            'mp3' => 'audio/mpeg',
-            'wav' => 'audio/wav',
-            'ogg' => 'audio/ogg',
-            'm4a', 'mp4' => 'audio/mp4',
-            default => 'audio/mpeg',
-        };
     }
 
     private function returnPlaceholder(string $type): BinaryFileResponse
