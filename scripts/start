@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Start DB async and run migrations
+set -eu
+cd "$(dirname "${BASH_SOURCE[0]}")"
+pushd ../database
+docker compose up -d
+popd
+pushd ../laravel/lite-app
+until [ "$(docker inspect --format='{{.State.Health.Status}}' sae5_6_InTheEnd)" = "healthy" ]; do
+    sleep 1
+done
+php artisan migrate
+popd

@@ -4,9 +4,5 @@ set -eu
 cd "$(dirname "${BASH_SOURCE[0]}")"
 . ./start
 pushd ../laravel/lite-app
-if [[ "$#" -eq 0 || -z "${1:-}" ]]; then
-    composer run dev
-else
-    composer run "$@"
-fi
+composer test "$@"
 popd

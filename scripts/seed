@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Rebuild database. Requires DB to be up.
 set -eu
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
+cd "$(dirname "${BASH_SOURCE[0]}")"
 . .venv/bin/activate
-pushd database
+pushd ../database
 python3 main.py "$@"
 popd
