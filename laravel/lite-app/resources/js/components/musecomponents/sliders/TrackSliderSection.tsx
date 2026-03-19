@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { ArtistLink } from '@/components/musecomponents/ArtistLink';
 import {
     CardCover,
     CardSubtitle,
@@ -14,7 +14,6 @@ export type SliderTrackArtist =
           artist_id: number;
           artist_name: string;
       }
-    | string
     | null
     | undefined;
 
@@ -28,14 +27,9 @@ export type SliderTrack = {
 type TrackSliderSectionProps = {
     title: string;
     tracks: SliderTrack[];
-    renderArtist?: (artist?: SliderTrackArtist) => ReactNode;
 };
 
-export function TrackSliderSection({
-    title,
-    tracks,
-    renderArtist,
-}: TrackSliderSectionProps) {
+export function TrackSliderSection({ title, tracks }: TrackSliderSectionProps) {
     const { playTrack } = useMusicPlayer();
 
     if (tracks.length === 0) {
@@ -80,11 +74,7 @@ export function TrackSliderSection({
                     <CardContent>
                         <CardTitle>{track.title}</CardTitle>
                         <CardSubtitle>
-                            {renderArtist
-                                ? renderArtist(track.artist)
-                                : typeof track.artist === 'string'
-                                  ? track.artist
-                                  : '—'}
+                            <ArtistLink artist={track.artist} />
                         </CardSubtitle>
                     </CardContent>
                 </MusicCard>

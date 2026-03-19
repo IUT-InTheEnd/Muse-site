@@ -7,7 +7,10 @@ import { login, register } from '@/routes';
 type RecommendedTrack = {
     id: number;
     title: string;
-    artist?: string | null;
+    artist?: {
+        artist_id: number;
+        artist_name: string;
+    } | null;
     cover?: string | null;
 };
 

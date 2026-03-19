@@ -48,19 +48,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ]
 
 export default function Dashboard({user, recentTracks, recommendedTracks, newTracks, artists}: Props) {
-    const renderArtistLink = (artist?: Track['artist']) => {
-        if (!artist) {
-            return '—';
-        }
-
-        return (
-            <Link href={`/artiste/${artist.artist_id}`}>
-                {artist.artist_name}
-            </Link>
-        );
-    };
-
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Accueil" />
@@ -72,13 +59,11 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                         <TrackSliderSection
                             title="Titres récemment écoutés"
                             tracks={recentTracks}
-                            renderArtist={renderArtistLink}
                         />
 
                         <TrackSliderSection
                             title="Rien que pour vous"
                             tracks={recommendedTracks}
-                            renderArtist={renderArtistLink}
                         />
 
                         <ArtistSlider title='Artistes favoris'>
@@ -96,10 +81,7 @@ export default function Dashboard({user, recentTracks, recommendedTracks, newTra
                             ))}
                         </ArtistSlider>
 
-                        <NewTracksSection
-                            tracks={newTracks}
-                            renderArtist={renderArtistLink}
-                        />
+                        <NewTracksSection tracks={newTracks} />
                     </div>
                 </div>
         </AppLayout>
