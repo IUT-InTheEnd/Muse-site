@@ -12,74 +12,11 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Tests\TestCase;
 
+
 class ReactionsTest extends TestCase
 {
     use WithFaker;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Schema::dropIfExists('album_reaction');
-        Schema::dropIfExists('track_reaction');
-        Schema::dropIfExists('album');
-        Schema::dropIfExists('track');
-        Schema::dropIfExists('user');
-
-        Schema::create('user', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('remember_token', 100)->nullable();
-            $table->text('two_factor_secret')->nullable();
-            $table->text('two_factor_recovery_codes')->nullable();
-            $table->timestamp('two_factor_confirmed_at')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('track', function (Blueprint $table) {
-            $table->increments('track_id');
-            $table->string('track_title')->nullable();
-            $table->unsignedInteger('track_listens')->default(0);
-            $table->unsignedInteger('track_favorites')->default(0);
-            $table->unsignedInteger('track_likes')->default(0);
-            $table->unsignedInteger('track_dislikes')->default(0);
-            $table->unsignedInteger('track_duration')->nullable();
-            $table->string('track_image_file')->nullable();
-            $table->string('track_file')->nullable();
-        });
-
-        Schema::create('album', function (Blueprint $table) {
-            $table->increments('album_id');
-            $table->string('album_title');
-            $table->date('album_date_created')->nullable();
-            $table->unsignedInteger('album_listens')->default(0);
-            $table->unsignedInteger('album_favorites')->default(0);
-            $table->unsignedInteger('album_likes')->default(0);
-            $table->unsignedInteger('album_dislikes')->default(0);
-            $table->string('album_image_file')->nullable();
-        });
-
-        Schema::create('track_reaction', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedInteger('track_id');
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->uuid('visitor_id')->nullable();
-            $table->string('reaction', 16);
-            $table->timestamps();
-        });
-
-        Schema::create('album_reaction', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedInteger('album_id');
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->uuid('visitor_id')->nullable();
-            $table->string('reaction', 16);
-            $table->timestamps();
-        });
-    }
 
     public function test_guest_can_like_a_track_and_receives_a_visitor_cookie(): void
     {

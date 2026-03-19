@@ -3,12 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Tests\TestCase;
 
 class UserInfoUpdateTest extends TestCase
 {
-    use RefreshDatabase;
+
 
     public function test_inertia_user_info_update_returns_a_redirect_instead_of_json(): void
     {

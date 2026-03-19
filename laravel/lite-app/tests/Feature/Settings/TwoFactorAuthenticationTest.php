@@ -3,14 +3,14 @@
 namespace Tests\Feature\Settings;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
 
 class TwoFactorAuthenticationTest extends TestCase
 {
-    use RefreshDatabase;
+
 
     public function test_two_factor_settings_page_can_be_rendered()
     {
