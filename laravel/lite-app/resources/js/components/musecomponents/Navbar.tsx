@@ -56,6 +56,12 @@ const Navbar = ({ user }: NavbarProps) => {
                                 >
                                     Playlists
                                 </a>
+                                <a
+                                    href="/page-recommandations"
+                                    className="hover:underline"
+                                >
+                                    Mes recommandations
+                                </a>
                             </div>
                         </>
                     )}
@@ -132,6 +138,12 @@ const Navbar = ({ user }: NavbarProps) => {
                                 className="hover:underline"
                             >
                                 Playlists
+                            </a>
+                            <a
+                                href="/page-recommandations"
+                                className="hover:underline"
+                            >
+                                Mes recommandations
                             </a>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>

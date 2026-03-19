@@ -16,6 +16,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Middleware\RefreshVisitorCookie;
+use App\Http\Controllers\RecommandationPageController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -118,6 +119,9 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/playlists/update', [PlaylistController::class, 'update'])->name('playlists.update');
     Route::delete('/playlists/delete', [PlaylistController::class, 'delete'])->name('playlists.delete');
     Route::post('/playlists/add-tracks-batch', [PlaylistController::class, 'addMultipleTracks'])->name('playlists.addTracksBatch');
+
+    // route page recommandations
+    Route::get('/page-recommandations', [RecommandationPageController::class, 'index'])->name('Recommandation.Index');
 
     // route playlist
     Route::get('/user/playlists', [PlaylistController::class, 'myPlaylists'])->name('my.playlists');
