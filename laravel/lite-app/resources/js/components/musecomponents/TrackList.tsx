@@ -32,6 +32,8 @@ type TrackListProps = {
     favoriteTrackIds?: number[];
     /** Afficher les index des tracks */
     showIndex?: boolean;
+    /** Décalage pour l'index */
+    indexOffset?: number;
     /** Classes CSS additionnelles pour le conteneur */
     className?: string;
     /** Classes CSS additionnelles pour la liste */
@@ -60,6 +62,7 @@ export function TrackList({
     playlists = [],
     favoriteTrackIds = [],
     showIndex = true,
+    indexOffset = 0,
     className,
     listClassName,
     onFavoriteChange,
@@ -127,7 +130,7 @@ export function TrackList({
                         key={item.track.track_id}
                         track={item.track}
                         artist={item.artist}
-                        index={index}
+                        index={index + indexOffset} 
                         showIndex={showIndex}
                         isFavorite={favoriteTrackIds.includes(
                             item.track.track_id,

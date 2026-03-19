@@ -9,7 +9,7 @@ import {
     TrashIcon,
     XIcon,
 } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import {
     TrackList,
     type TrackListItem,
@@ -66,79 +66,109 @@ export default function PlaylistShow({ playlist }: Props) {
     const [isDeleting, setIsDeleting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const [localTracks, setLocalTracks] = useState<TrackListItem[]>([]);
+    const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
+
+    useEffect(() => {
+        const items: TrackListItem[] = playlist.tracks.map((track) => {
+            const artist = track.realisers?.[0]?.artist;
+            return {
+                track: {
+                    track_id: track.track_id,
+                    track_title: track.track_title,
+                    track_image_file: track.track_image_file,
+                    track_duration: track.track_duration,
+                    track_listens: track.track_listens,
+                } as TrackData,
+                artist: artist ? ({
+                    artist_id: artist.artist_id,
+                    artist_name: artist.artist_name,
+                } as ArtistData) : undefined,
+            };
+        });
+        setLocalTracks(items);
+    }, [playlist.tracks]);
+
     const isEditable = playlist.playlist_deletable;
     const isFavorites = !playlist.playlist_deletable;
 
-    // Image de la playlist
+    // --- LOGIQUE DRAG & DROP ---
+    const handleDragStart = (index: number) => {
+        if (!isEditable) return;
+        setDraggedItemIndex(index);
+    };
+
+    const handleDragOver = (e: React.DragEvent, index: number) => {
+        e.preventDefault();
+        if (draggedItemIndex === null || draggedItemIndex === index) return;
+
+        const items = [...localTracks];
+        const draggedItem = items[draggedItemIndex];
+        items.splice(draggedItemIndex, 1);
+        items.splice(index, 0, draggedItem);
+        
+        setDraggedItemIndex(index);
+        setLocalTracks(items);
+    };
+
+    const handleDragEnd = async () => {
+        setDraggedItemIndex(null);
+        if (!isEditable) return;
+
+        try {
+            await fetch('/playlists/reorder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
+                },
+                body: JSON.stringify({
+                    playlist_id: playlist.playlist_id,
+                    track_ids: localTracks.map(item => item.track.track_id)
+                }),
+            });
+        } catch (error) {
+            console.error("Erreur lors de la sauvegarde de l'ordre:", error);
+        }
+    };
+
     const getPlaylistImage = () => {
-        if (playlist.playlist_image_file) {
-            return `/image/${playlist.playlist_image_file}`;
-        }
-        if (isFavorites) {
-            return '/images/default-fav-image.jpg';
-        }
-        return null;
+        if (playlist.playlist_image_file) return `/image/${playlist.playlist_image_file}`;
+        return isFavorites ? '/images/default-fav-image.jpg' : null;
     };
     const playlistImage = getPlaylistImage();
 
-    // Calculer la durée totale
-    const totalDuration = playlist.tracks.reduce(
-        (acc, track) => acc + (track.track_duration || 0),
-        0,
-    );
+    const totalDuration = playlist.tracks.reduce((acc, track) => acc + (track.track_duration || 0), 0);
     const hours = Math.floor(totalDuration / 3600);
     const minutes = Math.floor((totalDuration % 3600) / 60);
 
-    // Jouer toutes les tracks
     const handlePlayAll = async () => {
-        if (playlist.tracks.length === 0) return;
-
+        if (localTracks.length === 0) return;
         try {
-            const allTracks = await fetchTracks(
-                playlist.tracks.map((t) => t.track_id),
-            );
+            const allTracks = await fetchTracks(localTracks.map((t) => t.track.track_id));
             setPlayerPlaylist(allTracks, 0);
-        } catch (err) {
-            console.error(err);
-        }
+        } catch (err) { console.error(err); }
     };
 
-    // Mettre à jour le nom
     const handleUpdateName = async () => {
         if (!editedName.trim() || editedName === playlist.playlist_name) {
             setIsEditingName(false);
             return;
         }
-
         setIsUpdating(true);
         try {
             const response = await fetch('/playlists/update', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN':
-                        document
-                            .querySelector('meta[name="csrf-token"]')
-                            ?.getAttribute('content') ?? '',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
                 },
-                body: JSON.stringify({
-                    playlist_id: playlist.playlist_id,
-                    name: editedName,
-                }),
+                body: JSON.stringify({ playlist_id: playlist.playlist_id, name: editedName }),
             });
-
-            if (response.ok) {
-                router.reload();
-            }
-        } catch (error) {
-            console.error('Erreur lors de la mise a jour:', error);
-        } finally {
-            setIsUpdating(false);
-            setIsEditingName(false);
-        }
+            if (response.ok) router.reload();
+        } catch (error) { console.error(error); } finally { setIsUpdating(false); setIsEditingName(false); }
     };
 
-    // Mettre à jour la visibilité
     const handleToggleVisibility = async () => {
         setIsUpdating(true);
         try {
@@ -146,336 +176,161 @@ export default function PlaylistShow({ playlist }: Props) {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN':
-                        document
-                            .querySelector('meta[name="csrf-token"]')
-                            ?.getAttribute('content') ?? '',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
                 },
-                body: JSON.stringify({
-                    playlist_id: playlist.playlist_id,
-                    public: !playlist.playlist_public,
-                }),
+                body: JSON.stringify({ playlist_id: playlist.playlist_id, public: !playlist.playlist_public }),
             });
-
-            if (response.ok) {
-                router.reload();
-            }
-        } catch (error) {
-            console.error('Erreur lors de la mise a jour:', error);
-        } finally {
-            setIsUpdating(false);
-        }
+            if (response.ok) router.reload();
+        } catch (error) { console.error(error); } finally { setIsUpdating(false); }
     };
 
-    // Mettre à jour l'image
-    const handleImageChange = async (
-        e: React.ChangeEvent<HTMLInputElement>,
-    ) => {
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
         setIsUpdating(true);
         try {
             const formData = new FormData();
             formData.append('formData', file);
             formData.append('table', 'playlist');
             formData.append('playlist_id', String(playlist.playlist_id));
-
             const response = await fetch('/image', {
                 method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN':
-                        document
-                            .querySelector('meta[name="csrf-token"]')
-                            ?.getAttribute('content') ?? '',
-                },
+                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '' },
                 body: formData,
             });
-
-            if (response.ok) {
-                router.reload();
-            }
-        } catch (error) {
-            console.error("Erreur lors de l'upload:", error);
-        } finally {
-            setIsUpdating(false);
-        }
+            if (response.ok) router.reload();
+        } catch (error) { console.error(error); } finally { setIsUpdating(false); }
     };
 
-    // Supprimer la playlist
     const handleDelete = async () => {
         if (!confirm('Supprimer cette playlist ?')) return;
-
         setIsDeleting(true);
         try {
             const response = await fetch('/playlists/delete', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN':
-                        document
-                            .querySelector('meta[name="csrf-token"]')
-                            ?.getAttribute('content') ?? '',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
                 },
                 body: JSON.stringify({ playlist_id: playlist.playlist_id }),
             });
-
-            if (response.ok) {
-                router.visit('/user/playlists');
-            }
-        } catch (error) {
-            console.error('Erreur lors de la suppression:', error);
-        } finally {
-            setIsDeleting(false);
-        }
+            if (response.ok) router.visit('/user/playlists');
+        } catch (error) { console.error(error); } finally { setIsDeleting(false); }
     };
-
-    // Retirer un track de la playlist
-    const handleRemoveTrack = async (trackId: number) => {
-        try {
-            const response = await fetch('/playlists/remove-track', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN':
-                        document
-                            .querySelector('meta[name="csrf-token"]')
-                            ?.getAttribute('content') ?? '',
-                },
-                body: JSON.stringify({
-                    playlist_id: playlist.playlist_id,
-                    track_id: trackId,
-                }),
-            });
-
-            if (response.ok) {
-                router.reload();
-            }
-        } catch (error) {
-            console.error('Erreur lors du retrait:', error);
-        }
-    };
-
-    // Préparer les tracks pour le TrackList
-    const trackListItems: TrackListItem[] = playlist.tracks.map((track) => {
-        const artist = track.realisers?.[0]?.artist;
-        return {
-            track: {
-                track_id: track.track_id,
-                track_title: track.track_title,
-                track_image_file: track.track_image_file,
-                track_duration: track.track_duration,
-                track_listens: track.track_listens,
-            } as TrackData,
-            artist: artist
-                ? ({
-                      artist_id: artist.artist_id,
-                      artist_name: artist.artist_name,
-                  } as ArtistData)
-                : undefined,
-        };
-    });
 
     return (
         <>
             <Head title={playlist.playlist_name} />
             <div className="flex min-h-screen flex-col items-center">
-                {/* Header avec image et infos */}
                 <div
                     className="relative flex h-80 w-full items-end bg-cover bg-center"
-                    style={{
-                        backgroundImage: playlistImage
-                            ? `url(${playlistImage})`
-                            : undefined,
-                    }}
+                    style={{ backgroundImage: playlistImage ? `url(${playlistImage})` : undefined }}
                 >
                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30" />
-
-                    {/* Bouton pour changer l'image */}
+                    
                     {isEditable && (
                         <>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="hidden"
-                            />
+                            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={isUpdating}
                                 className="absolute cursor-pointer top-4 right-4 z-20 rounded-full bg-black/50 p-3 text-white transition hover:bg-black/70 disabled:opacity-50"
-                                aria-label="Changer l'image"
                             >
                                 <CameraIcon size={20} />
                             </button>
                         </>
                     )}
 
-                    {/* Image placeholder si pas d'image */}
                     {!playlistImage && (
                         <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                            <MusicIcon
-                                size={96}
-                                className="text-muted-foreground/50"
-                            />
+                            <MusicIcon size={96} className="text-muted-foreground/50" />
                         </div>
                     )}
 
                     <div className="relative z-10 w-full p-8">
                         <div className="mx-auto max-w-5xl">
-                            {/* Badge favoris ou visibilité */}
                             <div className="mb-2 flex items-center gap-2">
                                 {isFavorites ? (
-                                    <span className="rounded-full bg-primary/20 px-3 py-1 text-sm text-primary">
-                                        Favoris
-                                    </span>
+                                    <span className="rounded-full bg-primary/20 px-3 py-1 text-sm text-primary">Favoris</span>
                                 ) : (
                                     <button
                                         onClick={handleToggleVisibility}
                                         disabled={isUpdating}
                                         className="flex cursor-pointer items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-sm text-white transition hover:bg-white/20 disabled:opacity-50"
                                     >
-                                        {playlist.playlist_public ? (
-                                            <>
-                                                <GlobeIcon size={14} />
-                                                Publique
-                                            </>
-                                        ) : (
-                                            <>
-                                                <LockIcon size={14} />
-                                                Privee
-                                            </>
-                                        )}
+                                        {playlist.playlist_public ? <><GlobeIcon size={14} /> Publique</> : <><LockIcon size={14} /> Privee</>}
                                     </button>
                                 )}
                             </div>
 
-                            {/* Nom de la playlist */}
                             {isEditingName ? (
                                 <div className="mb-4 flex items-center gap-2">
                                     <input
-                                        type="text"
-                                        value={editedName}
-                                        onChange={(e) =>
-                                            setEditedName(e.target.value)
-                                        }
+                                        type="text" value={editedName}
+                                        onChange={(e) => setEditedName(e.target.value)}
                                         className="border-b-2 border-white bg-transparent text-4xl font-bold text-white outline-none"
                                         autoFocus
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter')
-                                                handleUpdateName();
-                                            if (e.key === 'Escape') {
-                                                setEditedName(
-                                                    playlist.playlist_name,
-                                                );
-                                                setIsEditingName(false);
-                                            }
-                                        }}
+                                        onKeyDown={(e) => { if (e.key === 'Enter') handleUpdateName(); if (e.key === 'Escape') { setEditedName(playlist.playlist_name); setIsEditingName(false); }}}
                                     />
-                                    <Button
-                                        size="sm"
-                                        onClick={handleUpdateName}
-                                        disabled={isUpdating}
-                                        className="cursor-pointer"
-                                    >
-                                        OK
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => {
-                                            setEditedName(
-                                                playlist.playlist_name,
-                                            );
-                                            setIsEditingName(false);
-                                        }}
-                                        className="cursor-pointer"
-                                    >
-                                        <XIcon size={16} />
-                                    </Button>
+                                    <Button size="sm" onClick={handleUpdateName} disabled={isUpdating} className="cursor-pointer">OK</Button>
+                                    <Button size="sm" variant="ghost" onClick={() => { setEditedName(playlist.playlist_name); setIsEditingName(false); }} className="cursor-pointer"><XIcon size={16} /></Button>
                                 </div>
                             ) : (
                                 <div className="mb-4 flex items-center gap-3">
-                                    <h1 className="text-4xl font-bold text-white">
-                                        {playlist.playlist_name}
-                                    </h1>
+                                    <h1 className="text-4xl font-bold text-white">{playlist.playlist_name}</h1>
                                     {isEditable && (
-                                        <button
-                                            onClick={() =>
-                                                setIsEditingName(true)
-                                            }
-                                            className="rounded-full cursor-pointer p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
-                                        >
+                                        <button onClick={() => setIsEditingName(true)} className="rounded-full cursor-pointer p-2 text-white/70 transition hover:bg-white/10 hover:text-white">
                                             <PencilIcon size={18} />
                                         </button>
                                     )}
                                 </div>
                             )}
 
-                            {/* Infos */}
                             <p className="mb-6 text-white/70">
-                                {playlist.user?.name &&
-                                    `Par ${playlist.user.name} • `}
-                                {playlist.tracks.length}{' '}
-                                {playlist.tracks.length > 1
-                                    ? 'titres'
-                                    : 'titre'}
-                                {totalDuration > 0 && (
-                                    <>
-                                        {' '}
-                                        • {hours > 0 && `${hours}h `}
-                                        {minutes} min
-                                    </>
-                                )}
+                                {playlist.user?.name && `Par ${playlist.user.name} • `}
+                                {localTracks.length} {localTracks.length > 1 ? 'titres' : 'titre'}
+                                {totalDuration > 0 && <> • {hours > 0 && `${hours}h `}{minutes} min</>}
                             </p>
 
-                            {/* Actions */}
                             <div className="flex items-center gap-3">
-                                <Button
-                                    size="lg"
-                                    onClick={handlePlayAll}
-                                    disabled={playlist.tracks.length === 0}
-                                    className="gap-2 cursor-pointer"
-                                >
-                                    <PlayIcon size={20} />
-                                    Lecture
+                                <Button size="lg" onClick={handlePlayAll} disabled={localTracks.length === 0} className="gap-2 cursor-pointer">
+                                    <PlayIcon size={20} /> Lecture
                                 </Button>
-
                                 {isEditable && (
-                                    <Button
-                                        size="lg"
-                                        variant="destructive"
-                                        onClick={handleDelete}
-                                        disabled={isDeleting}
-                                        className="gap-2 cursor-pointer"
-                                    >
-                                        <TrashIcon size={18} />
-                                        Supprimer
+                                    <Button size="lg" variant="destructive" onClick={handleDelete} disabled={isDeleting} className="gap-2 cursor-pointer">
+                                        <TrashIcon size={18} /> Supprimer
                                     </Button>
                                 )}
                             </div>
                         </div>
                     </div>
                 </div>
-
-                {/* Liste des tracks */}
                 <div className="w-full px-6 py-8">
                     <div className="mx-auto max-w-5xl">
-                        {playlist.tracks.length === 0 ? (
+                        {localTracks.length === 0 ? (
                             <div className="flex flex-col items-center justify-center gap-4 py-20 text-muted-foreground">
                                 <MusicIcon size={48} />
                                 <p>Cette playlist est vide</p>
-                                <p className="text-sm">
-                                    Ajoutez des titres depuis la page d'un album
-                                    ou d'un artiste
-                                </p>
                             </div>
                         ) : (
-                            <TrackList
-                                tracks={trackListItems}
-                                showIndex={true}
-                            />
+                            <div className="flex flex-col">
+                                {localTracks.map((item, index) => (
+                                    <div
+                                        key={item.track.track_id}
+                                        draggable={isEditable}
+                                        onDragStart={() => handleDragStart(index)}
+                                        onDragOver={(e) => handleDragOver(e, index)}
+                                        onDragEnd={handleDragEnd}
+                                        className={`transition-all duration-150 ${isEditable ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedItemIndex === index ? 'opacity-40 bg-white/5' : 'opacity-100 hover:bg-white/5'}`}
+                                    >
+                                        <TrackList
+                                            tracks={[item]}
+                                            showIndex={true}
+                                            indexOffset={index}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         )}
                     </div>
                 </div>
