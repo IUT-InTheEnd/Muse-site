@@ -117,6 +117,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/playlists/sync-track', [PlaylistController::class, 'syncTrackPlaylists'])->name('playlists.syncTrack');
     Route::patch('/playlists/update', [PlaylistController::class, 'update'])->name('playlists.update');
     Route::delete('/playlists/delete', [PlaylistController::class, 'delete'])->name('playlists.delete');
+    Route::post('/playlists/add-tracks-batch', [PlaylistController::class, 'addMultipleTracks'])->name('playlists.addTracksBatch');
 
     // route playlist
     Route::get('/user/playlists', [PlaylistController::class, 'myPlaylists'])->name('my.playlists');

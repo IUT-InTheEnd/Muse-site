@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/contexts/music-player-context';
 import { fetchTracks } from '@/lib/track-api';
 import type { SharedData } from '@/types';
+import { AlbumPlaylistDialog } from '@/components/musecomponents/AlbumPlaylistDialog';
 
 type Props = {
     album: {
@@ -49,6 +50,8 @@ export default function Album({
     const { setPlaylist } = useMusicPlayer();
     const [isInLibrary, setIsInLibrary] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isAlbumDialogOpen, setIsAlbumDialogOpen] = useState(false);
+    const allTrackIds = listeMusiques.map(m => m.track.track_id);
 
     // Check if album is in library on mount
     useEffect(() => {
@@ -208,13 +211,21 @@ export default function Album({
                                 )}
                             </Button>
                             <Button
-                                className="flex-1"
-                                variant={'default'}
-                                onClick={handleToggleLibrary}
-                                disabled={isLoading}
+                                className="flex-1 cursor-pointer"
+                                variant="default"
+                                onClick={() => {
+                                    if (!auth?.user) return alert('Connectez-vous !');
+                                    setIsAlbumDialogOpen(true);
+                                }}
                             >
                                 Ajouter à une playlist
                             </Button>
+
+                            <AlbumPlaylistDialog 
+                                isOpen={isAlbumDialogOpen}
+                                onOpenChange={setIsAlbumDialogOpen}
+                                trackIds={allTrackIds}
+                            />
                         </div>
                     </main>
                 </div>

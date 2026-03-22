@@ -79,36 +79,39 @@ class PlaylistController extends Controller
         ]);
     }
 
-    // Crée une nouvelle playlist et peut ajouter un track à la création
     public function create(Request $request): JsonResponse
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'track_id' => 'nullable|integer|exists:track,track_id',
-        ]);
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'track_id' => 'nullable|integer|exists:track,track_id', 
+        'track_ids' => 'nullable|array',                       
+        'track_ids.*' => 'integer|exists:track,track_id',
+    ]);
 
-        $user = auth()->user();
+    $user = auth()->user();
 
-        $playlist = Playlist::create([
-            'user_id' => $user->id,
-            'playlist_name' => $request->input('name'),
-            'playlist_date_created' => now(),
-            'playlist_date_updated' => now(),
-            'playlist_public' => false,
-            'playlist_deletable' => true,
-        ]);
+    $playlist = Playlist::create([
+        'user_id' => $user->id,
+        'playlist_name' => $request->input('name'),
+        'playlist_date_created' => now(),
+        'playlist_date_updated' => now(),
+        'playlist_public' => false,
+        'playlist_deletable' => true,
+    ]);
 
-        // Si un track_id est fourni, l'ajouter a la playlist
-        if ($request->has('track_id') && $request->input('track_id')) {
-            $playlist->tracks()->attach($request->input('track_id'));
-        }
-
-        return response()->json([
-            'success' => true,
-            'playlist' => $playlist,
-            'message' => 'Playlist creee avec succes',
-        ]);
+    if ($request->filled('track_ids')) {
+        $playlist->tracks()->attach($request->input('track_ids'));
+    } 
+    elseif ($request->filled('track_id')) {
+        $playlist->tracks()->attach($request->input('track_id'));
     }
+
+    return response()->json([
+        'success' => true,
+        'playlist' => $playlist,
+        'message' => 'Playlist créée avec succès',
+    ]);
+}
 
     // Supprime une playlist (seules les playlists supprimables peuvent être supprimées)
     public function delete(Request $request): JsonResponse
@@ -211,6 +214,32 @@ class PlaylistController extends Controller
             'message' => 'Titre ajoute a la playlist',
         ]);
     }
+
+    public function addMultipleTracks(Request $request): JsonResponse
+{
+    $request->validate([
+        'playlist_id' => 'required|integer|exists:playlist,playlist_id',
+        'track_ids' => 'required|array',
+        'track_ids.*' => 'integer|exists:track,track_id',
+    ]);
+
+    $user = auth()->user();
+    
+    $playlist = $this->playlists->userOwnedPlaylist($user, $request->input('playlist_id'));
+
+    if (!$playlist) {
+        return response()->json(['message' => 'Playlist non trouvée ou accès refusé'], 404);
+    }
+
+    $playlist->tracks()->syncWithoutDetaching($request->input('track_ids'));
+    
+    $playlist->update(['playlist_date_updated' => now()]);
+
+    return response()->json([
+        'success' => true, 
+        'message' => count($request->input('track_ids')) . ' titres ajoutés avec succès'
+    ]);
+}
 
     // Retire un track d'une playlist
     public function removeTrack(Request $request): JsonResponse
