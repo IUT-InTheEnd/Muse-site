@@ -133,6 +133,7 @@ Route::middleware(['auth'])->group(function () {
 
     // page administrator
     Route::get('/administrator', [AdministratorController::class, 'show'])->name('administrator');
+    Route::delete('/administrator/users/{id}', [AdministratorController::class, 'deleteUser'])->name('administrator.users.delete');
 
     // Images create/update/delete
     Route::post('/image', [ImageFileController::class, 'uploadImage'])->name('image.upload');
