@@ -42,3 +42,8 @@ export const MUSIC_CONTEXT_OPTIONS = [
     'Fête',
     'Autre',
 ] as const;
+
+export const ROLE_OPTIONS = [
+    'Utilisateur',
+    'Administrateur',
+] as const;

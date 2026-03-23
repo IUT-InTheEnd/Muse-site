@@ -134,6 +134,11 @@ Route::middleware(['auth'])->group(function () {
 
     // page administrator
     Route::get('/administrator', [AdministratorController::class, 'show'])->name('administrator');
+    Route::post('/administrator/users', [AdministratorController::class, 'createUser'])->name('administrator.users.create');
+    Route::patch('/administrator/users/{id}', [AdministratorController::class, 'updateUser'])->name('administrator.users.update');
+    Route::delete('/administrator/users/{id}', [AdministratorController::class, 'deleteUser'])->name('administrator.users.delete');
+    Route::patch('/administrator/users/{id}/role', [AdministratorController::class, 'changeUserRole'])->name('administrator.users.role');
+    Route::patch('/administrator/users/{id}/statut', [AdministratorController::class, 'changeUserStatut'])->name('administrator.users.statut');
 
     // Images create/update/delete
     Route::post('/image', [ImageFileController::class, 'uploadImage'])->name('image.upload');
