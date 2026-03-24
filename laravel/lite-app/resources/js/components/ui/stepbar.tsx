@@ -1,16 +1,13 @@
 import React from 'react';
+import { STEPS } from "@/lib/constante_generale"
+
 
 interface StepBarProps {
   currentStep: number;
 }
 
 const StepBar: React.FC<StepBarProps> = ({ currentStep }) => {
-  const steps = [
-    { id: 1, label: 'Genres' },
-    { id: 2, label: 'Artistes' },
-    { id: 3, label: 'Préférences' },
-    { id: 4, label: 'Récap' },
-  ];
+  
 
   return (
     <div className="w-full py-12">
@@ -23,7 +20,7 @@ const StepBar: React.FC<StepBarProps> = ({ currentStep }) => {
           }} 
         />
 
-        {steps.map((step) => {
+        {STEPS.map((step) => {
           const isActive = currentStep >= step.id;
           return (
             <div key={step.id} className="relative z-10 flex flex-col items-center flex-1">
