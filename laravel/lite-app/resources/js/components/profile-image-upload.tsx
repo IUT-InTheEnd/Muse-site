@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { deleteMethod, upload } from '@/routes/image';
 import type { SharedData } from '@/types';
+import { TYPEIMAGE } from "@/lib/constante_generale"
 
 function getInitials(name: string): string {
     return name
@@ -37,13 +38,7 @@ export default function ProfileImageUpload() {
         if (!file) return;
 
         // Validation côté client
-        const validTypes = [
-            'image/jpeg',
-            'image/png',
-            'image/jpg',
-            'image/webp',
-        ];
-        if (!validTypes.includes(file.type)) {
+        if (!TYPEIMAGE.includes(file.type)) {
             alert('Format non supporté. Utilisez JPEG, PNG ou WebP.');
             return;
         }

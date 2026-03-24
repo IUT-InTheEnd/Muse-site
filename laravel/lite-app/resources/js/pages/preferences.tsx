@@ -7,6 +7,7 @@ import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input";
 import StepBar from '@/components/ui/stepbar';
+import { STYLE_ICON, CONTEXTE_ICON, HUMEUR_ICON, PREFERENCE_ICON, LANGUE_ICON } from "@/lib/constantes_icon"
 
 interface Artist {
     artist_id: number;
@@ -48,52 +49,6 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
 
     const nextStep = () => setStep(step + 1);
     const prevStep = () => setStep(step - 1);
-
-    const iconMap: Record<string, any> = {
-        'Sport': <Dumbbell size={18} />,
-        'Travail / études': <BriefcaseBusiness size={18} />,
-        'Détente': <Sofa size={18} />,
-        'Soirée entre amis': <PartyPopper size={18} />,
-        'Trajet': <Car size={18} />,
-        'Jeu vidéo': <Gamepad2 size={18} />,
-        'Tâche ménagère ou cuisine': <UtensilsCrossed size={18} />,
-        'Lecture / écriture': <BookOpen size={18} />,
-        'Dormir': <MoonStar size={18} />,
-    };
-
-    const preferenceIconMap: Record<string, any> = {
-        'Les paroles': <MicVocal size={18} />,
-        "L'ambiance musicale": <Waves size={18} />,
-        'Les deux / Sans préférence': <AudioLines size={18} />,
-    };
-
-    const styleIconMap: Record<string, any> = {
-        'Plutôt acoustique / naturelle': <Guitar size={18} />,
-        'Plutôt électronique / synthétique': <Cpu size={18} />,
-        'Les deux / Sans préférence': <Radio size={18} />,
-    };
-
-    const langueIconMap: Record<string, any> = {
-        'Français': <Languages size={18} />,
-        'Anglais': <Languages size={18} />,
-        'Japonais': <Languages size={18} />,
-        'Espagnol': <Languages size={18} />,
-        'Russe': <Languages size={18} />,
-        'Coréen': <Languages size={18} />,
-        'Latin': <Languages size={18} />,
-        'Allemand': <Languages size={18} />,
-        'Plutôt instrumental': <Piano size={18} />,
-        'Peu importe / Indifférent': <Globe size={18} />,
-    };
-
-    const humeurIconMap: Record<string, any> = {
-        'Joyeuse': <Smile size={18} />,
-        'Triste': <Frown size={18} />,
-        'Énergique': <Flame size={18} />,
-        'Calme': <Moon size={18} />,
-        'Romantique': <Heart size={18} />,
-        'Motivé': <Zap size={18} />,
-    };
 
     return (
         <div className="w-full max-w-5xl mx-auto py-12 px-4">
@@ -232,7 +187,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                 <h2 className="font-semibold">Quand écoutez-vous de la musique ?</h2>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {Object.keys(iconMap).map((m) => (
+                                {Object.keys(CONTEXTE_ICON).map((m) => (
                                     <Button
                                         key={m}
                                         variant={formData.moments.includes(m) ? "default" : "secondary"}
@@ -244,7 +199,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                         }}
                                         className="border-none hover:bg-primary cursor-pointer"
                                     >
-                                        <div className="shrink-0">{iconMap[m]}</div>
+                                        <div className="shrink-0">{CONTEXTE_ICON[m]}</div>
                                         <h6 className="flex-1 text-center pr-4">{m}</h6>
                                     </Button>
                                 ))}
@@ -256,14 +211,14 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                 <h2 className="font-semibold">Dans une musique, vous préférez...</h2>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {Object.keys(preferenceIconMap).map((p) => (
+                                {Object.keys(PREFERENCE_ICON).map((p) => (
                                     <Button
                                         key={p}
                                         variant={formData.preferences === p ? "default" : "secondary"}
                                         onClick={() => setFormData({...formData, preferences: p})}
                                         className="border-none hover:bg-primary cursor-pointer"
                                     >
-                                        <div className="shrink-0">{preferenceIconMap[p]}</div>
+                                        <div className="shrink-0">{PREFERENCE_ICON[p]}</div>
                                         <h6 className="flex-1 text-center pr-4">{p}</h6>
                                     </Button>
                                 ))}
@@ -275,14 +230,14 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                 <h2 className="font-semibold">Votre style de musique est...</h2>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {Object.keys(styleIconMap).map((m) => (
+                                {Object.keys(STYLE_ICON).map((m) => (
                                     <Button
                                         key={m}
                                         variant={formData.styles === m ? "default" : "secondary"}
                                         onClick={() => setFormData({...formData, styles: m})}
                                         className="border-none hover:bg-primary cursor-pointer"
                                     >
-                                        <div className="shrink-0">{styleIconMap[m]}</div>
+                                        <div className="shrink-0">{STYLE_ICON[m]}</div>
                                         <h6 className="flex-1 text-center pr-4">{m}</h6>
                                     </Button>
                                 ))}
@@ -294,7 +249,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                 <h2 className="font-semibold">Vous écoutez des musiques en...</h2>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {Object.keys(langueIconMap).map((m) => (
+                                {Object.keys(LANGUE_ICON).map((m) => (
                                     <Button
                                         key={m}
                                         variant={formData.langues.includes(m) ? "default" : "secondary"}
@@ -306,7 +261,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                         }}
                                         className="border-none hover:bg-primary cursor-pointer"
                                     >
-                                        <div className="shrink-0">{langueIconMap[m]}</div>
+                                        <div className="shrink-0">{LANGUE_ICON[m]}</div>
                                         <h6 className="flex-1 text-center pr-4">{m}</h6>
                                     </Button>
                                 ))}
@@ -339,7 +294,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                 <h2 className="font-semibold ">Quels types de musique écoutez-vous ?</h2>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {Object.keys(humeurIconMap).map((h) => (
+                                {Object.keys(HUMEUR_ICON).map((h) => (
                                     <Button
                                         key={h}
                                         variant={formData.humeurs.includes(h) ? "default" : "secondary"}
@@ -351,7 +306,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                         }}
                                         className="border-none hover:bg-primary cursor-pointer"
                                     >
-                                        <div className="shrink-0">{humeurIconMap[h]}</div>
+                                        <div className="shrink-0">{HUMEUR_ICON[h]}</div>
                                         <h6 className="flex-1 text-center pr-4">{h}</h6>
                                     </Button>
                                 ))}
