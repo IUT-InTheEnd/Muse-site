@@ -1,11 +1,11 @@
+import { Loader2, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     type ReactionType,
     useReactionContext,
 } from '@/contexts/reaction-context';
 import { cn } from '@/lib/utils';
-import { Loader2, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
 
 type ReactionButtonsProps = {
     resource: 'tracks' | 'albums';

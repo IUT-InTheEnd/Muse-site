@@ -1,3 +1,6 @@
+import { Link } from '@inertiajs/react';
+import { ChevronsUpDown, Menu, Search, Settings, X } from 'lucide-react';
+import { useState } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -6,9 +9,6 @@ import {
 import { UserInfo } from '@/components/user-info';
 import { UserMenuContent } from '@/components/user-menu-content';
 import type { User } from '@/types';
-import { Link } from '@inertiajs/react';
-import { ChevronsUpDown, Menu, Search, X } from 'lucide-react';
-import { useState } from 'react';
 import { Button } from '../ui/button';
 
 type NavbarProps = {
@@ -83,7 +83,7 @@ const Navbar = ({ user }: NavbarProps) => {
                         </div>
                     ) : (
                         <div className="hidden items-center gap-4 sm:flex">
-                            <a href="/register" className="hover:underline cursor-pointer">
+                            <a href="/register" className="hover:underline">
                                 Inscription
                             </a>
                             <Button>
@@ -91,6 +91,13 @@ const Navbar = ({ user }: NavbarProps) => {
                                     Connexion
                                 </Link>
                             </Button>
+                            <Link
+                                href="/settings"
+                                className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-100 dark:hover:bg-muted"
+                                aria-label="Paramètres"
+                            >
+                                <Settings className="size-5" />
+                            </Link>
                         </div>
                     )}
 
@@ -153,6 +160,13 @@ const Navbar = ({ user }: NavbarProps) => {
                                     Connexion
                                 </Link>
                             </Button>
+                            <Link
+                                href="/settings"
+                                className="flex items-center gap-2 hover:underline"
+                            >
+                                <Settings className="size-4" />
+                                Paramètres
+                            </Link>
                         </>
                     )}
                 </div>

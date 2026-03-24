@@ -1,4 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
+import type { ChangeEvent} from 'react';
+import { useState } from 'react';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -10,7 +12,6 @@ import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
-import { ChangeEvent, useState } from 'react';
 
 type Props = {
     status?: string;

@@ -7,9 +7,15 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', '/settings/profile');
+Route::get('settings', function () {
+    return redirect()->to(auth()->check() ? '/settings/profile' : '/settings/appearance');
+});
 
+Route::get('settings/appearance', function () {
+    return Inertia::render('settings/appearance');
+})->name('appearance.edit');
+
+Route::middleware(['auth'])->group(function () {
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
@@ -24,10 +30,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user-password.update');
 
     Route::get('settings/api-token', [UserController::class, 'regenerateToken'])->name('api-token.reset');
-
-    Route::get('settings/appearance', function () {
-        return Inertia::render('settings/appearance');
-    })->name('appearance.edit');
 
     Route::get('settings/privacy', [PrivacyController::class, 'edit'])->name('privacy.edit');
     Route::patch('settings/privacy', [PrivacyController::class, 'update'])->name('privacy.update');

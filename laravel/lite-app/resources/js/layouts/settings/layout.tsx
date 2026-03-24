@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
@@ -9,33 +9,46 @@ import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editPrivacy } from '@/routes/privacy';
 import { edit } from '@/routes/profile';
 import { show as showSecurity } from '@/routes/security';
-import type { NavItem } from '@/types';
+import type { NavItem, User } from '@/types';
 
-const sidebarNavItems: NavItem[] = [
+type SettingsNavItem = NavItem & {
+    visibleWhenGuest: boolean;
+};
+
+const sidebarNavItems: SettingsNavItem[] = [
     {
         title: 'Profil',
         href: edit(),
         icon: null,
+        visibleWhenGuest: false,
     },
     {
         title: 'Sécurité',
         href: showSecurity(),
         icon: null,
+        visibleWhenGuest: false,
     },
     {
         title: 'Confidentialité',
         href: editPrivacy(),
         icon: null,
+        visibleWhenGuest: false,
     },
     {
         title: 'Apparence',
         href: editAppearance(),
         icon: null,
+        visibleWhenGuest: true,
     },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentUrl } = useCurrentUrl();
+    const page = usePage<{ auth?: { user?: User | null } }>();
+    const user = page.props.auth?.user ?? null;
+    const visibleNavItems = user
+        ? sidebarNavItems
+        : sidebarNavItems.filter((item) => item.visibleWhenGuest);
 
     // When server-side rendering, we only render the layout on the client...
     if (typeof window === 'undefined') {
@@ -46,7 +59,11 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
         <div className="px-4 py-6">
             <Heading
                 title="Paramètres"
-                description="Gérez votre profil et les paramètres de votre compte"
+                description={
+                    user
+                        ? 'Gérez votre profil, votre sécurité et vos préférences.'
+                        : "Gérez l'apparence du site sur cet appareil."
+                }
             />
 
             <div className="flex flex-col lg:flex-row lg:space-x-12">
@@ -55,7 +72,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                         className="flex flex-col space-y-1 space-x-0"
                         aria-label="Paramètres"
                     >
-                        {sidebarNavItems.map((item, index) => (
+                        {visibleNavItems.map((item, index) => (
                             <Button
                                 key={`${toUrl(item.href)}-${index}`}
                                 size="sm"

@@ -1,4 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
+import type { ChangeEvent } from 'react';
+import { useState, useEffect } from 'react';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -9,7 +11,6 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
-import { useState, useEffect, ChangeEvent } from 'react';
 
 export default function Register() {
     // Verification champs (vide ou remplis)

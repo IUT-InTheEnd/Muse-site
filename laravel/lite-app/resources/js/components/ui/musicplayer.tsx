@@ -1,7 +1,7 @@
-import { ReactionButtons } from '@/components/reaction-buttons';
 import { PlayIcon, PauseIcon, SkipForwardIcon, SkipBackIcon, ShuffleIcon, RepeatIcon, Repeat1Icon, VolumeIcon, Volume1Icon, Volume2Icon, VolumeXIcon, MusicIcon, ChevronDownIcon, LoaderIcon, AlertCircleIcon, XIcon, ListMusic,Heart } from 'lucide-react';
-import MusicWaitingList from '@/components/ui/music-waiting-list';
 import * as React from "react";
+import { ReactionButtons } from '@/components/reaction-buttons';
+import MusicWaitingList from '@/components/ui/music-waiting-list';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 
 function formatTime(s: number): string {

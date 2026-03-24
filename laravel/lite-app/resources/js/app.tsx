@@ -6,8 +6,8 @@ import '../css/app.css';
 import { AuthenticatedMusicPlayer } from './components/authenticated-music-player';
 import Footer from './components/musecomponents/Footer';
 import Navbar from './components/musecomponents/Navbar';
-import { ReactionProvider } from './contexts/reaction-context';
 import { MusicPlayerProvider } from './contexts/music-player-context';
+import { ReactionProvider } from './contexts/reaction-context';
 import { initializeTheme } from './hooks/use-appearance';
 import type { SharedData, User } from './types';
 

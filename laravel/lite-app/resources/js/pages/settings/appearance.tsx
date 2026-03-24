@@ -25,7 +25,7 @@ export default function Appearance() {
                     <Heading
                         variant="small"
                         title="Paramètres d'apparence"
-                        description="Mettez à jour les paramètres d'apparence de votre compte"
+                        description="Choisissez le thème clair, sombre ou système pour ce navigateur. Ce réglage est enregistré localement."
                     />
                     <AppearanceTabs />
                 </div>
