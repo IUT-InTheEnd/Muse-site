@@ -23,6 +23,19 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, [
             ...$this->profileRules(),
             'password' => $this->passwordRules(),
+        ], [
+            'name.required' => 'Merci de renseigner un pseudonyme.',
+            'name.unique' => 'Ce pseudonyme est déjà utilisé. Essayez-en un autre.',
+            'email.required' => 'Merci de renseigner une adresse e-mail.',
+            'email.email' => 'Le format de l’adresse e-mail est invalide.',
+            'email.unique' => 'Cette adresse e-mail est déjà associée à un compte. Si vous avez déjà un compte, essayez de vous connecter ou de réinitialiser votre mot de passe.',
+            'password.required' => 'Merci de renseigner un mot de passe.',
+            'password.min' => 'Votre mot de passe doit contenir au moins :min caractères.',
+            'password.letters' => 'Votre mot de passe doit contenir au moins une lettre.',
+            'password.mixed' => 'Votre mot de passe doit contenir une majuscule',
+            'password.numbers' => 'Votre mot de passe doit contenir au moins un chiffre.',
+            'password.symbols' => 'Votre mot de passe doit contenir au moins un symbole.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
         ])->validate();
 
         $userProfile = UserProfile::create([
