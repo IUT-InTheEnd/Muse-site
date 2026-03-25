@@ -14,20 +14,15 @@ function formatTime(s: number): string {
 }
 
 export default function MusicPlayer() {
-    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError, waitingList, showWaitingList } = useMusicPlayer();
+    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError, waitingList, showWaitingList,dispatch } = useMusicPlayer();
 
-    const [isFavorite, setIsFavorite] = React.useState(false);
+    const isFavorite = !!track?.is_favorite;
     const [isTogglingFavorite, setIsTogglingFavorite] = React.useState(false);
 
-    React.useEffect(() => {
-    if (track) {
-        setIsFavorite(Boolean(track.is_favorite));
-    }
-    }, [track]);
 
     const handleToggleFavorite = async () => {
-        if (!track?.id && !track?.track_id) return;
-        const trackId = track.id || track.track_id;
+        if (!track?.id && !track?.id) return;
+        const trackId = track.id;
         
         setIsTogglingFavorite(true);
         try {
@@ -42,7 +37,10 @@ export default function MusicPlayer() {
 
             if (response.ok) {
                 const data = await response.json();
-                setIsFavorite(data.is_favorite);
+                dispatch({ 
+                    type: 'TOGGLE_FAVORITE', 
+                    payload: { trackId, isFavorite: data.is_favorite } 
+                });
             }
         } catch (err) {
             console.error('Erreur favoris:', err);
@@ -179,19 +177,22 @@ export default function MusicPlayer() {
                         </button>
                         
                         <button 
-                            onClick={handleToggleFavorite} 
-                            disabled={isTogglingFavorite || !track}
-                            className="transition-transform active:scale-90 disabled:opacity-50"
-                        >
-                            {isTogglingFavorite ? (
-                                <LoaderIcon size={24} className="animate-spin text-purple-500" />
-                            ) : (
-                                <Heart 
-                                    size={24} 
-                                    className={isFavorite ? 'fill-purple-500 text-purple-500' : 'text-muted-foreground'}
-                                />
-                            )}
-                        </button>
+    onClick={handleToggleFavorite} 
+    disabled={isTogglingFavorite || !track}
+    className="transition-transform active:scale-90"
+>
+    {isTogglingFavorite ? (
+        <LoaderIcon size={24} className="animate-spin text-purple-500" />
+    ) : (
+        <Heart 
+            size={24} 
+            className={track?.is_favorite 
+                ? 'fill-purple-500 text-purple-500' 
+                : 'text-neutral-500 dark:text-white/70'
+            } 
+        />
+    )}
+</button>
 
                         <button onClick={skipBack}>
                             <SkipBackIcon size={32} className="text-foreground" />

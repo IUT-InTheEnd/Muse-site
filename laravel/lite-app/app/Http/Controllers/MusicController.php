@@ -7,12 +7,14 @@ use App\Models\Track;
 use App\Models\UserEcoute;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Services\FavoritesQueryService;
+
 
 class MusicController extends Controller
 {
-    public function __construct(private ReactionService $reactions) {}
+    public function __construct(private ReactionService $reactions,private FavoritesQueryService $favorites) {}
 
-    private function buildTrackPayload(Track $track, ?string $viewerReaction = null): array
+    private function buildTrackPayload(Track $track, ?string $viewerReaction = null,bool $isFavorite = false): array
     {
         $primaryArtist = $track->realisers->first()?->artist;
         $audioUrl = blank($track->track_file)
@@ -32,6 +34,7 @@ class MusicController extends Controller
             'likes' => $track->track_likes ?? 0,
             'dislikes' => $track->track_dislikes ?? 0,
             'reaction' => $viewerReaction,
+            'is_favorite' => $isFavorite,
         ];
     }
 
@@ -45,15 +48,20 @@ class MusicController extends Controller
             ],
         ]);
 
+        $user = auth()->user();
+
         if ($validated) {
             $musique = Track::find($request->id);
             if ($musique) {
                 $musique->loadMissing('realisers.artist');
                 $reactions = $this->reactions->trackReactionsFor($request, [$musique->track_id]);
 
+                $isFavorite = $user ? $this->favorites->isTrackFavorite($user, $musique->track_id) : false;
+
                 return response()->json($this->buildTrackPayload(
                     $musique,
                     $reactions[$musique->track_id] ?? null,
+                    $isFavorite
                 ));
             }
         }
@@ -82,6 +90,8 @@ class MusicController extends Controller
             ->keyBy('track_id');
         $reactions = $this->reactions->trackReactionsFor($request, $ids);
 
+        $user = auth()->user();
+
         $result = [];
         foreach ($ids as $id) {
             $musique = $tracks->get($id);
@@ -89,9 +99,12 @@ class MusicController extends Controller
                 continue;
             }
 
+            $isFavorite = $user ? $this->favorites->isTrackFavorite($user, $id) : false;
+
             $result[] = $this->buildTrackPayload(
                 $musique,
                 $reactions[$id] ?? null,
+                $isFavorite
             );
         }
 

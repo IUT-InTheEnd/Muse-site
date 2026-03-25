@@ -11,6 +11,7 @@ export type Track = {
     likes?: number;
     dislikes?: number;
     reaction?: 'like' | 'dislike' | null;
+    is_favorite?: boolean;
 };
 
 export type RepeatMode = 'off' | 'all' | 'one';
@@ -54,6 +55,7 @@ export type MusicPlayerActions = {
     playNext: () => void;
     playPrevious: () => void;
     waitingList: () => void;
+    dispatch: React.Dispatch<Action>;
 };
 
 export type MusicPlayerContextType = MusicPlayerState & MusicPlayerActions;
@@ -98,6 +100,7 @@ type Action =
     | { type: 'SET_PLAYLIST'; payload: Track[] }
     | { type: 'SET_INDEX'; payload: number }
     | { type: 'UPDATE_STATE'; payload: Partial<MusicPlayerState> }
+    | { type: 'TOGGLE_FAVORITE'; payload: { trackId: number; isFavorite: boolean } }
     | { type: 'RESET' };
 
 function playerReducer(
@@ -130,6 +133,21 @@ function playerReducer(
             return { ...state, currentIndex: action.payload };
         case 'UPDATE_STATE':
             return { ...state, ...action.payload };
+        case 'TOGGLE_FAVORITE':
+            const updatedPlaylist = state.playlist.map(t => 
+            (t.id === action.payload.trackId) 
+                    ? { ...t, is_favorite: action.payload.isFavorite } 
+                    : t
+            );
+            const updatedTrack = state.track?.id === action.payload.trackId 
+                ? { ...state.track, is_favorite: action.payload.isFavorite }
+                : state.track;
+
+            return {
+                ...state,
+                playlist: updatedPlaylist,
+                track: updatedTrack
+            };
         case 'RESET':
             return { ...initialState, volume: state.volume };
         default:
@@ -434,8 +452,8 @@ export function MusicPlayerProvider({
                 const modes: RepeatMode[] = ['off', 'all', 'one'];
                 const nextMode =
                     modes[
-                        (modes.indexOf(stateRef.current.repeatMode) + 1) %
-                            modes.length
+                    (modes.indexOf(stateRef.current.repeatMode) + 1) %
+                    modes.length
                     ];
                 dispatch({
                     type: 'UPDATE_STATE',
@@ -486,8 +504,9 @@ export function MusicPlayerProvider({
             playNext: skipForward,
             playPrevious: skipBack,
             waitingList: waitingList,
+            dispatch
         }),
-        [skipForward, skipBack, playTrackAtIndex],
+        [skipForward, skipBack, playTrackAtIndex,dispatch],
     );
 
     return (
