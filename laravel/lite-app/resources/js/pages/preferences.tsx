@@ -21,9 +21,39 @@ interface Genre {
     color: string;
 }
 
+function filtreRecherche<T>(items: T[], value: string, getLabel: (item: T) => string): T[] {
+    const query = value.toLowerCase();
+
+    const filtered = items.filter((item) => {
+        const label = getLabel(item).toLowerCase();
+        return label.includes(query);
+    });
+
+    if (!query) {
+        return filtered;
+    }
+
+    return [...filtered].sort((a, b) => {
+        const aLabel = getLabel(a).toLowerCase();
+        const bLabel = getLabel(b).toLowerCase();
+        const aStartsWith = aLabel.startsWith(query);
+        const bStartsWith = bLabel.startsWith(query);
+
+        if (aStartsWith && !bStartsWith) {
+            return -1;
+        }
+        if (!aStartsWith && bStartsWith) {
+            return 1;
+        }
+        return aLabel.localeCompare(bLabel);
+    });
+}
+
 const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: Genre[] }) => {
     const [step, setStep] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
+    const [nbGenreVisible, setVisibleGenresCount] = useState(12);
+    const [nbArtistVisible, setVisibleArtistsCount] = useState(12);
 
     const [formData, setFormData] = useState({
         genres: [] as number[],
@@ -50,6 +80,17 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
     const nextStep = () => setStep(step + 1);
     const prevStep = () => setStep(step - 1);
 
+    const filtreGenre = filtreRecherche(genres ?? [], searchQuery, (genre) => genre.name);
+    const filtreArtistes = filtreRecherche(allArtists ?? [], searchQuery, (artist) => artist.artist_name ?? "");
+
+    const displayedGenres = filtreGenre.slice(0, nbGenreVisible);
+    const voirPlusGenre = step === 1 && displayedGenres.length < filtreGenre.length;
+    const voirMoinsGenre = step === 1 && nbGenreVisible > 12;
+
+    const displayedArtists = filtreArtistes.slice(0, nbArtistVisible);
+    const voirPlusArtistes = step === 2 && displayedArtists.length < filtreArtistes.length;
+    const voirMoinsArtistes = step === 2 && nbArtistVisible > 12;
+
     return (
         <div className="w-full max-w-5xl mx-auto py-12 px-4">
             <div className='text-white'>
@@ -68,20 +109,17 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                     type="text"
                                     placeholder="Rechercher un genre..."
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) => {
+                                        setSearchQuery(e.target.value);
+                                        setVisibleGenresCount(12);
+                                    }}
                                     className="px-6 py-6"
                                 />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            {genres && genres
-                                .filter((genre) => {
-                                    const query = searchQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                                    const name = genre.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                                    return name.includes(query);
-                                })
-                                .slice(0, 12)
+                            {displayedGenres
                                 .map((genre) => {
                                     const isSelected = formData.genres.includes(genre.id);
                                     return (
@@ -126,14 +164,15 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                     type="text" 
                                     placeholder="Rechercher un artiste..." 
                                     className="px-6 py-6"
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) => {
+                                        setSearchQuery(e.target.value);
+                                        setVisibleArtistsCount(12);
+                                    }}
                                 />
                             </div>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-                            {allArtists && allArtists
-                                .filter(a => a.artist_name?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchQuery.toLowerCase()))
-                                .slice(0, 12)
+                            {displayedArtists
                                 .map((art) => {
                                     const isSelected = formData.artists.includes(art.artist_id);
 
@@ -377,6 +416,42 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                         className="w-48 border-foregroun py-3 cursor-pointer"
                     >
                         Retour
+                    </Button>
+                )}
+                {voirMoinsGenre && (
+                    <Button
+                        variant="secondary"
+                        onClick={() => setVisibleGenresCount((prev) => prev - 12)}
+                        className="w-48 py-3 cursor-pointer"
+                    >
+                        Afficher moins de genres
+                    </Button>
+                )}
+                {voirPlusGenre && (
+                    <Button
+                        variant="secondary"
+                        onClick={() => setVisibleGenresCount((prev) => prev + 12)}
+                        className="w-48 py-3 cursor-pointer"
+                    >
+                        Afficher plus de genres
+                    </Button>
+                )}
+                {voirMoinsArtistes && (
+                    <Button
+                        variant="secondary"
+                        onClick={() => setVisibleArtistsCount((prev) => prev - 12)}
+                        className="w-48 py-3 cursor-pointer"
+                    >
+                        Afficher moins d'artistes
+                    </Button>
+                )}
+                {voirPlusArtistes && (
+                    <Button
+                        variant="secondary"
+                        onClick={() => setVisibleArtistsCount((prev) => prev + 12)}
+                        className="w-48 py-3 cursor-pointer"
+                    >
+                        Afficher plus d'artistes
                     </Button>
                 )}
                 <Button 
