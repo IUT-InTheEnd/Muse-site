@@ -21,6 +21,34 @@ interface Genre {
     color: string;
 }
 
+function filtreRecherche<T>(items: T[], value: string, getLabel: (item: T) => string): T[] {
+    const query = value.toLowerCase();
+
+    const filtered = items.filter((item) => {
+        const label = getLabel(item).toLowerCase();
+        return label.includes(query);
+    });
+
+    if (!query) {
+        return filtered;
+    }
+
+    return [...filtered].sort((a, b) => {
+        const aLabel = getLabel(a).toLowerCase();
+        const bLabel = getLabel(b).toLowerCase();
+        const aStartsWith = aLabel.startsWith(query);
+        const bStartsWith = bLabel.startsWith(query);
+
+        if (aStartsWith && !bStartsWith) {
+            return -1;
+        }
+        if (!aStartsWith && bStartsWith) {
+            return 1;
+        }
+        return aLabel.localeCompare(bLabel);
+    });
+}
+
 const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: Genre[] }) => {
     const [step, setStep] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
@@ -51,13 +79,8 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
     const nextStep = () => setStep(step + 1);
     const prevStep = () => setStep(step - 1);
 
-    const filtreGenre = genres
-        ? genres.filter((genre) => {
-            const query = searchQuery.toLowerCase();
-            const name = genre.name.toLowerCase();
-            return name.includes(query);
-        })
-        : [];
+    const filtreGenre = filtreRecherche(genres ?? [], searchQuery, (genre) => genre.name);
+    const filtreArtistes = filtreRecherche(allArtists ?? [], searchQuery, (artist) => artist.artist_name ?? "");
 
     const displayedGenres = filtreGenre.slice(0, nbGenreVisible);
     const voirPlusGenre = step === 1 && displayedGenres.length < filtreGenre.length;
@@ -141,8 +164,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                             </div>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-                            {allArtists && allArtists
-                                .filter(a => a.artist_name?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchQuery.toLowerCase()))
+                            {filtreArtistes
                                 .slice(0, 12)
                                 .map((art) => {
                                     const isSelected = formData.artists.includes(art.artist_id);
