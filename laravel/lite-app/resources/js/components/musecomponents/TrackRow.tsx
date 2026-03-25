@@ -398,7 +398,7 @@ export function TrackRow({
                     )}
                     {/* Indicateur de lecture */}
                     {isPlaying && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <div className="absolute inset-0 flex items-center justify-center bg-overlay">
                             <div className="flex gap-0.5">
                                 <span
                                     className="h-3 w-1 animate-pulse bg-primary"

@@ -55,7 +55,7 @@ export default function Support() {
                                     type="email"
                                     placeholder="mail@example.com"
                                     required
-                                    className="bg-white text-black"
+                                    className="bg-background text-foreground"
                                 />
                             </Field>
                             <Field>
@@ -66,7 +66,7 @@ export default function Support() {
                                     placeholder="Votre nom"
                                     ref={nameRef}
                                     required
-                                    className="bg-white text-black"
+                                    className="bg-background text-foreground"
                                 />
                             </Field>
                             <Field>
@@ -77,11 +77,11 @@ export default function Support() {
                                     <SelectTrigger
                                         id="form-reason"
                                         ref={selectRef}
-                                        className="bg-white text-black"
+                                        className="bg-background text-foreground"
                                     >
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-white text-black">
+                                    <SelectContent className="bg-popover text-popover-foreground">
                                         <SelectItem
                                             value="placeholder"
                                             disabled
@@ -122,20 +122,20 @@ export default function Support() {
                                     id="form-message"
                                     placeholder="Votre Message"
                                     ref={messageRef}
-                                    className="h-50 bg-white text-black"
+                                    className="h-50 bg-background text-foreground"
                                 />
                             </Field>
                             <Field orientation="horizontal">
                                 <Button
                                     type="submit"
-                                    className="w-1/2 bg-[#5E00FF] text-white hover:bg-[#C9B6E9] hover:text-black cursor-pointer"
+                                    className="w-1/2 cursor-pointer bg-[#5E00FF] text-inverse-foreground hover:bg-[#C9B6E9] hover:text-foreground"
                                     disabled={canSubmit}
                                 >
                                     Submit
                                 </Button>
                                 <Button
                                     type="button"
-                                    className="w-1/2 bg-[#757575] text-white hover:bg-[#D9D9D9] hover:text-black cursor-pointer"
+                                    className="w-1/2 cursor-pointer bg-[#757575] text-inverse-foreground hover:bg-[#D9D9D9] hover:text-foreground"
                                 >
                                     Cancel
                                 </Button>

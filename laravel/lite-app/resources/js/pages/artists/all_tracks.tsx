@@ -108,7 +108,7 @@ export default function AllTracks({ artist, albums, trackReactions = {} }: AllTr
                                         playTracks(album.tracks[0]?.id)
                                     }
                                     disabled={isLoading}
-                                    className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white disabled:opacity-50 dark:bg-white dark:text-black"
+                                    className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-inverse text-inverse-foreground disabled:opacity-50"
                                 >
                                     {isLoading ? (
                                         <LoaderIcon

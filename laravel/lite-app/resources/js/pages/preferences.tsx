@@ -93,7 +93,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
 
     return (
         <div className="w-full max-w-5xl mx-auto py-12 px-4">
-            <div className='text-white'>
+            <div className="text-foreground">
                 <StepBar currentStep={step} />
             </div>
 
@@ -136,14 +136,14 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                 isSelected ? 'border-primary' : 'border-transparent hover:border-primary'
                                             }`}
                                         >
-                                            <div className={`absolute inset-0 ${isSelected ? 'bg-primary/40' : 'bg-black/0'}`} />
+                                            <div className={`absolute inset-0 ${isSelected ? 'bg-primary/40' : 'bg-transparent'}`} />
 
-                                            <div className="absolute inset-0 flex items-center text-white justify-center p-2 text-center">
+                                            <div className="absolute inset-0 flex items-center justify-center p-2 text-center text-overlay-foreground">
                                                 <h2 className="uppercase">{genre.name}</h2>
                                             </div>
 
                                             {isSelected && (
-                                                <div className="absolute top-2 right-2 bg-white text-primary rounded-full p-1">
+                                                <div className="absolute top-2 right-2 rounded-full bg-background p-1 text-primary">
                                                     <Check size={16} strokeWidth={4}/>
                                                 </div>
                                             )}
@@ -196,14 +196,14 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                                 }}
                                             />
                                             
-                                            <div className={`absolute inset-0 ${isSelected ? 'bg-primary/40' : 'bg-black/50'}`} />
+                                            <div className={`absolute inset-0 ${isSelected ? 'bg-primary/40' : 'bg-overlay'}`} />
                                             
-                                            <div className="absolute inset-0 flex text-white items-center justify-center p-4">
+                                            <div className="absolute inset-0 flex items-center justify-center p-4 text-overlay-foreground">
                                                 <h2>{art.artist_name}</h2>
                                             </div>
                                             
                                             {isSelected && (
-                                                <div className="absolute top-2 right-2 bg-white text-primary rounded-full p-1">
+                                                <div className="absolute top-2 right-2 rounded-full bg-background p-1 text-primary">
                                                     <Check size={20} strokeWidth={4}/>
                                                 </div>
                                             )}

@@ -139,8 +139,8 @@ export default function ProfileImageUpload() {
                 </Avatar>
 
                 {isLoading && (
-                    <div className="absolute inset-0 flex items-center/s justify-center rounded-full bg-black/50">
-                        <Loader2 className="h-8 w-8 animate-spin text-white" />
+                    <div className="absolute inset-0 flex items-center/s justify-center rounded-full bg-overlay">
+                        <Loader2 className="h-8 w-8 animate-spin text-overlay-foreground" />
                     </div>
                 )}
             </div>

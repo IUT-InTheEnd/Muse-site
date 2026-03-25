@@ -6,21 +6,21 @@ export default function MusicWaitingList() {
     const { playlist, currentIndex, waitingList, setPlaylist } = useMusicPlayer();
 
     return (
-        <aside className="flex h-120 w-90 flex-col overflow-hidden rounded-tl-2xl border border-neutral-200 bg-neutral-100 px-6 py-4 text-neutral-900 shadow-2xl dark:border-white/10 dark:bg-[#0b1220] dark:text-white">
+        <aside className="flex h-120 w-90 flex-col overflow-hidden rounded-tl-2xl border border-border bg-popover px-6 py-4 text-popover-foreground shadow-2xl">
             <div className="relative">
                 <h4 className="mb-4 text-xl font-semibold">File d'attente</h4>
                 <button
                     onClick={waitingList}
-                    className="absolute cursor-pointer top-2 right-2 p-1 rounded-full hover:bg-neutral-200 dark:hover:bg-white/10 transition-all duration-200"
+                    className="absolute top-2 right-2 cursor-pointer rounded-full p-1 transition-all duration-200 hover:bg-accent"
                     aria-label="Minimiser la file d'attente"
                 >
-                    <ChevronDownIcon size={20} className="text-neutral-500 dark:text-white/60" />
+                    <ChevronDownIcon size={20} className="text-muted-foreground" />
                 </button>
             </div>
 
             <div className="mt-4 flex-1 space-y-2 overflow-y-auto pr-1">
                 {playlist.length === 0 ? (
-                    <p className="text-sm text-neutral-500 dark:text-white/60">
+                    <p className="text-sm text-muted-foreground">
                         Aucune piste dans la file d'attente.
                     </p>
                 ) : (
@@ -30,7 +30,7 @@ export default function MusicWaitingList() {
                             className={`rounded-md p-3 border ${
                                 index === currentIndex
                                     ? 'border-purple-500 bg-purple-500/10'
-                                    : 'border-neutral-200 dark:border-white/10'
+                                    : 'border-border'
                             }
                             ${
                                 index < currentIndex
@@ -47,7 +47,7 @@ export default function MusicWaitingList() {
                                 <p className="font-medium truncate">
                                     {item.title || 'Titre inconnu'}
                                 </p>
-                                <p className="text-sm text-neutral-500 dark:text-white/60 truncate">
+                                <p className="text-sm text-muted-foreground truncate">
                                     {item.artist || 'Artiste inconnu'}
                                 </p>
                             </div>

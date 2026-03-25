@@ -226,7 +226,13 @@ export default function PlaylistShow({ playlist }: Props) {
                     className="relative flex h-80 w-full items-end bg-cover bg-center"
                     style={{ backgroundImage: playlistImage ? `url(${playlistImage})` : undefined }}
                 >
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30" />
+                    <div
+                        className="pointer-events-none absolute inset-0"
+                        style={{
+                            background:
+                                'linear-gradient(to top, var(--overlay-heavy), var(--overlay), var(--overlay-soft))',
+                        }}
+                    />
                     
                     {isEditable && (
                         <>
@@ -234,7 +240,7 @@ export default function PlaylistShow({ playlist }: Props) {
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={isUpdating}
-                                className="absolute cursor-pointer top-4 right-4 z-20 rounded-full bg-black/50 p-3 text-white transition hover:bg-black/70 disabled:opacity-50"
+                                className="absolute top-4 right-4 z-20 cursor-pointer rounded-full bg-overlay p-3 text-overlay-foreground transition hover:bg-overlay-strong disabled:opacity-50"
                             >
                                 <CameraIcon size={20} />
                             </button>
@@ -247,7 +253,7 @@ export default function PlaylistShow({ playlist }: Props) {
                         </div>
                     )}
 
-                    <div className="relative z-10 w-full p-8">
+                    <div className="relative z-10 w-full p-8 text-overlay-foreground">
                         <div className="mx-auto max-w-5xl">
                             <div className="mb-2 flex items-center gap-2">
                                 {isFavorites ? (
@@ -256,7 +262,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                     <button
                                         onClick={handleToggleVisibility}
                                         disabled={isUpdating}
-                                        className="flex cursor-pointer items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-sm text-white transition hover:bg-white/20 disabled:opacity-50"
+                                        className="flex cursor-pointer items-center gap-1 rounded-full bg-overlay-surface px-3 py-1 text-sm text-overlay-foreground transition hover:bg-overlay-surface-hover disabled:opacity-50"
                                     >
                                         {playlist.playlist_public ? <><GlobeIcon size={14} /> Publique</> : <><LockIcon size={14} /> Privee</>}
                                     </button>
@@ -268,7 +274,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                     <input
                                         type="text" value={editedName}
                                         onChange={(e) => setEditedName(e.target.value)}
-                                        className="border-b-2 border-white bg-transparent text-4xl font-bold text-white outline-none"
+                                        className="border-b-2 border-overlay-border bg-transparent text-4xl font-bold text-overlay-foreground outline-none"
                                         autoFocus
                                         onKeyDown={(e) => { if (e.key === 'Enter') handleUpdateName(); if (e.key === 'Escape') { setEditedName(playlist.playlist_name); setIsEditingName(false); }}}
                                     />
@@ -277,16 +283,16 @@ export default function PlaylistShow({ playlist }: Props) {
                                 </div>
                             ) : (
                                 <div className="mb-4 flex items-center gap-3">
-                                    <h1 className="text-4xl font-bold text-white">{playlist.playlist_name}</h1>
+                                    <h1 className="text-4xl font-bold">{playlist.playlist_name}</h1>
                                     {isEditable && (
-                                        <button onClick={() => setIsEditingName(true)} className="rounded-full cursor-pointer p-2 text-white/70 transition hover:bg-white/10 hover:text-white">
+                                        <button onClick={() => setIsEditingName(true)} className="cursor-pointer rounded-full p-2 text-overlay-muted-foreground transition hover:bg-overlay-surface hover:text-overlay-foreground">
                                             <PencilIcon size={18} />
                                         </button>
                                     )}
                                 </div>
                             )}
 
-                            <p className="mb-6 text-white/70">
+                            <p className="mb-6 text-overlay-muted-foreground">
                                 {playlist.user?.name && `Par ${playlist.user.name} • `}
                                 {localTracks.length} {localTracks.length > 1 ? 'titres' : 'titre'}
                                 {totalDuration > 0 && <> • {hours > 0 && `${hours}h `}{minutes} min</>}
@@ -321,7 +327,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                         onDragStart={() => handleDragStart(index)}
                                         onDragOver={(e) => handleDragOver(e, index)}
                                         onDragEnd={handleDragEnd}
-                                        className={`transition-all duration-150 first:rounded-t-lg last:rounded-b-lg overflow-hidden ${isEditable ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedItemIndex === index ? 'opacity-40 bg-white/5' : 'opacity-100 hover:bg-white/5'}`}
+                                        className={`overflow-hidden transition-all duration-150 first:rounded-t-lg last:rounded-b-lg ${isEditable ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedItemIndex === index ? 'bg-overlay-surface-subtle opacity-40' : 'opacity-100 hover:bg-overlay-surface-subtle'}`}
                                     >
                                         <TrackList
                                             tracks={[item]}

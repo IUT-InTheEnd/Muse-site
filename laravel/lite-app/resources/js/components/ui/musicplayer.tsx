@@ -56,7 +56,7 @@ export default function MusicPlayer() {
         return (
             <button
                 onClick={toggleMinimized}
-                className="fixed bottom-6 right-6 z-50 w-14 h-14 flex items-center justify-center rounded-full bg-purple-500 hover:bg-purple-600 text-white shadow-lg transition-all duration-200 hover:scale-105"
+                className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-purple-500 text-primary-foreground shadow-lg transition-all duration-200 hover:scale-105 hover:bg-purple-600"
                 aria-label="Ouvrir le lecteur"
             >
                 <MusicIcon size={28} />
@@ -81,14 +81,14 @@ export default function MusicPlayer() {
                 </div>
             )}
 
-            <div className="pointer-events-auto bg-neutral-100 dark:bg-[#0b1220] text-neutral-900 dark:text-white border-t border-neutral-200 dark:border-white/10 px-8 py-4">
+            <div className="pointer-events-auto border-t border-border bg-background px-8 py-4 text-foreground">
             {/* Bouton minimiser */}
             <button
                 onClick={toggleMinimized}
-                className="absolute top-2 right-2 p-1 rounded-full hover:bg-neutral-200 dark:hover:bg-white/10 transition-colors"
+                className="absolute top-2 right-2 rounded-full p-1 transition-colors hover:bg-accent"
                 aria-label="Minimiser le lecteur"
             >
-                <ChevronDownIcon size={20} className="text-neutral-500 dark:text-white/60" />
+                <ChevronDownIcon size={20} className="text-muted-foreground" />
             </button>
 
             <div className="flex items-center gap-8">
@@ -102,14 +102,14 @@ export default function MusicPlayer() {
                                 className="w-20 h-20 rounded-lg object-cover shrink-0"
                             />
                         ) : (
-                            <div className="w-20 h-20 bg-neutral-200 dark:bg-white/10 rounded-lg shrink-0" />
+                            <div className="h-20 w-20 shrink-0 rounded-lg bg-muted" />
                         )}
 
                         <div className="overflow-hidden">
                             <div className="text-lg font-semibold truncate">
                                 {track?.title || 'No track'}
                             </div>
-                            <div className="text-base text-neutral-500 dark:text-white/60 truncate">
+                            <div className="text-base text-muted-foreground truncate">
                                 {track?.artistid ? (
                                     <a href={`/artiste/${track.artistid}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                                         {track?.artist || '—'}
@@ -173,7 +173,7 @@ export default function MusicPlayer() {
                                 className={
                                     shuffle
                                         ? 'text-purple-500 dark:text-purple-400'
-                                        : 'text-neutral-500 dark:text-white/70'
+                                        : 'text-muted-foreground'
                                 }
                             />
                         </button>
@@ -188,19 +188,19 @@ export default function MusicPlayer() {
                             ) : (
                                 <Heart 
                                     size={24} 
-                                    className={isFavorite ? 'fill-purple-500 text-purple-500' : 'text-neutral-500 dark:text-white/70'} 
+                                    className={isFavorite ? 'fill-purple-500 text-purple-500' : 'text-muted-foreground'}
                                 />
                             )}
                         </button>
 
                         <button onClick={skipBack}>
-                            <SkipBackIcon size={32} className="text-neutral-600 dark:text-white/80" />
+                            <SkipBackIcon size={32} className="text-foreground" />
                         </button>
 
                         <button
                             onClick={togglePlay}
                             disabled={isLoading}
-                            className="w-14 h-14 flex items-center justify-center rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black disabled:opacity-50"
+                            className="flex h-14 w-14 items-center justify-center rounded-full bg-inverse text-inverse-foreground disabled:opacity-50"
                         >
                             {isLoading ? (
                                 <LoaderIcon size={28} className="animate-spin" />
@@ -212,7 +212,7 @@ export default function MusicPlayer() {
                         </button>
 
                         <button onClick={skipForward}>
-                            <SkipForwardIcon size={32} className="text-neutral-600 dark:text-white/80" />
+                            <SkipForwardIcon size={32} className="text-foreground" />
                         </button>
 
                         <button onClick={cycleRepeatMode}>
@@ -224,7 +224,7 @@ export default function MusicPlayer() {
                                     className={
                                         repeatMode === 'all'
                                             ? 'text-purple-500 dark:text-purple-400'
-                                            : 'text-neutral-500 dark:text-white/70'
+                                            : 'text-muted-foreground'
                                     }
                                 />
                             )}
@@ -233,7 +233,7 @@ export default function MusicPlayer() {
 
                     {/* Barre de progression */}
                     <div className="flex items-center gap-3 w-full">
-                        <span className="text-sm text-neutral-400 dark:text-white/50 w-10 text-right">
+                        <span className="w-10 text-right text-sm text-muted-foreground">
                             {formatTime(currentTime)}
                         </span>
                         <input
@@ -244,7 +244,7 @@ export default function MusicPlayer() {
                             onChange={(e) => seek(Number(e.target.value))}
                             className="flex-1 h-1.5 accent-purple-500"
                         />
-                        <span className="text-sm text-neutral-400 dark:text-white/50 w-10">
+                        <span className="w-10 text-sm text-muted-foreground">
                             {formatTime(duration)}
                         </span>
                     </div>
@@ -254,13 +254,13 @@ export default function MusicPlayer() {
                 <div className="flex items-center gap-3 flex-1 justify-end">
                     <button onClick={toggleMute} className="cursor-pointer">
                         {volume === 0 ? (
-                            <VolumeXIcon size={28} className="text-neutral-500 dark:text-white/70" />
+                            <VolumeXIcon size={28} className="text-muted-foreground" />
                         ) : volume < 0.33 ? (
-                            <VolumeIcon size={28} className="text-neutral-500 dark:text-white/70" />
+                            <VolumeIcon size={28} className="text-muted-foreground" />
                         ) : volume < 0.66 ? (
-                            <Volume1Icon size={28} className="text-neutral-500 dark:text-white/70" />
+                            <Volume1Icon size={28} className="text-muted-foreground" />
                         ) : (
-                            <Volume2Icon size={28} className="text-neutral-500 dark:text-white/70" />
+                            <Volume2Icon size={28} className="text-muted-foreground" />
                         )}
                     </button>
                     <input
@@ -275,7 +275,7 @@ export default function MusicPlayer() {
                     />
                     {/* File d'attente */}
                     <button onClick={waitingList}>
-                        <ListMusic size={32} className="text-neutral-600 dark:text-white/80 cursor-pointer duration-200 transition-all" />
+                        <ListMusic size={32} className="cursor-pointer text-foreground duration-200 transition-all" />
                     </button>
                 </div>
             </div>

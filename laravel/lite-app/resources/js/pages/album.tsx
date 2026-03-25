@@ -1,6 +1,7 @@
 import { Head, usePage } from '@inertiajs/react';
 import { Check, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { AlbumPlaylistDialog } from '@/components/musecomponents/AlbumPlaylistDialog';
 import {
     TrackList,
     type TrackListItem,
@@ -15,7 +16,6 @@ import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/contexts/music-player-context';
 import { fetchTracks } from '@/lib/track-api';
 import type { SharedData } from '@/types';
-import { AlbumPlaylistDialog } from '@/components/musecomponents/AlbumPlaylistDialog';
 
 type Props = {
     album: {
@@ -144,13 +144,13 @@ export default function Album({
                         backgroundImage: `url(${proxyUrl(album.album_image_file)})`,
                     }}
                 >
-                    <div className="pointer-events-none absolute inset-0 bg-black/70"></div>
-                    <main className="relative z-10 ml-8 flex flex-col gap-6 px-6 py-10 text-left">
+                    <div className="pointer-events-none absolute inset-0 bg-overlay-strong"></div>
+                    <main className="relative z-10 ml-8 flex flex-col gap-6 px-6 py-10 text-left text-overlay-foreground">
                         <div className="flex flex-col gap-2">
-                            <h1 className="!text-6xl font-bold text-white">
+                            <h1 className="!text-6xl font-bold">
                                 {album.album_title}
                             </h1>
-                            <h2 className="text-lg font-semibold text-white">
+                            <h2 className="text-lg font-semibold">
                                 {listeArtistes} • {year} •
                                 {nombreMusiques > 0 ? ` ${nombreMusiques} titres` : '0 titre'} •
                                 {h > 0 ? ` ${h}h ` : ''} {min % 60} min {sec} sec

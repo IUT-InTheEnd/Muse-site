@@ -191,7 +191,7 @@ export default function PlaylistsPage({ playlists }: PlaylistsPageProps) {
                                         </Link>
                                     </PlaylistCard>
                                     {!playlist.playlist_public && (
-                                        <div className="absolute top-2 left-2 rounded-full bg-black/10 px-3 py-1 text-sm text-white transition hover:bg-black/20 disabled:opacity-50">
+                                        <div className="absolute top-2 left-2 rounded-full bg-overlay-soft px-3 py-1 text-sm text-overlay-foreground transition hover:bg-overlay disabled:opacity-50">
                                             <LockIcon size={16} />
                                         </div>
                                     )}                  

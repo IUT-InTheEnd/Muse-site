@@ -230,8 +230,8 @@ export default function Profile({
                                                     />
                                                     {is_owner &&
                                                         !playlist.playlist_public && (
-                                                            <div className="absolute top-2 right-2 rounded-full bg-black/60 p-1.5">
-                                                                <Lock className="h-3 w-3 text-white" />
+                                                            <div className="absolute top-2 right-2 rounded-full bg-overlay p-1.5">
+                                                                <Lock className="h-3 w-3 text-overlay-foreground" />
                                                             </div>
                                                         )}
                                                 </div>

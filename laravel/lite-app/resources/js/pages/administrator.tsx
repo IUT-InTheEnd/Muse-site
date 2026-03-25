@@ -638,7 +638,7 @@ export default function Administrator({ users }: Props) {
 										<div className="flex items-center gap-3">
 											<Avatar className="h-8 w-8">
 												<AvatarImage src={userImageSrc ?? undefined} alt={user.name} className="object-cover" />
-												<AvatarFallback className="text-xs font-semibold bg-primary/20 text-primary dark:bg-neutral-700 dark:text-white">
+												<AvatarFallback className="text-xs font-semibold bg-primary/20 text-primary dark:bg-neutral-700 dark:text-foreground">
 													{getUserInitial(user.name)}
 												</AvatarFallback>
 											</Avatar>
@@ -699,7 +699,7 @@ export default function Administrator({ users }: Props) {
 						<DialogHeader className="flex w-full flex-row items-center justify-between gap-4 rounded-md bg-muted/100 p-4 mt-4">
 							<Avatar className="h-16 w-16 border-2 border-primary/20 bg-background">
 								<AvatarImage src={selectedUserImageSrc ?? undefined} alt={selectedUser?.name} className="object-cover" />
-								<AvatarFallback className="text-xl font-semibold bg-primary/20 text-primary dark:bg-neutral-700 dark:text-white">
+								<AvatarFallback className="text-xl font-semibold bg-primary/20 text-primary dark:bg-neutral-700 dark:text-foreground">
 									{getUserInitial(selectedUser?.name)}
 								</AvatarFallback>
 							</Avatar>
@@ -713,7 +713,7 @@ export default function Administrator({ users }: Props) {
 								{!isEditMode && (
 									<Button size="sm" className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setModeEdition(true)} ><PencilLine /> </Button>
 								)}
-								<Button size="sm" className="cursor-pointer bg-destructive text-white hover:bg-destructive/80" onClick={() => setOpenDelete(true)}>
+								<Button size="sm" className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/80" onClick={() => setOpenDelete(true)}>
 									<Trash2 />
 								</Button>
 							</div>
@@ -868,10 +868,10 @@ export default function Administrator({ users }: Props) {
 											<strong>{Number(selectedUser?.id_role ?? 2) === 1 ? 'Utilisateur' : 'Administrateur'}</strong> ?
 										</p>
 										<div className="mt-6 flex justify-end gap-2">
-											<Button type="button" className="cursor-pointer bg-red-500 text-white hover:bg-red-600" onClick={() => setOpenChangeRole(false)} disabled={isChangingRole}>
+											<Button type="button" className="cursor-pointer bg-red-500 text-inverse-foreground hover:bg-red-600" onClick={() => setOpenChangeRole(false)} disabled={isChangingRole}>
 												Annuler
 											</Button>
-											<Button type="button" className="cursor-pointer bg-emerald-500 text-white hover:bg-emerald-600" onClick={confirmChangeRoleUser} disabled={isChangingRole || !selectedUser}>
+											<Button type="button" className="cursor-pointer bg-emerald-500 text-inverse-foreground hover:bg-emerald-600" onClick={confirmChangeRoleUser} disabled={isChangingRole || !selectedUser}>
 												{isChangingRole ? 'Mise à jour...' : 'Confirmer'}
 											</Button>
 										</div>
@@ -885,10 +885,10 @@ export default function Administrator({ users }: Props) {
 											<strong>{selectedUser?.public_profile_visibility ? 'Privé' : 'Public'}</strong> ?
 										</p>
 										<div className="mt-6 flex justify-end gap-2">
-											<Button type="button" className="cursor-pointer bg-red-500 text-white hover:bg-red-600" onClick={() => setOpenChangeStatut(false)} disabled={isChangingStatut}>
+											<Button type="button" className="cursor-pointer bg-red-500 text-inverse-foreground hover:bg-red-600" onClick={() => setOpenChangeStatut(false)} disabled={isChangingStatut}>
 												Annuler
 											</Button>
-											<Button type="button" className="cursor-pointer bg-emerald-500 text-white hover:bg-emerald-600" onClick={confirmChangeStatutUser} disabled={isChangingStatut || !selectedUser}>
+											<Button type="button" className="cursor-pointer bg-emerald-500 text-inverse-foreground hover:bg-emerald-600" onClick={confirmChangeStatutUser} disabled={isChangingStatut || !selectedUser}>
 												{isChangingStatut ? 'Mise à jour...' : 'Confirmer'}
 											</Button>
 										</div>
@@ -917,15 +917,15 @@ export default function Administrator({ users }: Props) {
 						<div className="mt-6 flex justify-end gap-2">
 							{isEditMode ? (
 								<>
-									<Button type="button" className="cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-400" onClick={handleValidate}>
+									<Button type="button" className="cursor-pointer bg-emerald-600 text-inverse-foreground hover:bg-emerald-700 dark:bg-emerald-500 dark:text-inverse-foreground dark:hover:bg-emerald-400" onClick={handleValidate}>
 										Valider
 									</Button>
-									<Button type="button" className="cursor-pointer bg-red-500 text-white hover:bg-red-600" onClick={() => setOpenModification(false)}>
+									<Button type="button" className="cursor-pointer bg-red-500 text-inverse-foreground hover:bg-red-600" onClick={() => setOpenModification(false)}>
 										Annuler
 									</Button>
 								</>
 							) : (
-								<Button type="button" className="cursor-pointer bg-muted-foreground text-black hover:bg-muted-foreground/80" onClick={() => setOpenModification(false)}>
+								<Button type="button" className="cursor-pointer bg-muted-foreground text-inverse hover:bg-muted-foreground/80" onClick={() => setOpenModification(false)}>
 									Fermer
 								</Button>
 							)}
@@ -977,10 +977,10 @@ export default function Administrator({ users }: Props) {
 						</div>
 
 						<div className="mt-6 flex justify-end gap-2">
-							<Button type="button" className="cursor-pointer bg-emerald-500 text-white hover:bg-emerald-600" onClick={handleCreateUser} disabled={isCreating}>
+							<Button type="button" className="cursor-pointer bg-emerald-500 text-inverse-foreground hover:bg-emerald-600" onClick={handleCreateUser} disabled={isCreating}>
 								{isCreating ? 'Création...' : 'Créer'}
 							</Button>
-							<Button type="button" className="cursor-pointer bg-red-500 text-white hover:bg-red-600" onClick={() => setOpenCreate(false)} disabled={isCreating}>
+							<Button type="button" className="cursor-pointer bg-red-500 text-inverse-foreground hover:bg-red-600" onClick={() => setOpenCreate(false)} disabled={isCreating}>
 								Annuler
 							</Button>
 						</div>

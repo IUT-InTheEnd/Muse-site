@@ -93,7 +93,7 @@ const Navbar = ({ user }: NavbarProps) => {
                                 Inscription
                             </a>
                             <Button>
-                                <Link href="/login" className="text-white cursor-pointer">
+                                <Link href="/login" className="cursor-pointer text-primary-foreground">
                                     Connexion
                                 </Link>
                             </Button>
@@ -168,7 +168,7 @@ const Navbar = ({ user }: NavbarProps) => {
                                 Inscription
                             </a>
                             <Button>
-                                <Link href="/login" className="text-white cursor-pointer">
+                                <Link href="/login" className="cursor-pointer text-primary-foreground">
                                     Connexion
                                 </Link>
                             </Button>

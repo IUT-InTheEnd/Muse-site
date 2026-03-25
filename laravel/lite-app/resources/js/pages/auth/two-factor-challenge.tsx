@@ -67,7 +67,7 @@ export default function TwoFactorChallenge() {
                                         name="recovery_code"
                                         type="text"
                                         placeholder="Veuillez saisir votre code de récupération"
-                                        className={'bg-white text-black'}
+                                        className="bg-background text-foreground"
                                         autoFocus={showRecoveryInput}
                                         required
                                     />
@@ -91,9 +91,7 @@ export default function TwoFactorChallenge() {
                                                     { length: OTP_MAX_LENGTH },
                                                     (_, index) => (
                                                         <InputOTPSlot
-                                                            className={
-                                                                'bg-white text-black'
-                                                            }
+                                                            className="bg-background text-foreground"
                                                             key={index}
                                                             index={index}
                                                         />

@@ -31,22 +31,22 @@ export default function Welcome({
                     className="relative flex min-h-[calc(100vh-5rem-11rem)] w-full items-center justify-center bg-cover bg-center bg-no-repeat opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0"
                     style={{ backgroundImage: "url('/images/guy2.jpg')" }}
                 >
-                    <div className="pointer-events-none absolute inset-0 bg-black/70"></div>
+                    <div className="pointer-events-none absolute inset-0 bg-overlay-strong"></div>
 
-                    <main className="relative z-10 flex w-full flex-col items-center justify-center">
+                    <main className="relative z-10 flex w-full flex-col items-center justify-center text-overlay-foreground">
                         <div className="flex w-full max-w-xl flex-col gap-6 px-6 py-10 sm:max-w-2xl lg:max-w-4xl lg:justify-center">
                             <div className="flex flex-col gap-2">
                                 <div className="flex max-w-md flex-col gap-2">
-                                    <h1 className="text-2xl font-bold text-white sm:text-3xl">
+                                    <h1 className="text-2xl font-bold sm:text-3xl">
                                         Bienvenue sur Lite !
                                     </h1>
-                                    <h2 className="text-lg font-semibold text-white sm:text-xl">
+                                    <h2 className="text-lg font-semibold sm:text-xl">
                                         La plateforme de streaming musical n°1 des
                                         Côtes d'Armor
                                     </h2>
                                 </div>
 
-                                <p className="max-w-md text-sm text-white sm:text-base">
+                                <p className="max-w-md text-sm sm:text-base">
                                     Accédez à des millions de
                                     titres &mdash; connectez vous pour une meilleure expérience
                                 </p>
@@ -58,10 +58,10 @@ export default function Welcome({
                                         </Link>
                                     </Button>
                                     <Button
-                                        className="w-full border-white cursor-pointer"
+                                        className="w-full cursor-pointer border-overlay-border text-overlay-foreground hover:bg-overlay-surface"
                                         variant={'secondary'}
                                     >
-                                        <Link href={login()} className="text-white">
+                                        <Link href={login()}>
                                             Se connecter
                                         </Link>
                                     </Button>

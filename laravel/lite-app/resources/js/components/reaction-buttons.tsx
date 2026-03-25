@@ -125,7 +125,7 @@ export function ReactionButtons({
 
     const buttonBaseClassName =
         appearance === 'player'
-            ? 'h-10 w-10 rounded-full p-0 text-neutral-500 hover:bg-neutral-200/80 hover:text-neutral-800 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white'
+            ? 'h-10 w-10 rounded-full p-0 text-muted-foreground hover:bg-accent hover:text-foreground'
             : 'rounded-full px-2.5';
 
     const activeLikeClassName =

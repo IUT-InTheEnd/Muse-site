@@ -26,7 +26,7 @@ export function UserInfo({
                         className="object-cover"
                     />
                 )}
-                <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                <AvatarFallback className="rounded-lg bg-neutral-200 text-foreground dark:bg-neutral-700 dark:text-foreground">
                     {getInitials(user.name)}
                 </AvatarFallback>
             </Avatar>
