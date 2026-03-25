@@ -53,6 +53,7 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
     const [step, setStep] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
     const [nbGenreVisible, setVisibleGenresCount] = useState(12);
+    const [nbArtistVisible, setVisibleArtistsCount] = useState(12);
 
     const [formData, setFormData] = useState({
         genres: [] as number[],
@@ -85,6 +86,10 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
     const displayedGenres = filtreGenre.slice(0, nbGenreVisible);
     const voirPlusGenre = step === 1 && displayedGenres.length < filtreGenre.length;
     const voirMoinsGenre = step === 1 && nbGenreVisible > 12;
+
+    const displayedArtists = filtreArtistes.slice(0, nbArtistVisible);
+    const voirPlusArtistes = step === 2 && displayedArtists.length < filtreArtistes.length;
+    const voirMoinsArtistes = step === 2 && nbArtistVisible > 12;
 
     return (
         <div className="w-full max-w-5xl mx-auto py-12 px-4">
@@ -159,13 +164,15 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                                     type="text" 
                                     placeholder="Rechercher un artiste..." 
                                     className="px-6 py-6"
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) => {
+                                        setSearchQuery(e.target.value);
+                                        setVisibleArtistsCount(12);
+                                    }}
                                 />
                             </div>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-                            {filtreArtistes
-                                .slice(0, 12)
+                            {displayedArtists
                                 .map((art) => {
                                     const isSelected = formData.artists.includes(art.artist_id);
 
@@ -427,6 +434,24 @@ const PreferenceForm = ({ allArtists, genres }: { allArtists: Artist[], genres: 
                         className="w-48 py-3 cursor-pointer"
                     >
                         Afficher plus de genres
+                    </Button>
+                )}
+                {voirMoinsArtistes && (
+                    <Button
+                        variant="secondary"
+                        onClick={() => setVisibleArtistsCount((prev) => prev - 12)}
+                        className="w-48 py-3 cursor-pointer"
+                    >
+                        Afficher moins d'artistes
+                    </Button>
+                )}
+                {voirPlusArtistes && (
+                    <Button
+                        variant="secondary"
+                        onClick={() => setVisibleArtistsCount((prev) => prev + 12)}
+                        className="w-48 py-3 cursor-pointer"
+                    >
+                        Afficher plus d'artistes
                     </Button>
                 )}
                 <Button 
