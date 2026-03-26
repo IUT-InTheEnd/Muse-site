@@ -58,3 +58,7 @@ The commit description should include
 ## Security & Configuration Tips
 
 Do not commit secrets or modified `.env` files. Database access is configured through `laravel/lite-app/.env`. Treat `database/dataset/` as source input and `prepared_seed_data/` as generated output.
+
+## Languages
+
+When writing french text, include accents and diacritics properly.

@@ -345,7 +345,7 @@ Complexité **moyenne à élevée** :
 
 ### Faiblesses principales
 
-- incohérences critiques sécurité/auth (reset password non hashé, route `genpassword`),
+- ~~incohérences critiques sécurité/auth (reset password non hashé, route `genpassword`),~~ (escape hatches dev)
 - divergence migrations Laravel vs schéma SQL réel,
 - couverture de tests insuffisante,
 - dépendance à fichiers générés non versionnés,

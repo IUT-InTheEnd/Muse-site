@@ -22,7 +22,7 @@
 
 ## features
 
-- Permettre l'authentification OAuth (login with google)
+- ~~Permettre l'authentification OAuth (login with google)~~
 - Mettre des images d'arrière plan sur les cartes de sélection de genre dans le formulaire d'inscription
 - Revoir les couleurs dans le questionnaire (violet sur noir...) : vérifier contrast ratio AAA
 - drag and drop => changer l'ordre dans la playlist
