@@ -5,73 +5,73 @@
 Cross-reference avec `prompts/audit.result.md` et le code actuel :
 
 - Le site est un monolithe Laravel + Inertia React.
-- Il existe deja des playlists utilisateur, un lecteur global, des pages dediees (`resources/js/pages/*`) et des APIs JSON cote Laravel.
-- Les recommandations existent deja, mais elles sont delegates a des scripts Python via `App\Services\RecommendationService`.
-- La couverture de tests est faible et plusieurs zones du projet sont fragiles. Il faut donc privilegier une implementation simple, isolee et testable.
+- Il existe déjà des playlists utilisateur, un lecteur global, des pages dédiées (`resources/js/pages/*`) et des APIs JSON côté Laravel.
+- Les recommandations existent déjà, mais elles sont déléguées à des scripts Python via `App\Services\RecommendationService`.
+- La couverture de tests est faible et plusieurs zones du projet sont fragiles. Il faut donc privilégier une implémentation simple, isolée et testable.
 
 Points techniques directement utiles au blind test :
 
-- Les playlists existent deja : `app/Models/Playlist.php`, `app/Http/Controllers/PlaylistController.php`, `resources/js/pages/playlist/show.tsx`.
-- L'ajout de titres a une playlist existe deja cote UI, y compris titre par titre : `resources/js/components/musecomponents/TrackRow.tsx`.
-- Le lecteur global et l'API actuelle de lecture exposent tout de suite les metadonnees du morceau : `resources/js/components/ui/musicplayer.tsx`, `resources/js/lib/track-api.ts`, `app/Http/Controllers/MusicController.php`.
-- Le proxy actuel ne fait pas encore de decoupe d'extrait blind test ; il se contente de relayer un media distant ou un placeholder : `app/Http/Controllers/ProxyController.php`.
+- Les playlists existent déjà : `app/Models/Playlist.php`, `app/Http/Controllers/PlaylistController.php`, `resources/js/pages/playlist/show.tsx`.
+- L'ajout de titres à une playlist existe déjà côté UI, y compris titre par titre : `resources/js/components/musecomponents/TrackRow.tsx`.
+- Le lecteur global et l'API actuelle de lecture exposent tout de suite les métadonnées du morceau : `resources/js/components/ui/musicplayer.tsx`, `resources/js/lib/track-api.ts`, `app/Http/Controllers/MusicController.php`.
+- Le proxy actuel ne fait pas encore de découpe d'extrait blind test ; il se contente de relayer un média distant ou un placeholder : `app/Http/Controllers/ProxyController.php`.
 
-## Evaluation globale
+## Évaluation globale
 
 ### Verdict
 
 La proposition est **faisable**, et son intuition principale est bonne :
 
-- reutiliser la notion de playlist comme source de morceaux,
-- separer la page de generation et la page de lecture,
+- réutiliser la notion de playlist comme source de morceaux,
+- séparer la page de génération et la page de lecture,
 - s'appuyer sur les recommandations pour construire une playlist blind test.
 
-En revanche, **elle ne repond pas completement aux attendus dans son etat actuel** et elle n'est pas encore assez precise pour etre implementee de maniere robuste.
+En revanche, **elle ne répond pas complètement aux attendus dans son état actuel** et elle n'est pas encore assez précise pour être implémentée de manière robuste.
 
-Mon avis synthese :
+Mon avis de synthèse :
 
 - **Correspondance aux attendus : partielle mais bonne base**
-- **Faisabilite technique : bonne**
-- **Robustesse implementation : moyenne en l'etat**
-- **Robustesse UX : moyenne en l'etat**
+- **Faisabilité technique : bonne**
+- **Robustesse implémentation : moyenne en l'état**
+- **Robustesse UX : moyenne en l'état**
 
-## Est-ce que la proposition repond aux attendus ?
+## Est-ce que la proposition répond aux attendus ?
 
 ### Contraintes
 
-- Utiliser les systemes de recommandation : **oui, en intention**, mais le detail de calcul du score de recommandation n'est pas defini.
-- Page a part : **oui**.
-- Modifier existant site/API/BD : **oui**, et ce sera necessaire.
+- Utiliser les systèmes de recommandation : **oui, en intention**, mais le détail de calcul du score de recommandation n'est pas défini.
+- Page à part : **oui**.
+- Modifier l'existant site/API/BD : **oui**, et ce sera nécessaire.
 
 ### Attendus fonctionnels
 
 - Demander le nombre de musiques : **oui**.
-- Difficulte facile/moyen/difficile avec 10s/5s/3s : **oui**.
+- Difficulté facile/moyen/difficile avec 10s/5s/3s : **oui**.
 - Bouton "Advanced generation" : **oui**.
-- Filtres annee / genre / artiste / popularite / instrumental-spoken / langues : **oui au niveau de l'idee**, mais definitions trop floues pour coder correctement.
-- Bouton pour generer le blind test : **oui**.
+- Filtres année / genre / artiste / popularité / instrumental-spoken / langues : **oui au niveau de l'idée**, mais définitions trop floues pour coder correctement.
+- Bouton pour générer le blind test : **oui**.
 - Bouton pour obtenir la liste des musiques du blind test : **pas vraiment couvert explicitement**.
-- Possibilite d'ajouter une musique a une playlist perso : **partiellement couvert**. La proposition parle surtout d'enregistrer le blind test dans une playlist, pas clairement d'ajouter un morceau individuel depuis la liste finale.
+- Possibilité d'ajouter une musique à une playlist perso : **partiellement couvert**. La proposition parle surtout d'enregistrer le blind test dans une playlist, pas clairement d'ajouter un morceau individuel depuis la liste finale.
 
 ### Conclusion sur les attendus
 
-La proposition **repond a la structure generale attendue**, mais **il manque encore au moins trois choses pour dire qu'elle repond pleinement aux attendus** :
+La proposition **répond à la structure générale attendue**, mais **il manque encore au moins trois choses pour dire qu'elle répond pleinement aux attendus** :
 
-1. un vrai mecanisme pour afficher la liste complete du blind test,
-2. une vraie action "ajouter ce morceau a une playlist perso" depuis cette liste,
-3. des definitions non ambigues pour les filtres et le calcul du mix "connu / inconnu".
+1. un vrai mécanisme pour afficher la liste complète du blind test,
+2. une vraie action "ajouter ce morceau à une playlist perso" depuis cette liste,
+3. des définitions non ambiguës pour les filtres et le calcul du mix "connu / inconnu".
 
 ## Ce qui est bon dans la proposition
 
-- Reutiliser les playlists comme source de morceaux est un bon choix fonctionnel et architectural.
-- Avoir deux pages distinctes est coherent avec l'architecture actuelle du site.
+- Réutiliser les playlists comme source de morceaux est un bon choix fonctionnel et architectural.
+- Avoir deux pages distinctes est cohérent avec l'architecture actuelle du site.
 - Autoriser la lecture d'une playlist existante en mode blind test est une bonne extension. C'est utile pour le manuel et cela limite la duplication de concepts.
-- L'idee d'un blind test mixte "morceaux connus mais peu ecoutes" + "morceaux inconnus mais recommandes" est interessante et alignee avec l'esprit du site.
-- Le cycle UX "Demarrer -> Rejouer -> Reveler -> Suivant -> Terminer" est globalement bon.
+- L'idée d'un blind test mixte "morceaux connus mais peu écoutés" + "morceaux inconnus mais recommandés" est intéressante et alignée avec l'esprit du site.
+- Le cycle UX "Démarrer -> Rejouer -> Révéler -> Suivant -> Terminer" est globalement bon.
 
-## Problemes et limitations apparentes
+## Problèmes et limitations apparentes
 
-### 1. Fuite de metadonnees si on reutilise l'API et le lecteur actuels
+### 1. Fuite de métadonnées si on réutilise l'API et le lecteur actuels
 
 C'est le point le plus important.
 
@@ -89,25 +89,27 @@ Donc :
 - si on branche le blind test sur `fetchTrack()` / `fetchTracks()`,
 - ou sur le `music-player-context`,
 
-alors le blind test est "spoilerable" immediatement via l'UI, l'etat React ou les requetes reseau.
+alors le blind test est "spoilerable" immédiatement via l'UI, l'état React ou les requêtes réseau.
 
-La proposition ne traite pas assez ce sujet. Pour un blind test robuste, il faut un **mode de lecture masque**, avec une API dediee qui ne livre pas les reponses avant le clic sur "Reveler".
+La proposition ne traite pas assez ce sujet. Pour un blind test robuste, il faut un **mode de lecture masqué**, avec une API dédiée qui ne livre pas les réponses avant le clic sur "Révéler".
+
+> Solution: cacher uniquement les métadonneés du front (pas de hiding côté réseau, ce n'est pas un hackathon)
 
 ### 2. Le proxy actuel ne suffit pas encore pour servir un extrait blind test
 
-La proposition mentionne une reimplementation des ranges du proxy, mais aujourd'hui ce n'est pas fait.
+La proposition mentionne une réimplémentation des ranges du proxy, mais aujourd'hui ce n'est pas fait.
 
-Le blind test a besoin d'un vrai mecanisme de clip :
+Le blind test a besoin d'un vrai mécanisme de clip :
 
 - soit par support HTTP Range si la source le permet,
-- soit par un endpoint applicatif qui sert un extrait borne,
-- soit par un token de session cote serveur qui masque l'URL originale.
+- soit par un endpoint applicatif qui sert un extrait borné,
+- soit par un token de session côté serveur qui masque l'URL originale.
 
-Sans cela, la difficulte 3s/5s/10s ne sera pas robuste.
+Sans cela, la difficulté 3s/5s/10s ne sera pas robuste.
 
-### 3. L'ordre de playlist n'est pas formalise correctement
+### 3. L'ordre de playlist n'est pas formalisé correctement
 
-Le blind test depend d'un ordre de passage stable.
+Le blind test dépend d'un ordre de passage stable.
 
 Or :
 
@@ -115,149 +117,151 @@ Or :
 - la page playlist tente d'appeler `/playlists/reorder`,
 - mais cette route / logique n'existe pas dans le backend.
 
-Donc aujourd'hui, l'ordre d'une playlist n'est pas un contrat fiable. Pour un blind test, c'est un vrai probleme.
+Donc aujourd'hui, l'ordre d'une playlist n'est pas un contrat fiable. Pour un blind test, c'est un vrai problème.
 
-### 4. La proposition est encore ambigue sur la persistance
+> Il faut faire une migration (de schéma, pas laravel)
+
+### 4. La proposition est encore ambiguë sur la persistance
 
 On ne sait pas clairement :
 
-- si un blind test genere cree toujours une playlist,
-- s'il cree juste une session temporaire,
+- si un blind test généré crée toujours une playlist,
+- s'il crée juste une session temporaire,
 - ou si la sauvegarde dans une playlist est optionnelle.
 
-Il faut trancher ce comportement avant implementation.
+Il faut trancher ce comportement avant implémentation.
 
-### 5. Le calcul "taux de recommendation" n'est pas defini de maniere exploitable
+### 5. Le calcul "taux de recommendation" n'est pas défini de manière exploitable
 
-Le code actuel de recommandations renvoie surtout des **listes ordonnees d'IDs**, pas des scores normalises et comparables.
+Le code actuel de recommandations renvoie surtout des **listes ordonnées d'IDs**, pas des scores normalisés et comparables.
 
 Donc la phrase :
 
-- "degre = taux de recommendation"
+- "degré = taux de recommendation"
 
-est bonne conceptuellement, mais pas assez precise pour etre codee telle quelle.
+est bonne conceptuellement, mais pas assez précise pour être codée telle quelle.
 
-Il faut definir si :
+Il faut définir si :
 
 - on utilise le rang dans la liste comme score,
 - on modifie les scripts Python pour retourner un score explicite,
-- ou on calcule un score applicatif supplementaire.
+- ou on calcule un score applicatif supplémentaire.
 
-### 6. Les filtres avances ne sont pas assez precis
+### 6. Les filtres avancés ne sont pas assez précis
 
 Plusieurs champs sont ambigus :
 
-- **Annee** : annee d'enregistrement, de creation, ou intervalle ?
-- **Popularite** : `track_listens`, `track_interest`, `track_hottness`, ou autre ?
+- **Année** : année d'enregistrement, de création, ou intervalle ?
+- **Popularité** : `track_listens`, `track_interest`, `track_hottness`, ou autre ?
 - **Instrumental / Spoken** : seuils exacts ? champ bool + champ echonest ? cas mixtes ?
 - **Langues** : `track_language_code` ou table relationnelle `track_chanter_en` ?
 - **Artiste** : un seul artiste, plusieurs, autocomplete par nom ou ID ?
 
-Sans definition stricte, l'implementation risque d'etre incoherente ou frustrante cote UX.
+Sans définition stricte, l'implémentation risque d'être incohérente ou frustrante côté UX.
 
-### 7. Le blind test peut polluer l'historique d'ecoute et les recommandations
+### 7. Le blind test peut polluer l'historique d'écoute et les recommandations
 
-Le lecteur actuel incremente les ecoutes a 50% du morceau dans `music-player-context.tsx`.
+Le lecteur actuel incrémente les écoutes à 50% du morceau dans `music-player-context.tsx`.
 
 Si un blind test sert des clips courts comme de "vrais morceaux", il peut :
 
-- incrementer artificiellement les ecoutes,
+- incrémenter artificiellement les écoutes,
 - fausser le pool "connu / inconnu",
 - modifier les futures recommandations.
 
-Il faut decider explicitement : **une ecoute blind test ne compte pas comme une ecoute normale**.
+Il faut décider explicitement : **une écoute blind test ne compte pas comme une écoute normale**.
 
-### 8. UX : la liste finale et l'ajout a une playlist perso ne sont pas assez explicites
+### 8. UX : la liste finale et l'ajout à une playlist perso ne sont pas assez explicites
 
 Les attendus demandent :
 
 - un bouton pour obtenir la liste des musiques,
-- la possibilite d'ajouter une musique a une playlist perso.
+- la possibilité d'ajouter une musique à une playlist perso.
 
-La proposition parle surtout de jouer une playlist ou d'en creer une.
+La proposition parle surtout de jouer une playlist ou d'en créer une.
 Il manque une UX claire de type :
 
 - "Voir la liste du blind test"
-- puis, sur chaque ligne, "Ajouter a une playlist"
+- puis, sur chaque ligne, "Ajouter à une playlist"
 
-### 9. Cas limites non traites
+### 9. Cas limites non traités
 
 Exemples :
 
-- utilisateur sans historique d'ecoute,
-- historique trop petit pour remplir la moitie "connu",
+- utilisateur sans historique d'écoute,
+- historique trop petit pour remplir la moitié "connu",
 - filtres trop restrictifs,
 - morceaux sans fichier audio exploitable,
-- morceaux sans donnees echonest,
-- playlists vides ou tres courtes.
+- morceaux sans données echonest,
+- playlists vides ou très courtes.
 
-Ces cas doivent etre geres des le design, pas apres coup.
+Ces cas doivent être gérés dès le design, pas après coup.
 
-## Evaluation de robustesse
+## Évaluation de robustesse
 
-### Robustesse implementation
+### Robustesse implémentation
 
-**Moyenne en l'etat.**
+**Moyenne en l'état.**
 
-La direction est bonne, mais il faut la durcir autour de quelques decisions structurantes :
+La direction est bonne, mais il faut la durcir autour de quelques décisions structurantes :
 
-- ne pas reutiliser tel quel le lecteur global,
-- ne pas reutiliser tel quel l'API de lecture standard,
+- ne pas réutiliser tel quel le lecteur global,
+- ne pas réutiliser tel quel l'API de lecture standard,
 - formaliser l'ordre de playlist,
-- definir exactement le scoring et les filtres,
-- isoler les sessions blind test du comptage d'ecoute classique.
+- définir exactement le scoring et les filtres,
+- isoler les sessions blind test du comptage d'écoute classique.
 
 ### Robustesse UX
 
-**Moyenne en l'etat, potentiellement bonne apres clarification.**
+**Moyenne en l'état, potentiellement bonne après clarification.**
 
-Les ecrans principaux sont bien identifies, mais plusieurs details UX sont decisifs :
+Les écrans principaux sont bien identifiés, mais plusieurs détails UX sont décisifs :
 
-- ne pas spoiler avant "Reveler",
-- eviter les metadonnees visibles dans le lecteur global,
-- rendre le flux de jeu tres clair,
+- ne pas spoiler avant "Révéler",
+- éviter les métadonnées visibles dans le lecteur global,
+- rendre le flux de jeu très clair,
 - permettre une sortie lisible vers la liste finale,
-- gerer proprement les cas ou la generation trouve peu de candidats.
+- gérer proprement les cas où la génération trouve peu de candidats.
 
-## Reformulation claire et non ambigue : plan d'implementation
+## Reformulation claire et non ambiguë : plan d'implémentation
 
-Ci-dessous, une version reformulee, precise et directement implementable de la proposition.
+Ci-dessous, une version reformulée, précise et directement implémentable de la proposition.
 
-### 1. Perimetre fonctionnel
+### 1. Périmètre fonctionnel
 
-La fonctionnalite comporte **deux entrees** :
+La fonctionnalité comporte **deux entrées** :
 
-1. **Generer un blind test recommande**
-   - page dediee,
-   - generation a partir des recommandations + historique utilisateur + filtres.
+1. **Générer un blind test recommandé**
+   - page dédiée,
+   - génération à partir des recommandations + historique utilisateur + filtres.
 
 2. **Jouer une playlist existante en mode blind test**
    - depuis une playlist existante,
-   - ouverture sur une page dediee de lecture blind test,
-   - sans repasser par la generation.
+   - ouverture sur une page dédiée de lecture blind test,
+   - sans repasser par la génération.
 
-Dans les deux cas, la lecture se fait sur **une page blind test dediee**, distincte des pages playlist classiques.
+Dans les deux cas, la lecture se fait sur **une page blind test dédiée**, distincte des pages playlist classiques.
 
-### 2. Pages et routes a creer
+### 2. Pages et routes à créer
 
-Creer les pages suivantes :
+Créer les pages suivantes :
 
 - `/blind-tests/new`
-  - page de generation du blind test.
+  - page de génération du blind test.
 - `/blind-tests/play/{sessionId}`
   - page de lecture blind test.
 - `/playlist/{id}/blind-test`
-  - point d'entree depuis une playlist existante ; cette route cree une session puis redirige vers `/blind-tests/play/{sessionId}`.
+  - point d'entrée depuis une playlist existante ; cette route crée une session puis redirige vers `/blind-tests/play/{sessionId}`.
 
 Ajouter sur la page playlist existante un bouton :
 
 - `Lancer en blind test`
 
-### 3. Contrat de donnees a ajouter / modifier
+### 3. Contrat de données à ajouter / modifier
 
-#### Base de donnees
+#### Base de données
 
-Modifier la structure des donnees pour introduire :
+Modifier la structure des données pour introduire :
 
 1. une colonne `position` sur `playlist_contient_track`
    - obligatoire pour garantir l'ordre de lecture.
@@ -272,144 +276,144 @@ Modifier la structure des donnees pour introduire :
    - `status` (`ready`, `finished`)
    - timestamps simples
 
-Cette table sert a stocker la configuration d'un run blind test sans polluer la notion generale de playlist.
+Cette table sert à stocker la configuration d'un run blind test sans polluer la notion générale de playlist.
 
-#### Regle de persistance
+#### Règle de persistance
 
-Regle claire :
+Règle claire :
 
-- un blind test **genere** cree une **playlist privee** possedee par l'utilisateur, puis cree une `blind_test_session` qui pointe dessus ;
-- un blind test **depuis playlist existante** ne duplique pas la playlist, il cree seulement une `blind_test_session` pointant vers cette playlist.
+- un blind test **généré** crée une **playlist privée** possédée par l'utilisateur, puis crée une `blind_test_session` qui pointe dessus ;
+- un blind test **depuis playlist existante** ne duplique pas la playlist, il crée seulement une `blind_test_session` pointant vers cette playlist.
 
 Ainsi :
 
-- on reutilise bien l'architecture playlist,
-- on garde une page separee,
-- on peut retrouver la liste complete des morceaux,
-- on peut ajouter un morceau a une autre playlist perso depuis la liste finale.
+- on réutilise bien l'architecture playlist,
+- on garde une page séparée,
+- on peut retrouver la liste complète des morceaux,
+- on peut ajouter un morceau à une autre playlist perso depuis la liste finale.
 
-### 4. Definitions non ambigues des inputs de generation
+### 4. Définitions non ambiguës des inputs de génération
 
 La page `/blind-tests/new` contient :
 
 - `Nombre de musiques`
   - entier, min 1, max 50
-- `Difficulte`
+- `Difficulté`
   - `Facile = 10 secondes`
   - `Moyen = 5 secondes`
   - `Difficile = 3 secondes`
 - un bouton ou volet `Advanced generation`
 
-Le volet avance contient :
+Le volet avancé contient :
 
-- `Annee`
+- `Année`
   - deux champs `annee_min` et `annee_max`
-  - applique sur `track_date_recorded`
+  - appliqué sur `track_date_recorded`
   - fallback sur `track_date_created` si `track_date_recorded` est nul
 - `Genre`
   - multi-select de genres
-  - un morceau est eligible s'il appartient a au moins un genre selectionne
+  - un morceau est éligible s'il appartient à au moins un genre sélectionné
 - `Artiste`
   - select/autocomplete sur l'artiste
-  - si renseigne, le morceau doit avoir au moins un artiste correspondant
-- `Popularite`
+  - si renseigné, le morceau doit avoir au moins un artiste correspondant
+- `Popularité`
   - filtre sur `track_listens`
   - trois niveaux : `faible`, `moyenne`, `forte`
-  - la classification se fait par percentiles sur l'ensemble candidat apres filtres de base
+  - la classification se fait par percentiles sur l'ensemble candidat après filtres de base
 - `Type vocal`
-  - valeurs : `indifferent`, `instrumental`, `spoken`
+  - valeurs : `indifférent`, `instrumental`, `spoken`
   - `instrumental` = `track_instrumental = true` OU `track_echonest.instrumentalness >= 0.5`
   - `spoken` = `track_echonest.speechiness >= 0.5`
 - `Langues`
   - multi-select
-  - priorite a la relation `track_chanter_en`
+  - priorité à la relation `track_chanter_en`
   - fallback sur `track_language_code` si la relation manque
 
-### 5. Regles precises de generation recommandee
+### 5. Règles précises de génération recommandée
 
-La generation produit une playlist de `n` morceaux.
+La génération produit une playlist de `n` morceaux.
 
 #### 5.1. Construction des deux pools
 
 Pool A : `connu`
 
-- morceaux deja ecoutes par l'utilisateur,
-- filtres avances appliques,
-- score = rarete d'ecoute,
+- morceaux déjà écoutés par l'utilisateur,
+- filtres avancés appliqués,
+- score = rareté d'écoute,
 - formule : `known_score = 1 - (nb_ecoute / max_nb_ecoute_utilisateur)` si `max_nb_ecoute_utilisateur > 0`, sinon `0`.
 
 Pool B : `inconnu`
 
-- morceaux jamais ecoutes par l'utilisateur,
-- filtres avances appliques,
-- issus des systemes de recommandation existants,
-- score = score de recommandation normalise.
+- morceaux jamais écoutés par l'utilisateur,
+- filtres avancés appliqués,
+- issus des systèmes de recommandation existants,
+- score = score de recommandation normalisé.
 
 #### 5.2. Source de recommandation pour le pool inconnu
 
-Regle claire :
+Règle claire :
 
 - si l'utilisateur a un historique exploitable :
-  - utiliser en priorite `userBased(userId, nLarge)` pour une base generale,
-  - completer par `echoNest(userId, lastTrackId, nLarge)` si un dernier morceau ecoute existe,
-  - fusionner les resultats.
+  - utiliser en priorité `userBased(userId, nLarge)` pour une base générale,
+  - compléter par `echoNest(userId, lastTrackId, nLarge)` si un dernier morceau écouté existe,
+  - fusionner les résultats.
 - si l'utilisateur n'a pas d'historique :
   - utiliser `newUser(nLarge)`.
 
 #### 5.3. Score de recommandation
 
-Version implementable sans changer immediatement tous les scripts Python :
+Version implémentable sans changer immédiatement tous les scripts Python :
 
-- les scripts actuels renvoient des listes ordonnees ;
-- on transforme le rang en score normalise ;
+- les scripts actuels renvoient des listes ordonnées ;
+- on transforme le rang en score normalisé ;
 - exemple : premier = score 1.0, dernier = score proche de 0.
 
-Amelioration ulterieure possible :
+Amélioration ultérieure possible :
 
 - faire retourner un vrai score par les scripts Python.
 
-#### 5.4. Repartition connu / inconnu
+#### 5.4. Répartition connu / inconnu
 
-Regle claire :
+Règle claire :
 
 - `known_target = floor(n / 2)`
 - `unknown_target = n - known_target`
 
-Selection :
+Sélection :
 
-- tirer les morceaux dans chaque pool de maniere ponderee par leur score,
+- tirer les morceaux dans chaque pool de manière pondérée par leur score,
 - sans doublon,
-- si un pool n'a pas assez de candidats, completer avec l'autre pool,
-- afficher un message non bloquant si la repartition 50/50 n'a pas pu etre respectee.
+- si un pool n'a pas assez de candidats, compléter avec l'autre pool,
+- afficher un message non bloquant si la répartition 50/50 n'a pas pu être respectée.
 
 #### 5.5. Ordre final
 
-Une fois les morceaux selectionnes :
+Une fois les morceaux sélectionnés :
 
-- melanger l'ordre final,
+- mélanger l'ordre final,
 - enregistrer cet ordre dans `playlist_contient_track.position`,
-- ne plus recalculer ni remelanger pendant la session.
+- ne plus recalculer ni remélanger pendant la session.
 
-### 6. API backend dediee blind test
+### 6. API backend dédiée blind test
 
-Creer des endpoints dedies. Ne pas reutiliser tel quel `/tracks` ou `/test-music-player`.
+Créer des endpoints dédiés. Ne pas réutiliser tel quel `/tracks` ou `/test-music-player`.
 
-Endpoints proposes :
+Endpoints proposés :
 
 - `POST /blind-tests/generate`
   - valide les inputs,
-  - genere la playlist privee,
-  - cree la session,
+  - génère la playlist privée,
+  - crée la session,
   - retourne `session_id`.
 
 - `POST /blind-tests/session-from-playlist`
   - prend `playlist_id` + `difficulty`,
-  - cree une session blind test pour cette playlist,
+  - crée une session blind test pour cette playlist,
   - retourne `session_id`.
 
 - `GET /blind-tests/{sessionId}`
-  - retourne l'etat global de la session,
-  - nombre de rounds, difficulte, index courant, etc.
+  - retourne l'état global de la session,
+  - nombre de rounds, difficulté, index courant, etc.
 
 - `GET /blind-tests/{sessionId}/round/{index}/clip`
   - retourne uniquement l'audio du round,
@@ -418,17 +422,17 @@ Endpoints proposes :
 
 - `GET /blind-tests/{sessionId}/round/{index}/reveal`
   - retourne titre + artiste + album + cover pour le round courant,
-  - appele seulement au clic sur `Reveler`.
+  - appelé seulement au clic sur `Révéler`.
 
 - `GET /blind-tests/{sessionId}/tracks`
-  - retourne la liste complete des morceaux,
-  - utilisee uniquement quand l'utilisateur clique sur `Voir la liste du blind test`.
+  - retourne la liste complète des morceaux,
+  - utilisée uniquement quand l'utilisateur clique sur `Voir la liste du blind test`.
 
-### 7. Regles de lecture blind test
+### 7. Règles de lecture blind test
 
 La page `/blind-tests/play/{sessionId}` n'utilise pas le lecteur global classique.
 
-Elle utilise un composant local dedie blind test avec l'etat suivant :
+Elle utilise un composant local dédié blind test avec l'état suivant :
 
 - `idle`
 - `playing`
@@ -437,108 +441,108 @@ Elle utilise un composant local dedie blind test avec l'etat suivant :
 
 Cycle exact :
 
-1. Etat initial :
-   - bouton `Demarrer`
-   - aucune metadata affichee
+1. État initial :
+   - bouton `Démarrer`
+   - aucune métadata affichée
 
-2. Au clic sur `Demarrer` :
+2. Au clic sur `Démarrer` :
    - lecture du clip du premier morceau
-   - a la fin du clip, arret automatique
+   - à la fin du clip, arrêt automatique
    - bouton `Rejouer` visible
-   - bouton `Reveler` visible
+   - bouton `Révéler` visible
 
 3. Au clic sur `Rejouer` :
-   - rejoue le meme clip depuis le debut
+   - rejoue le même clip depuis le début
 
-4. Au clic sur `Reveler` :
-   - affiche au centre la carte complete : titre + artiste + album + cover
+4. Au clic sur `Révéler` :
+   - affiche au centre la carte complète : titre + artiste + album + cover
    - remplace l'action principale par `Suivant`
 
 5. Au clic sur `Suivant` :
    - passe au morceau suivant
-   - masque de nouveau les metadonnees
+   - masque de nouveau les métadonnées
    - lance la lecture du clip suivant
 
 6. Au dernier morceau :
    - `Suivant` devient `Terminer`
 
 7. Au clic sur `Terminer` :
-   - session marquee `finished`
-   - retour a l'etat initial de la page avec acces a la liste finale
+   - session marquée `finished`
+   - retour à l'état initial de la page avec accès à la liste finale
 
-### 8. Regles anti-spoiler
+### 8. Règles anti-spoiler
 
 Pour que le blind test soit robuste :
 
-- ne jamais charger dans le frontend toutes les reponses avant reveal,
+- ne jamais charger dans le frontend toutes les réponses avant reveal,
 - ne jamais afficher le lecteur global classique pendant la session blind test,
-- ne jamais exposer l'URL media originale cote client si elle peut contenir des indices,
-- ne pas afficher la liste complete sans action explicite de l'utilisateur.
+- ne jamais exposer l'URL média originale côté client si elle peut contenir des indices,
+- ne pas afficher la liste complète sans action explicite de l'utilisateur.
 
 Le bouton `Voir la liste du blind test` :
 
-- doit etre visible,
-- mais doit ouvrir un dialogue de confirmation du type `Cette action revele toutes les reponses`.
+- doit être visible,
+- mais doit ouvrir un dialogue de confirmation du type `Cette action révèle toutes les réponses`.
 
-### 9. Liste finale et ajout a une playlist perso
+### 9. Liste finale et ajout à une playlist perso
 
-Une fois la liste revelee explicitement ou la session terminee :
+Une fois la liste révélée explicitement ou la session terminée :
 
-- afficher la liste complete des morceaux du blind test,
-- reutiliser les composants de liste de tracks existants,
-- sur chaque ligne, conserver l'action existante `Ajouter a une playlist`.
+- afficher la liste complète des morceaux du blind test,
+- réutiliser les composants de liste de tracks existants,
+- sur chaque ligne, conserver l'action existante `Ajouter à une playlist`.
 
 Ainsi, l'attendu :
 
 - `obtenir la liste des musiques du blind test`
-- et `ajouter une musique a une playlist perso`
+- et `ajouter une musique à une playlist perso`
 
 est couvert explicitement.
 
-### 10. Regles sur les ecoutes et la recommandation
+### 10. Règles sur les écoutes et la recommandation
 
-Decision explicite :
+Décision explicite :
 
-- une lecture blind test **ne compte pas** comme une ecoute normale.
+- une lecture blind test **ne compte pas** comme une écoute normale.
 
 Donc :
 
-- pas d'appel a `/add-listen` depuis le player blind test,
+- pas d'appel à `/add-listen` depuis le player blind test,
 - pas de pollution de `user_ecoute`,
 - pas de biais induit sur les futures recommandations.
 
-### 11. Cas limites a implementer explicitement
+### 11. Cas limites à implémenter explicitement
 
-- utilisateur sans historique : generation uniquement depuis `newUser()`
-- pas assez de morceaux dans le pool `connu` : complement depuis `inconnu`
-- pas assez de morceaux dans le pool `inconnu` : complement depuis `connu`
+- utilisateur sans historique : génération uniquement depuis `newUser()`
+- pas assez de morceaux dans le pool `connu` : complément depuis `inconnu`
+- pas assez de morceaux dans le pool `inconnu` : complément depuis `connu`
 - filtres trop restrictifs : message clair + proposition d'assouplir les filtres
 - playlist vide : blocage propre avec message
-- morceaux sans audio utilisable : exclus de la generation
-- morceaux sans echonest : exclus seulement si le filtre en depend
+- morceaux sans audio utilisable : exclus de la génération
+- morceaux sans echonest : exclus seulement si le filtre en dépend
 
-### 12. Verification et tests a prevoir
+### 12. Vérification et tests à prévoir
 
-Vu l'etat du projet decrit dans `prompts/audit.result.md`, il faut au minimum :
+Vu l'état du projet décrit dans `prompts/audit.result.md`, il faut au minimum :
 
-- tests feature Laravel pour la generation et les endpoints blind test,
-- tests sur les droits d'acces aux sessions et playlists privees,
-- tests sur le non-comptage des ecoutes blind test,
-- test de la logique de repartition connu / inconnu,
+- tests feature Laravel pour la génération et les endpoints blind test,
+- tests sur les droits d'accès aux sessions et playlists privées,
+- tests sur le non-comptage des écoutes blind test,
+- test de la logique de répartition connu / inconnu,
 - test du fallback quand un pool est insuffisant.
 
 ## Conclusion
 
-La proposition est **bonne sur le fond**, mais **insuffisamment precise et insuffisamment robuste en l'etat** pour etre codee directement sans risque de contresens.
+La proposition est **bonne sur le fond**, mais **insuffisamment précise et insuffisamment robuste en l'état** pour être codée directement sans risque de contresens.
 
-Le point cle est le suivant :
+Le point clé est le suivant :
 
-- **oui**, il faut reutiliser les playlists comme source de morceaux,
-- **non**, il ne faut pas reutiliser tel quel le lecteur et l'API de lecture actuels pour la session blind test.
+- **oui**, il faut réutiliser les playlists comme source de morceaux,
+- **non**, il ne faut pas réutiliser tel quel le lecteur et l'API de lecture actuels pour la session blind test.
 
-Si on applique le plan ci-dessus, la fonctionnalite devient :
+Si on applique le plan ci-dessus, la fonctionnalité devient :
 
 - conforme aux attendus,
-- coherente avec l'architecture actuelle,
-- plus solide cote UX,
-- et nettement plus simple a implementer proprement.
+- cohérente avec l'architecture actuelle,
+- plus solide côté UX,
+- et nettement plus simple à implémenter proprement.
