@@ -5,13 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Album;
 use App\Models\Track;
 use App\Services\FavoritesQueryService;
+use App\Services\PlaylistTrackService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class FavoritesController extends Controller
 {
-    public function __construct(private FavoritesQueryService $favorites) {}
+    public function __construct(
+        private FavoritesQueryService $favorites,
+        private PlaylistTrackService $playlistTracks,
+    ) {}
 
     public function index()
     {
@@ -38,7 +42,7 @@ class FavoritesController extends Controller
         $exists = $this->favorites->isTrackFavorite($user, $trackId);
 
         if ($exists) {
-            $favoritesPlaylist->tracks()->detach($trackId);
+            $this->playlistTracks->removeTrack($favoritesPlaylist, $trackId);
             $track = Track::find($trackId);
             $track->track_favorites = $track->track_favorites - 1;
             $track->save();
@@ -50,9 +54,7 @@ class FavoritesController extends Controller
             ]);
 
         } else {
-            $favoritesPlaylist->tracks()->attach($trackId);
-            $favoritesPlaylist->playlist_date_updated = now();
-            $favoritesPlaylist->save();
+            $this->playlistTracks->appendTrack($favoritesPlaylist, $trackId);
 
             $track = Track::find($trackId);
             $track->track_favorites = $track->track_favorites + 1;

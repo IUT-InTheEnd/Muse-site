@@ -60,9 +60,18 @@ class SearchQueryService
     public function languages(): Collection
     {
         return Language::query()
-            ->select('language_id', 'language_label')
+            ->select('language_id', 'language_code', 'language_label')
             ->orderBy('language_label')
             ->distinct()
+            ->get();
+    }
+
+    public function allGenres(): Collection
+    {
+        return Genre::query()
+            ->select('genre_id', 'genre_title', 'genre_parent_id', 'top_level')
+            ->orderBy('top_level', 'desc')
+            ->orderBy('genre_title')
             ->get();
     }
 

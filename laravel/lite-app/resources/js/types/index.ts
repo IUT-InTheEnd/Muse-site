@@ -7,6 +7,14 @@ import type { Auth } from './auth';
 export type SharedData = {
     name: string;
     auth: Auth;
+    blindTest?: {
+        has_ephemeral: boolean;
+        ephemeral: {
+            track_count: number;
+            generated_at?: string | null;
+            generation?: Record<string, unknown> | null;
+        } | null;
+    };
     sidebarOpen: boolean;
     [key: string]: unknown;
 };

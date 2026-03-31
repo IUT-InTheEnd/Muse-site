@@ -62,6 +62,12 @@ const Navbar = ({ user }: NavbarProps) => {
                                 >
                                     Mes recommandations
                                 </a>
+                                <a
+                                    href="/blind-tests/new"
+                                    className="hover:underline"
+                                >
+                                    Blind test
+                                </a>
                             </div>
                         </>
                     )}
@@ -144,6 +150,9 @@ const Navbar = ({ user }: NavbarProps) => {
                                 className="hover:underline"
                             >
                                 Mes recommandations
+                            </a>
+                            <a href="/blind-tests/new" className="hover:underline">
+                                Blind test
                             </a>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>

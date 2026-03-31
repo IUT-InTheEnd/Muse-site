@@ -9,16 +9,9 @@ use Symfony\Component\Process\Process;
 class RecommendationService
 {
     /**
-     * Retourne les IDs de tracks recommandés via un script Python.
-     *
-     * @param  string  $scriptPath  Chemin absolu vers le script Python
-     * @param  array  $arguments  Arguments passés au script
-     * @param  int  $timeout  Timeout en secondes
-     * @return int[]
-     *
-     * @throws ProcessFailedException
+     * @return array<string, mixed>|array<int, mixed>
      */
-    public function runScript(string $scriptPath, array $arguments, int $timeout = 120): array
+    public function runJsonScript(string $scriptPath, array $arguments, int $timeout = 120): array
     {
         $python = $this->resolvePythonBinary();
         $process = new Process(array_merge([$python, $scriptPath], $arguments));
@@ -29,11 +22,23 @@ class RecommendationService
             throw new ProcessFailedException($process);
         }
 
-        $trackIds = json_decode(trim($process->getOutput()), true);
+        $payload = json_decode(trim($process->getOutput()), true);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (json_last_error() !== JSON_ERROR_NONE || ! is_array($payload)) {
             throw new \RuntimeException("Invalid JSON output from recommendation script: $scriptPath: ".$process->getOutput());
         }
+
+        return $payload;
+    }
+
+    /**
+     * Retourne les IDs de tracks recommandés via un script Python.
+     *
+     * @return int[]
+     */
+    public function runScript(string $scriptPath, array $arguments, int $timeout = 120): array
+    {
+        $trackIds = $this->runJsonScript($scriptPath, $arguments, $timeout);
 
         return $trackIds ?? [];
     }
@@ -41,8 +46,11 @@ class RecommendationService
     private function resolvePythonBinary(): string
     {
         $candidates = [
+            base_path('python-env/Scripts/python.exe'),
             base_path('python-env/bin/python3'),
+            base_path('venv/Scripts/python.exe'),
             base_path('venv/bin/python3'),
+            base_path('../../.venv/Scripts/python.exe'),
             base_path('../../.venv/bin/python3'),
         ];
 
@@ -77,33 +85,36 @@ class RecommendationService
     public function newUser(int $n = 10): array
     {
         $scriptPath = app_path().'/Http/Controllers/RecommendationScripts/reco_user_based_p1.py';
+
         return $this->runScript($scriptPath, [(string) $n]);
     }
 
     /**
-     * Recommandations item-based (Mathéo) — cosine similarity sur métadonnées artiste/album.
+     * Recommandations item-based (Mathéo) : cosine similarity sur métadonnées artiste/album.
      *
      * @return int[]
      */
     public function itemBasedMatheo(int $userId, int $trackId, int $n = 10, int $mode = 3): array
     {
         $scriptPath = app_path().'/Http/Controllers/RecommendationScripts/reco_item_based_matheo.py';
+
         return $this->runScript($scriptPath, [(string) $userId, (string) $trackId, (string) $n, (string) $mode]);
     }
 
     /**
-     * Recommandations item-based (Mathieu) — cosine similarity genre + popularité.
+     * Recommandations item-based (Mathieu) : cosine similarity genre + popularité.
      *
      * @return int[]
      */
     public function itemBasedMathieu(int $trackId, int $n = 10, float $simRatio = 0.8, float $seuilSim = 0.4): array
     {
         $scriptPath = app_path().'/Http/Controllers/RecommendationScripts/reco_item_based_mathieu.py';
+
         return $this->runScript($scriptPath, [(string) $trackId, (string) $n, (string) $simRatio, (string) $seuilSim]);
     }
 
     /**
-     * Recommandations EchoNest — vecteurs audio avec filtrage genre.
+     * Recommandations EchoNest : vecteurs audio avec filtrage genre.
      *
      * @return int[]
      */
@@ -135,5 +146,18 @@ class RecommendationService
             $compareGenre ? 'true' : 'false',
             (string) $topK,
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function generateBlindTest(int $userId, array $payload, int $timeout = 180): array
+    {
+        $scriptPath = app_path().'/Http/Controllers/RecommendationScripts/blind_test_generate.py';
+
+        return $this->runJsonScript($scriptPath, [
+            (string) $userId,
+            json_encode($payload, JSON_THROW_ON_ERROR),
+        ], $timeout);
     }
 }

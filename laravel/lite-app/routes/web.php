@@ -3,6 +3,7 @@
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\BlindTestController;
 use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImageFileController;
@@ -119,6 +120,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/playlists/update', [PlaylistController::class, 'update'])->name('playlists.update');
     Route::delete('/playlists/delete', [PlaylistController::class, 'delete'])->name('playlists.delete');
     Route::post('/playlists/add-tracks-batch', [PlaylistController::class, 'addMultipleTracks'])->name('playlists.addTracksBatch');
+    Route::post('/playlists/reorder', [PlaylistController::class, 'reorder'])->name('playlists.reorder');
 
     // route page recommandations
     Route::get('/page-recommandations', [RecommandationPageController::class, 'index'])->name('Recommandation.Index');
@@ -126,6 +128,13 @@ Route::middleware(['auth'])->group(function () {
     // route playlist
     Route::get('/user/playlists', [PlaylistController::class, 'myPlaylists'])->name('my.playlists');
     Route::get('/playlist/{id}', [PlaylistController::class, 'show'])->name('playlist.show');
+
+    // blind tests
+    Route::get('/blind-tests/new', [BlindTestController::class, 'create'])->name('blind-tests.new');
+    Route::get('/blind-tests/artists', [BlindTestController::class, 'searchArtists'])->name('blind-tests.artists');
+    Route::post('/blind-tests/generate', [BlindTestController::class, 'generate'])->name('blind-tests.generate');
+    Route::get('/blind-tests/play/ephemeral', [BlindTestController::class, 'playEphemeral'])->name('blind-tests.play.ephemeral');
+    Route::get('/blind-tests/play/playlist/{id}', [BlindTestController::class, 'playPlaylist'])->name('blind-tests.play.playlist');
 
     // route preferences
     Route::get('/preferences', [PreferencesController::class, 'index'])

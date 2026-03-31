@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     CameraIcon,
     GlobeIcon,
@@ -302,6 +302,13 @@ export default function PlaylistShow({ playlist }: Props) {
                                 <Button size="lg" onClick={handlePlayAll} disabled={localTracks.length === 0} className="gap-2 cursor-pointer">
                                     <PlayIcon size={20} /> Lecture
                                 </Button>
+                                {localTracks.length > 0 && (
+                                    <Button size="lg" variant="outline" asChild className="gap-2 cursor-pointer">
+                                        <Link href={`/blind-tests/play/playlist/${playlist.playlist_id}`}>
+                                            <PlayIcon size={20} /> Lancer en blind test
+                                        </Link>
+                                    </Button>
+                                )}
                                 {isEditable && (
                                     <Button size="lg" variant="destructive" onClick={handleDelete} disabled={isDeleting} className="gap-2 cursor-pointer">
                                         <TrashIcon size={18} /> Supprimer

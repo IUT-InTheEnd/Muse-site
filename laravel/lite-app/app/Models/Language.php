@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class Language
  * 
  * @property int $language_id
+ * @property string|null $language_code
  * @property string $language_label
  * @property string|null $language_handle
  * 
@@ -29,6 +30,7 @@ class Language extends Model
 	public $timestamps = false;
 
 	protected $fillable = [
+		'language_code',
 		'language_label',
 		'language_handle'
 	];

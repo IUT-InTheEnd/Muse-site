@@ -63,6 +63,9 @@ class Playlist extends Model
 
     public function tracks()
     {
-        return $this->belongsToMany(Track::class, 'playlist_contient_track', 'playlist_id', 'track_id');
+        return $this->belongsToMany(Track::class, 'playlist_contient_track', 'playlist_id', 'track_id')
+            ->using(PlaylistContientTrack::class)
+            ->withPivot('position')
+            ->orderBy('playlist_contient_track.position');
     }
 }

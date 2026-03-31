@@ -6,20 +6,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
  * Class PlaylistContientTrack
  * 
  * @property int $playlist_id
  * @property int $track_id
+ * @property int $position
  * 
  * @property Playlist $playlist
  * @property Track $track
  *
  * @package App\Models
  */
-class PlaylistContientTrack extends Model
+class PlaylistContientTrack extends Pivot
 {
 	protected $table = 'playlist_contient_track';
 	public $incrementing = false;
@@ -27,8 +28,15 @@ class PlaylistContientTrack extends Model
 
 	protected $casts = [
 		'playlist_id' => 'int',
-		'track_id' => 'int'
+		'track_id' => 'int',
+		'position' => 'int',
 	];
+
+    protected $fillable = [
+        'playlist_id',
+        'track_id',
+        'position',
+    ];
 
 	public function playlist()
 	{
