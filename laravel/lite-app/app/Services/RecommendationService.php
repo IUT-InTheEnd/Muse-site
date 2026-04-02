@@ -52,6 +52,7 @@ class RecommendationService
             base_path('venv/bin/python3'),
             base_path('../../.venv/Scripts/python.exe'),
             base_path('../../.venv/bin/python3'),
+            base_path('../../../../.venv/bin/python3'),
         ];
 
         foreach ($candidates as $candidate) {
