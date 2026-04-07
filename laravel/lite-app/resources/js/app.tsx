@@ -40,7 +40,7 @@ function AppWrapper({
                 <MusicPlayerProvider userId={user?.id}>
                     {/* Header */}
                     <header className="w-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
-                        <div className="mx-auto w-full max-w-168.75 text-sm lg:max-w-4xl">
+                        <div className="mx-auto w-full max-w-[96rem] text-sm">
                             <Navbar user={user} />
                         </div>
                     </header>
