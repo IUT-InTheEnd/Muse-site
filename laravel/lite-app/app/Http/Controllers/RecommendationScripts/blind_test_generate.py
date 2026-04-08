@@ -263,37 +263,64 @@ def fetch_unknown_pool(
     language_codes: list[str],
     recommendation_scores: dict[int, float],
 ) -> list[dict[str, Union[float, int]]]:
-    if not recommendation_scores:
-        return []
-
     clauses, params = build_filter_clauses(filters, language_codes)
-    where_clause = " AND ".join(
-        [
-            "t.track_id = ANY(%s)",
-            "NOT EXISTS (SELECT 1 FROM user_ecoute ue WHERE ue.user_id = %s AND ue.track_id = t.track_id)",
-            *clauses,
-        ]
-    )
+    unseen_clause = "NOT EXISTS (SELECT 1 FROM user_ecoute ue WHERE ue.user_id = %s AND ue.track_id = t.track_id)"
 
-    candidate_ids = list(recommendation_scores.keys())
+    pool_by_track_id: dict[int, dict[str, Union[float, int]]] = {}
 
+    if recommendation_scores:
+        candidate_ids = list(recommendation_scores.keys())
+        recommended_where_clause = " AND ".join(
+            [
+                "t.track_id = ANY(%s)",
+                unseen_clause,
+                *clauses,
+            ]
+        )
+
+        cursor.execute(
+            f"""
+            SELECT DISTINCT t.track_id
+            FROM track t
+            LEFT JOIN track_echonest te ON te.track_id = t.track_id
+            WHERE {recommended_where_clause}
+            """,
+            [candidate_ids, user_id, *params],
+        )
+
+        for track_id, in cursor.fetchall():
+            normalized_track_id = int(track_id)
+            pool_by_track_id[normalized_track_id] = {
+                "track_id": normalized_track_id,
+                "score": max(float(recommendation_scores.get(normalized_track_id, 0.0)), 0.01),
+            }
+
+    # Best effort fallback: if filtered recommendations are too sparse, complete the
+    # unknown pool with any filtered unheard tracks from the catalog.
+    fallback_where_clause = " AND ".join([unseen_clause, *clauses])
     cursor.execute(
         f"""
-        SELECT DISTINCT t.track_id
+        SELECT DISTINCT t.track_id, COALESCE(t.track_listens, 0) AS track_listens
         FROM track t
         LEFT JOIN track_echonest te ON te.track_id = t.track_id
-        WHERE {where_clause}
+        WHERE {fallback_where_clause}
+        ORDER BY COALESCE(t.track_listens, 0) DESC, t.track_id ASC
         """,
-        [candidate_ids, user_id, *params],
+        [user_id, *params],
     )
 
-    return [
-        {
-            "track_id": int(track_id),
-            "score": max(float(recommendation_scores.get(int(track_id), 0.0)), 0.01),
+    for track_id, track_listens in cursor.fetchall():
+        normalized_track_id = int(track_id)
+        if normalized_track_id in pool_by_track_id:
+            continue
+
+        # Give fallback tracks a lower but non-zero weight than explicit recommendations.
+        pool_by_track_id[normalized_track_id] = {
+            "track_id": normalized_track_id,
+            "score": max(0.02 + min(int(track_listens or 0), 1000) / 100000, 0.02),
         }
-        for track_id, in cursor.fetchall()
-    ]
+
+    return list(pool_by_track_id.values())
 
 
 def weighted_sample_without_replacement(
