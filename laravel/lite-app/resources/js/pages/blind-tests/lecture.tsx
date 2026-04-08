@@ -1,55 +1,21 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { check } from '@/routes/favorites';
+import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
+import { CardCover, CardContent, CardTitle, CardSubtitle } from '@/components/musecomponents/cards/Card';
+import { proxyUrl } from '@/components/proxy';
+import { usePage } from '@inertiajs/react';
+import type { SharedData } from '@/types';
+import { Siren, Heart } from 'lucide-react';
+import { TrackRow } from '@/components/musecomponents/TrackRow';
 
-// BlindTestSessionService
-
-type Props = {
-    source: 'ephemeral';
-    trackCount: number;
-    playlist: {
-        id: number;
-        name: string;
-    } | null;
-    ephemeral: {
-        generated_at?: string | null;
-        generation?: {
-            count?: number;
-            counts?: {
-                known_selected?: number;
-                unknown_selected?: number;
-            };
-        } | null;
-    } | null;
-};
-
-const dureeMusique = 5;
 const nbReponsesQcm = 4;
-const nbMusic = 10;
 
 let nbPointsTotal = 0;
 let nbPointsArtiste = 0;
 let nbPointsTitre = 0;
 
-const qcmChoices = [
-    'Daft Punk — One More Time',
-    'Stromae — Alors on danse',
-    'The Weeknd — Blinding Lights',
-    'Dua Lipa — Levitating',
-];
-
-function choixReponse(reponse: string) {
-    // qcm choices = reponse + 3 autre reponse aléatoire
-    qcmChoices[Math.floor(Math.random() * nbReponsesQcm)] = reponse;
-    console.log('qcmChoices',qcmChoices);
-    return qcmChoices;
-}
-
-function checkReponse(reponse: string) {
-    // vérifier la réponse et mettre à jour les points
-}
-
+// Fonction pour formater le temps reponsetant en mm:ss
 function formatTemps(seconds: number): string {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -57,55 +23,58 @@ function formatTemps(seconds: number): string {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-export default function BlindTestLecture({
-    source,
-    trackCount,
-    playlist,
-    ephemeral,
-}: Props) {
+export default function BlindTestLecture() {
+    const [dureeMusique, setDureeMusique] = React.useState<number>(5);
+    const [difficulty, setDifficulty] = React.useState<'facile'|'moyen'|'dur'>('moyen');
     const [jeuCommence, setJeuCommence] = React.useState(false);
-    const [tracks, setTracks] = React.useState<Array<{id?: number; title?: string; artist?: string; url: string}>>([]);
-    const [tempsRestant, setTempsRestant] = React.useState(dureeMusique);
+    const [tracks, setTracks] = React.useState<Array<{id?: number; title?: string; artist?: string; url?: string; duration?: number}>>([]);
+    const [tempsreponsetant, setTempsMusique] = React.useState(dureeMusique);
     const [go, setGo] = React.useState(false);
     const [showQcm, setShowQcm] = React.useState(false);
+    const [qcmChoices, setQcmChoices] = React.useState<string[]>([]);
     const [showReponse, setShowReponse] = React.useState(false);
     const [showScore, setShowScore] = React.useState(false);
+    const [showPointTotal, setShowPointTotal] = React.useState(false);
+    const [userAnswer, setReponseUser] = React.useState('');
     const [reponseSelectionne, setReponseSelectionne] = React.useState<string | null>(null);
     const [showPointArtiste, setShowPointArtiste] = React.useState(false);
     const [showPointTitre, setShowPointTitre] = React.useState(false);
-    const [musicActuelle, setMusicActuelle] = React.useState(0);
+    const [musicIdActuelle, setMusicActuelle] = React.useState(0);
     const [showBtnIndice, setShowBtnIndice] = React.useState(true);
+    const [favoritesMap, setFavoritesMap] = React.useState<Record<number, boolean>>({});
     const audioRef = React.useRef<HTMLAudioElement | null>(null);
     const audioTimeoutRef = React.useRef<number | null>(null);
 
+    const nbMusic = tracks.length;
+
+    // Gérer le timer pour la musique
     React.useEffect(() => {
-        if (!go || tempsRestant <= 0) {
+        if (!go || tempsreponsetant <= 0) {
             return;
         }
 
         const timer = window.setInterval(() => {
-            setTempsRestant((previous) => Math.max(previous - 1, 0));
+            setTempsMusique((previous) => Math.max(previous - 1, 0));
         }, 1000);
 
         return () => window.clearInterval(timer);
-    }, [go, tempsRestant]);
+    }, [go, tempsreponsetant]);
 
+    // Arrêter la musique quand le temps est écoulé
     React.useEffect(() => {
         if (!jeuCommence) {
             return;
         }
 
-        if (tempsRestant === 0) {
+        if (tempsreponsetant === 0) {
             setGo(false);
-            // stop current audio when time is up
             if (audioRef.current) {
                 audioRef.current.pause();
             }
         }
-    }, [jeuCommence, tempsRestant]);
+    }, [jeuCommence, tempsreponsetant]);
 
     React.useEffect(() => {
-        // cleanup on unmount
         return () => {
             if (audioRef.current) {
                 audioRef.current.pause();
@@ -117,101 +86,334 @@ export default function BlindTestLecture({
         };
     }, []);
 
+    // Charger les musiques éphémèreponse au début
+    React.useEffect(() => {
+        async function chargerMusiqueEphemeral() {
+            try {
+                const reponse = await fetch('/blind-tests/ephemeral-tracks', { credentials: 'same-origin' });
+                if (!reponse.ok){
+                    return;
+                }
+                const json = await reponse.json();
+                if (Array.isArray(json.tracks)) {
+                    setTracks(json.tracks);
+                    try {
+                        window.sessionStorage.setItem('blindTestTracks', JSON.stringify(json.tracks));
+                    } catch (e) {
+                        console.error('Impossible de stocker les musiques éphémèreponse dans sessionStorage', e);
+                    }
+                }
+            } catch (e) {
+                console.error('Impossible de charger les musiques éphémèreponse', e);
+            }
+        }
+
+        chargerMusiqueEphemeral();
+    }, []);
+
+    // Lancer la musique actuelle quand elle change
+    React.useEffect(() => {
+        if (!jeuCommence){
+            return;
+        }
+        if (!tracks || nbMusic === 0){
+            return;
+        }
+        if (musicIdActuelle < 0 || musicIdActuelle >= nbMusic){
+            return;
+        }
+
+        playMusique(musicIdActuelle);
+    }, [musicIdActuelle, jeuCommence, tracks]);
+
+    
+
+    // Fonction pour charger les musiques depuis sessionStorage
     function chargeMusiqueSession() {
         try {
-            const raw = window.sessionStorage.getItem('blindTestTracks');
-            if (!raw) return [];
-            const parsed = JSON.parse(raw);
+            const musiqueStockees = window.sessionStorage.getItem('blindTestTracks');
+            if (!musiqueStockees) return [];
+            const parsed = JSON.parse(musiqueStockees);
             if (Array.isArray(parsed)) return parsed;
         } catch (e) {
-            console.warn('Aucune musique trouvée dans sessionStorage', e);
+            console.error('Impossible de charger les musiques depuis sessionStorage', e);
         }
         return [];
     }
 
-    function playTrack(index: number) {
-        const t = tracks[index];
-        if (!t || !t.url) return;
-
-        if (audioRef.current) {
-            audioRef.current.pause();
+    // Arrête l'audio en cours et annule le timeout 
+    const stopMusique = () => {
+        try {
+            if (audioTimeoutRef.current) {
+                window.clearTimeout(audioTimeoutRef.current);
+                audioTimeoutRef.current = null;
+            }
+        } catch (e) {
+           console.error('Impossible d\'arreter le timeout de la musique', e);
         }
 
-        const audio = new Audio(t.url);
-        audioRef.current = audio;
-        audio.play().catch((err) => console.warn('Audio play failed', err));
+        try {
+            if (audioRef.current) {
+                audioRef.current.pause();
+            }
+        } catch (e) {
+            console.error('Impossible de mettre en pause l\'audio', e);
+        }
 
-        // ensure timer stops playback after dureeMusique seconds
-        if (audioTimeoutRef.current) window.clearTimeout(audioTimeoutRef.current);
-        audioTimeoutRef.current = window.setTimeout(() => {
-            audio.pause();
-            setGo(false);
-            setShowQcm(true);
-        }, dureeMusique * 1000);
+        setGo(false);
+    };
+
+    // Fonction pour jouer une musique à partir de son index
+    function playMusique(index: number) {
+        if (!tracks[index]){
+            return;
+        }
+
+        if (audioRef.current) {
+            try {
+                audioRef.current.pause();
+            } catch (e) {
+                console.error("Impossible de mettre en pause l'audio", e);
+            }
+            audioRef.current = null;
+        }
+
+        (async () => {
+            try {
+                let playableUrl: string | undefined = (tracks[index] as any).url;
+
+                if (tracks[index].id) {
+                    const reponse = await fetch(`/test-music-player?id=${encodeURIComponent(tracks[index].id as number)}`);
+                    if (reponse.ok) {
+                        const data = await reponse.json();
+                        playableUrl = data.url ?? playableUrl;
+                    }
+                }
+
+                if (!playableUrl) {
+                    console.warn('Aucune URL jouable trouvée pour la piste', tracks[index]);
+                    return;
+                }
+
+                const audio = new Audio(proxyUrl(playableUrl) ?? playableUrl);
+                audioRef.current = audio;
+                await audio.play().catch((err) => console.warn('Audio play failed', err));
+
+                setTempsMusique(dureeMusique);
+                if (audioTimeoutRef.current) window.clearTimeout(audioTimeoutRef.current);
+                audioTimeoutRef.current = window.setTimeout(() => {
+                    try {
+                        audio.pause();
+                    } catch (e) {
+                        console.error("Impossible de mettre en pause l'audio", e);
+                    }
+
+                    setGo(false);
+                    setTempsMusique(0);
+                }, dureeMusique * 1000);
+            } catch (err) {
+                console.error('Erreur lors du chargement de la piste pour lecture', err);
+            }
+        })();
     }
 
-    const startBlindTest = () => {
-        setJeuCommence(true);
-        setTempsRestant(dureeMusique);
+    // Fonction pour passer à la musique suivante
+    const nextMusic = () => {
+        stopMusique();
+        setShowReponse(false);
+        setShowQcm(false);
+        setReponseSelectionne(null);
+
+        setTempsMusique(dureeMusique);
         setGo(true);
+        setMusicActuelle((prec) => {
+            const derniereMusique = Math.min(nbMusic, nbMusic) - 1;
+            if (prec < derniereMusique){
+                return prec + 1;
+            }
+            setShowScore(true);
+            setJeuCommence(false);
+            return prec;
+        });
+    };
+
+    // Fonction pour démarrer le blind test
+    const startBlindTest = () => {
+        const chargement = chargeMusiqueSession();
+        // set duration from selected difficulty (compute locally to avoid state update race)
+        const selectedDuration = difficulty === 'facile' ? 10 : difficulty === 'moyen' ? 5 : 3;
+        setDureeMusique(selectedDuration);
+
+        setJeuCommence(true);
         setShowQcm(false);
         setShowScore(false);
         setReponseSelectionne(null);
-        console.log('musique');
-        console.log(source, trackCount, playlist, ephemeral);
-        // charger les musiques depuis la session et lancer la première
-        const chargement = chargeMusiqueSession();
         if (chargement.length) {
             setTracks(chargement);
-            // small timeout to ensure state applied before playing
-            setTimeout(() => playTrack(0), 50);
+        }
+
+        setMusicActuelle(0);
+        setTempsMusique(selectedDuration);
+        setGo(true);
+    };
+
+    // Fonction pour mélanger les choix du QCM
+    function melangeChoixQCM<T>(choix: T[]) {
+        for (let i = choix.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [choix[i], choix[j]] = [choix[j], choix[i]];
+        }
+        return choix;
+    }
+
+    // Fonction pour afficher et créer les reponses du QCM
+    const afficherQCM = () => {
+        if (!tracks || nbMusic === 0){
+            return;
+        }
+
+        const musiqueActuelle = tracks[musicIdActuelle];
+        const correct = `${musiqueActuelle.artist} — ${musiqueActuelle.title}`;
+
+        const autreReponses = tracks.map((t) => `${t.artist} — ${t.title}`).filter((str, idx) => str && str !== correct);
+
+        const melangeAutreponseReponses = melangeChoixQCM(autreReponses.slice());
+        const nbReponsesFausse = Math.max(0, nbReponsesQcm - 1);
+        const fausses = melangeAutreponseReponses.slice(0, nbReponsesFausse);
+
+        const choices = melangeChoixQCM([correct, ...fausses]);
+        setQcmChoices(choices);
+        setShowQcm(true);
+    };
+
+    // Fonction pour normaliser les chaînes de caractèreponse / comparaison de chaine
+    function normalizeStr(chaine: string) {
+        return chaine.normalize('NFD').toLowerCase().trim();
+    }
+
+    // Fonction pour valider la réponse de l'utilisateur
+    const valideReponseUser = () => {
+        // arrêter la lecture immédiatement
+        stopMusique();
+
+        if (!tracks || nbMusic === 0){
+            return;
+        }
+
+        setShowPointArtiste(false);
+        setShowPointTitre(false);
+        setShowPointTotal(false);
+
+        const musiqueActuelle = tracks[musicIdActuelle];
+        const reponseCorrect = `${musiqueActuelle.artist} — ${musiqueActuelle.title}`;
+
+        if (showQcm) {
+            // si aide qcm et que c'est bon +1
+            if (reponseSelectionne === reponseCorrect) {
+                nbPointsTotal = nbPointsTotal + 1;
+                setShowPointTotal(true);
+            }
         } else {
-            console.warn('Aucune musique trouvée dans sessionStorage (cle: blindTestTracks)');
+            // sans qcm, +1 artiste, +1 titre
+            const user = normalizeStr(userAnswer || '');
+            const artist = normalizeStr(musiqueActuelle.artist || '');
+            const title = normalizeStr(musiqueActuelle.title || '');
+
+            const artisteCorrect = artist && user.includes(artist);
+            const titreCorrect = title && user.includes(title);
+
+            if (artisteCorrect) {
+                nbPointsArtiste = nbPointsArtiste + 1;
+                nbPointsTotal = nbPointsTotal + 1;
+                setShowPointArtiste(true);
+            }
+            if (titreCorrect) {
+                nbPointsTitre = nbPointsTitre + 1;
+                nbPointsTotal = nbPointsTotal + 1;
+                setShowPointTitre(true);
+            }
+        }
+        setShowReponse(true);
+    };
+
+    // Fonction pour si l'utilisateur abandonne
+    const userAbandonne = () => {
+        stopMusique();
+        setShowPointArtiste(false);
+        setShowPointTitre(false);
+        setShowPointTotal(false);
+        setShowReponse(true);
+    };
+
+    const { auth } = usePage<SharedData>().props;
+
+    const handleToggleFavorite = async (e: React.MouseEvent, trackId?: number) => {
+        e.stopPropagation();
+        if (!auth?.user) {
+            alert('Connectez-vous pour gérer vos favoris.');
+            return;
+        }
+        if (!trackId) return;
+
+        try {
+            const reponse = await fetch('/favorites/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
+                },
+                body: JSON.stringify({ track_id: trackId }),
+            });
+            if (!reponse.ok) return;
+            const json = await reponse.json();
+            setFavoritesMap((prev) => ({ ...prev, [trackId]: json.is_favorite }));
+        } catch (err) {
+            console.error('Erreur favoris:', err);
         }
     };
 
-    const progress = (tempsRestant / dureeMusique) * 100;
-
-    const nextMusic = () => {
-        if (musicActuelle < nbMusic - 1) {
-            setMusicActuelle(musicActuelle + 1);
-            setShowReponse(false);
-            setShowQcm(false);
-            setReponseSelectionne(null);
-            setTempsRestant(dureeMusique);
-            setGo(true);
-            // lancer la musique suivante si disponible
-            const nextIndex = musicActuelle + 1;
-            setTimeout(() => playTrack(nextIndex), 50);
-        }
-        if (musicActuelle === nbMusic - 1) {
-            setShowScore(true);
-            setJeuCommence(false);
-        }
-    };
-
+    // Fonction pour retourner à l'accueil à la fin
     const returnAccueil = () => {
-        // rediriger vers la page d'accueil
         window.location.href = '/';
     }
 
     return (
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-10">
-            {!jeuCommence ?(
-                
+            {!jeuCommence && !showScore ?(
                 <section className="space-y-6 rounded-2xl border bg-card p-6">
                     <h1 className="text-3xl font-semibold">Règles du jeu</h1>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-md">
                         Tu dois reconnaître la musique avant la fin du chrono. Tu peux répondre directement, ou demander
                         un indice pour passer en mode QCM à 4 réponses mais dans ce cas vous perdez 0.5 point.
                     </p>
-                    <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+                    <ul className="list-disc space-y-2 pl-5 text-md">
                         <li>Chaque manche dure {dureeMusique} secondes.</li>
-                        <li>Le chrono démarre au clic sur commencer, et la musique se lance.</li>
-                        <li>Si vous trouvez l'artiste / groupe vous gagnez 1 point, et 1 point pour le titre.</li>
+                        <li>Le chronomètre démarre lorsque vous cliquez sur "Commencer", et la musique se lance.</li>
+                        <li>Si vous trouvez l'artiste, vous gagnez 1 point. Si vous trouvez le titre, vous gagnez également 1 point.</li>
                     </ul>
+                    <div className="flex flex-row items-start gap-2">
+                        <Siren className="h-8 w-8 text-red-600" />
+                        <span className="text-md text-foreground">
+                            Besoin d'un coup de pouce ? Demandez un <strong>indice</strong> pour afficher un QCM — vous
+                            ne pourrez alors remporter qu'un seul point pour la bonne réponse.
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <label className="text-md">Difficulté :</label>
+                        <select
+                            value={difficulty}
+                            onChange={(e) => setDifficulty(e.target.value as any)}
+                            className="rounded-md border px-2 py-1"
+                        >
+                            <option value="facile">Facile (10s)</option>
+                            <option value="moyen">Moyen (5s)</option>
+                            <option value="dur">Dur (3s)</option>
+                        </select>
+                    </div>
+
                     <Button onClick={startBlindTest} className="cursor-pointer">
-                        {musicActuelle > 0 ? 'Reprendre' : 'Commencer'} le blind test
+                        {musicIdActuelle > 0 ? 'Reprendre' : 'Commencer'} le blind test
                     </Button>
                 </section>
             ) : (
@@ -220,72 +422,82 @@ export default function BlindTestLecture({
                         <Button className="cursor-pointer bg-primary text-primary-foreground" onClick={() => setJeuCommence(false)}>
                             Voir les règles
                         </Button>
-                        <div className="rounded-full bg-muted/50 px-3 py-3 text-xs font-medium text-muted-foreground">
-                            <p>{musicActuelle + 1} / {nbMusic}</p>
+                        <div>
+                            <p>Score total : {nbPointsTotal}</p>
+                        </div>
+                        <div className="rounded-full bg-muted/50 px-3 py-3 text-xs font-medium  ">
+                            <p>{musicIdActuelle + 1} / {nbMusic}</p>
                         </div>
                     </div>
 
-                    <div className="flex justify-center">
-                            <div
-                                className="relative flex h-64 w-64 items-center justify-center rounded-full border-6 border-primary"
-                                style={{
-                                    background: `conic-gradient(hsl(var(--primary)) ${progress}%, hsl(var(--muted)) ${progress}% 100%)`,
-                                }}
-                            >
-                                <div className="flex h-56 w-56 flex-col items-center justify-center rounded-full bg-background text-center">
-                                    <span className="text-sm text-muted-foreground">Temps restant</span>
-                                    <span className="mt-1 text-5xl font-bold">{formatTemps(tempsRestant)}</span>
-                                    <span className="mt-2 text-xs text-muted-foreground">
-                                        {go ? 'Lecture en cours' : 'Chrono arrêté'}
-                                    </span>
-                                </div>
+                    <div className="flex flex-col justify-center items-center gap-4">
+                        <div className="relative flex h-64 w-64 items-center justify-center rounded-full border-6 border-primary">
+                            <div className="flex h-56 w-56 flex-col items-center justify-center rounded-full bg-background text-center">
+                                <>
+                                    <span className="text-md  ">Temps restant</span>
+                                    <span className="mt-1 text-5xl font-bold">{formatTemps(tempsreponsetant)}</span>
+                                    <span className="mt-2 text-xs  ">{go ? 'Lecture en cours' : 'Chrono arrêté'}</span>
+                                </>
                             </div>
                         </div>
-
-                        <div className="flex flex-wrap gap-3">
-                            
-                            
-                        </div>
+                    </div>
 
                         {!showQcm ? (
-                            <div className="flex flex-row gap-4">
-                                <span className="text-sm text-muted-foreground">Votre réponse</span>
-                                <Input type="text" placeholder="Votre réponse" className="w-full" />
+                            <div className="flex flex-row items-center gap-4">
+                                <span className="text-md">Votre réponse</span>
+                                <Input value={userAnswer} onChange={(e: any) => setReponseUser(e.target.value)} type="text" placeholder="Votre réponse" className="w-full" />
                                 {showBtnIndice && (
-                                    <Button className="cursor-pointer" variant="secondary" onClick={() => setShowQcm(true)}>
+                                    <Button className="cursor-pointer" variant="secondary" onClick={afficherQCM}>
                                         Un indice ?
                                     </Button>
                                 )}
                             </div>
                         ) : (
                             <div className="space-y-3 rounded-xl border bg-card p-4">
-                                <p className="text-sm text-muted-foreground">Indice activé : choisis la bonne réponse.</p>
-                                {nbPointsTotal = nbPointsTotal - 0.5}
+                                <p className="text-md">Indice activé : choisis la bonne réponse.</p>
                                 <div className="grid gap-2">
-                                    {qcmChoices.map((choice) => (
-                                        <button
-                                            key={choice}
-                                            type="button"
-                                            onClick={() => setReponseSelectionne(choice)}
-                                            className={`rounded-lg border px-4 py-3 text-left transition-colors ${
-                                                reponseSelectionne === choice
-                                                    ? 'border-primary bg-primary/10 text-primary'
-                                                    : 'bg-background hover:bg-muted/50'
-                                            }`}
-                                        >
-                                            {choice}
-                                        </button>
-                                    ))}
+                                    {qcmChoices.map((choice) => {
+                                        const currentCorrect = tracks && tracks[musicIdActuelle]
+                                            ? `${tracks[musicIdActuelle].artist} — ${tracks[musicIdActuelle].title}`
+                                            : '';
+                                        const isCorrect = choice === currentCorrect;
+                                        const isSelected = choice === reponseSelectionne;
+
+                                        const baseClass = 'rounded-lg border px-4 py-3 text-left transition-colors';
+                                        let variantClass = 'bg-background hover:bg-muted/50';
+
+                                        if (showReponse) {
+                                            if (isCorrect) {
+                                                variantClass = 'border-green-500 bg-green-50 text-green-700';
+                                            } else if (isSelected) {
+                                                variantClass = 'border-red-500 bg-red-50 text-red-700';
+                                            } else {
+                                                variantClass = 'bg-background/50 ';
+                                            }
+                                        } else {
+                                            variantClass = isSelected ? 'border-primary bg-primary/10 text-primary' : variantClass;
+                                        }
+
+                                        return (
+                                            <button
+                                                key={choice}
+                                                type="button"
+                                                onClick={() => setReponseSelectionne(choice)}
+                                                className={`${baseClass} ${variantClass}`}
+                                            >
+                                                {choice}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
 
                         <div className="flex gap-4">
-                            {/* si click sue un des deux boutons () =>setShowBtnIndice(false) pour ne plus afficher le bouton indice */}
-                            <Button className="cursor-pointer" onClick={() => setShowReponse(true)}>
+                            <Button className="cursor-pointer" onClick={() => valideReponseUser()}>
                                 Valider et voir la réponse
                             </Button>
-                            <Button className="cursor-pointer" variant="secondary" onClick={() => setShowReponse(true)}>
+                            <Button className="cursor-pointer" variant="secondary" onClick={() => userAbandonne()}>
                                 Je donne ma langue au chat
                             </Button>
                         </div>
@@ -293,17 +505,26 @@ export default function BlindTestLecture({
                         <div>
                             {showReponse && (
                                 <div className="space-y-3 rounded-xl border bg-card p-4">
-                                    <p className="text-sm text-muted-foreground">La bonne réponse était :</p>
-                                    <h2 className="text-lg font-semibold">Daft Punk — One More Time</h2>
+                                    <p className="text-md  ">La bonne réponse était :</p>
+                                    <h2 className="text-lg font-semibold">
+                                        {`${tracks[musicIdActuelle].artist} — ${tracks[musicIdActuelle].title}`}
+                                    </h2>
                                     <div>
-                                        {showPointArtiste && <p className="text-sm text-muted-foreground">Vous avez gagné 1 point pour l'artiste !</p>}
-                                        {showPointTitre && <p className="text-sm text-muted-foreground">Vous avez gagné 1 point pour le titre !</p>}
-                                        <p className="text-sm text-muted-foreground">
-                                            Vous avez au total {nbPointsTotal} points dont {nbPointsArtiste} pour l'artiste et {nbPointsTitre} pour le titre.
+                                        {showPointArtiste && <p className="text-md  ">Vous avez gagné 1 point pour l'artiste !</p>}
+                                        {showPointTitre && <p className="text-md  ">Vous avez gagné 1 point pour le titre !</p>}
+                                        {showQcm && (
+                                            showPointTotal ? (
+                                                <p className="text-md  ">Vous avez gagné 1 point pour la bonne réponse (QCM).</p>
+                                            ) : (
+                                                <p className="text-md  ">Vous n'avez pas obtenu de point au QCM.</p>
+                                            )
+                                        )}
+                                        <p className="text-md  ">
+                                            Vous avez au total {nbPointsTotal} points.
                                         </p>
                                     </div>
                                     <Button className="cursor-pointer" variant="secondary" onClick={nextMusic}>
-                                        {musicActuelle +1 === nbMusic ? 'Terminer et voir les scores' : 'Musique suivante'}
+                                        {musicIdActuelle +1 === nbMusic ? 'Terminer et voir les scoreponse' : 'Musique suivante'}
                                     </Button>
                                 </div>
                             )}
@@ -313,27 +534,48 @@ export default function BlindTestLecture({
                             {showScore && (
                                 <section className="space-y-6 rounded-2xl border bg-card p-6">
                                     <h1 className="text-3xl font-semibold">Score final</h1>
-                                    <p className="text-sm text-muted-foreground">
+                                    <p className="text-md  ">
                                         Vous avez terminé le blind test ! Voici votre score final : {nbPointsTotal} points.
                                     </p>
-                                    <p className="text-sm text-muted-foreground">
-                                        Détails : {nbPointsArtiste} points pour les artistes, {nbPointsTitre} points pour les titres.
+                                    <p className="text-md  ">
+                                        Détails : {nbPointsArtiste} points pour les artistes, {nbPointsTitre} points pour les titreponse.
                                     </p>
                                     <h2 className="text-xl font-semibold">Voici la liste des musiques</h2>
-                                    <p className="text-sm text-muted-foreground">Vous pouvez l'ajouter à vos playlist</p>
+                                    <p className="text-md  ">Vous pouvez l'ajouter à vos playlist</p>
                                     <div>
-                                        <ul className="list-disc pl-5">
-                                            <li>Daft Punk — One More Time</li>
-                                            <li>Stromae — Alors on danse</li>
-                                            <li>The Weeknd — Blinding Lights</li>
-                                            <li>Dua Lipa — Levitating</li>
-                                        </ul>
+                                        <div className="space-y-2">
+                                            {tracks.map((t, idx) => {
+                                                const id = (t.id ?? idx) as number;
+                                                const trackProp = {
+                                                    track_id: id,
+                                                    track_title: t.title ?? '',
+                                                    track_favorites: favoritesMap[id] ? 1 : 0,
+                                                    track_image_file: (t as any).cover,
+                                                    track_duration: (t as any).duration,
+                                                    track_listens: (t as any).listens,
+                                                };
+                                                const artistProp = (t as any).artist
+                                                    ? { artist_id: (t as any).artist_id ?? 0, artist_name: (t as any).artist }
+                                                    : undefined;
+
+                                                return (
+                                                    <TrackRow
+                                                        key={id}
+                                                        track={trackProp}
+                                                        artist={artistProp}
+                                                        isFavorite={Boolean(favoritesMap[id])}
+                                                        showListens={false}
+                                                        coverSize="lg"
+                                                        onFavoriteChange={(trackId: number, isFav: boolean) =>
+                                                            setFavoritesMap((prev) => ({ ...prev, [trackId]: isFav }))
+                                                        }
+                                                    />
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                     <h2 className="text-xl font-semibold">Merci d'avoir joué !</h2>
                                     <div>
-                                        {/* <Button onClick={rejouer} className="cursor-pointer">
-                                            Rejouer
-                                        </Button>*/ }
                                         <Button onClick={returnAccueil} className="cursor-pointer">
                                             Retourner à l'accueil
                                         </Button>

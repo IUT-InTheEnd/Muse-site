@@ -189,7 +189,7 @@ class BlindTestController extends Controller
                 ]);
         }
 
-        return Inertia::render('blind-tests/ready', [
+        return Inertia::render('blind-tests/lecture', [
             'source' => 'ephemeral',
             'trackCount' => count($ephemeral['track_ids'] ?? []),
             'playlist' => null,
@@ -216,7 +216,7 @@ class BlindTestController extends Controller
                 ]);
         }
 
-        return Inertia::render('blind-tests/ready', [
+        return Inertia::render('blind-tests/lecture', [
             'source' => 'playlist',
             'trackCount' => $playlist->tracks->count(),
             'playlist' => [
@@ -225,5 +225,49 @@ class BlindTestController extends Controller
             ],
             'ephemeral' => null,
         ]);
+    }
+
+    public function musiqueGenererEphemeral(Request $request): JsonResponse
+    {
+        $ephemeral = $this->blindTests->getEphemeral($request->session());
+
+        if (! $ephemeral) {
+            return response()->json(['tracks' => []]);
+        }
+
+        $musiqueId = $ephemeral['track_ids'] ?? [];
+
+        $tracksQuery = \App\Models\Track::with(['realisers.artist'])
+            ->whereIn('track_id', $musiqueId)
+            ->get()
+            ->keyBy('track_id');
+
+        $ordered = array_map(function ($id) use ($tracksQuery) {
+            if (! isset($tracksQuery[$id])) {
+                return null;
+            }
+
+            $track = $tracksQuery[$id];
+
+            $artist = null;
+            $firstRealiser = $track->realisers->first();
+            if ($firstRealiser && isset($firstRealiser->artist)) {
+                $artistObj = $firstRealiser->artist;
+                $artist = $artistObj->artist_name ?? null;
+            }
+
+            return [
+                'id' => $track->track_id,
+                'title' => $track->track_title,
+                'artist' => $artist,
+                'url' => $track->track_url ?? $track->track_file ?? null,
+                'duration' => $track->track_duration ?? null,
+            ];
+        }, $musiqueId);
+
+        // filter out missing
+        $ordered = array_values(array_filter($ordered));
+
+        return response()->json(['tracks' => $ordered]);
     }
 }
