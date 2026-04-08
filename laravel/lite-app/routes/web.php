@@ -173,4 +173,8 @@ Route::get('/rds', function () {
     return view('redisTest');
 });
 
+Route::get('/blind-tests/lecture', function () {
+    return Inertia::render('blind-tests/lecture');
+})->name('blind-tests.lecture');
+
 require __DIR__.'/settings.php';
