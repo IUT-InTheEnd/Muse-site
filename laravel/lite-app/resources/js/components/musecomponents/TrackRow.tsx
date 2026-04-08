@@ -67,6 +67,8 @@ type TrackRowProps = {
     // Pour jouer une liste de tracks avec le bon index
     siblingTracks?: { track: TrackData; artist?: ArtistData }[];
     trackIndexInSiblings?: number;
+    showListens?: boolean;
+    coverSize?: 'sm' | 'md' | 'lg';
 };
 
 export function TrackRow({
@@ -82,6 +84,8 @@ export function TrackRow({
     onCreatePlaylist,
     siblingTracks,
     trackIndexInSiblings,
+    showListens = true,
+    coverSize = 'md',
 }: TrackRowProps) {
     const { auth } = usePage<SharedData>().props;
     const {
@@ -383,7 +387,7 @@ export function TrackRow({
                 </div>
 
                 {/* Cover */}
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded">
+                <div className={`relative ${coverSize === 'sm' ? 'h-8 w-8' : coverSize === 'lg' ? 'h-16 w-16' : 'h-12 w-12'} shrink-0 overflow-hidden rounded`}>
                     {track.track_image_file ? (
                         <img
                             src={proxyUrl(track.track_image_file)}
@@ -435,7 +439,7 @@ export function TrackRow({
                 </div>
 
                 {/* Nombre de lectures */}
-                {track.track_listens !== undefined && (
+                {showListens && track.track_listens !== undefined && (
                     <span className="hidden font-mono text-sm text-muted-foreground md:block w-30 text-right">
                         {track.track_listens.toLocaleString('fr-FR')}
                     </span>

@@ -134,6 +134,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/blind-tests/artists', [BlindTestController::class, 'searchArtists'])->name('blind-tests.artists');
     Route::post('/blind-tests/generate', [BlindTestController::class, 'generate'])->name('blind-tests.generate');
     Route::get('/blind-tests/play/ephemeral', [BlindTestController::class, 'playEphemeral'])->name('blind-tests.play.ephemeral');
+    Route::get('/blind-tests/ephemeral-tracks', [BlindTestController::class, 'musiqueGenererEphemeral'])->name('blind-tests.ephemeral-tracks');
     Route::get('/blind-tests/play/playlist/{id}', [BlindTestController::class, 'playPlaylist'])->name('blind-tests.play.playlist');
 
     // route preferences
@@ -172,5 +173,9 @@ Route::get('/valr', function () {
 Route::get('/rds', function () {
     return view('redisTest');
 });
+
+Route::get('/blind-tests/lecture', function () {
+    return Inertia::render('blind-tests/lecture');
+})->name('blind-tests.lecture');
 
 require __DIR__.'/settings.php';

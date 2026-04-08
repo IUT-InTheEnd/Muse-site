@@ -67,11 +67,16 @@ function AppWrapper({
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
-    resolve: (name) =>
-        resolvePageComponent(
+    resolve: (name) => {
+        if (name === 'blind-tests/lecture') {
+            return import('./pages/blind-tests/lecture.tsx');
+        }
+
+        return resolvePageComponent(
             `./pages/${name}.tsx`,
             import.meta.glob('./pages/**/*.tsx'),
-        ),
+        );
+    },
     setup({ el, App, props }) {
         const root = createRoot(el);
         const sharedData = props.initialPage.props as unknown as SharedData;
