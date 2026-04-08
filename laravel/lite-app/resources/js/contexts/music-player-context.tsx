@@ -102,6 +102,7 @@ type Action =
     | { type: 'SET_PROGRESS'; payload: { current: number; duration: number } }
     | { type: 'SET_PLAYLIST'; payload: Track[] }
     | { type: 'SET_INDEX'; payload: number }
+    | { type: 'TOGGLE_AUTO_PLAY_NEXT' }
     | { type: 'UPDATE_STATE'; payload: Partial<MusicPlayerState> }
     | { type: 'TOGGLE_FAVORITE'; payload: { trackId: number; isFavorite: boolean } }
     | { type: 'RESET' };
@@ -134,6 +135,8 @@ function playerReducer(
             return { ...state, playlist: action.payload };
         case 'SET_INDEX':
             return { ...state, currentIndex: action.payload };
+        case 'TOGGLE_AUTO_PLAY_NEXT':
+            return { ...state, autoPlayNext: !state.autoPlayNext };
         case 'UPDATE_STATE':
             return { ...state, ...action.payload };
         case 'TOGGLE_FAVORITE':
@@ -536,12 +539,7 @@ export function MusicPlayerProvider({
             playPrevious: skipBack,
             waitingList: waitingList,
             toggleAutoPlayNext: () =>
-                dispatch({
-                    type: 'UPDATE_STATE',
-                    payload: {
-                        autoPlayNext: !stateRef.current.autoPlayNext,
-                    },
-                }),
+                dispatch({ type: 'TOGGLE_AUTO_PLAY_NEXT' }),
             dispatch
         }),
         [skipForward, skipBack, playTrackAtIndex,dispatch],

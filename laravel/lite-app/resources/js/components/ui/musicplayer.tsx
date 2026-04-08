@@ -53,6 +53,7 @@ export default function MusicPlayer() {
     if (minimized) {
         return (
             <button
+                type="button"
                 onClick={toggleMinimized}
                 className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-purple-500 text-primary-foreground shadow-lg transition-all duration-200 hover:scale-105 hover:bg-purple-600"
                 aria-label="Ouvrir le lecteur"
@@ -82,6 +83,7 @@ export default function MusicPlayer() {
             <div className="pointer-events-auto border-t border-border bg-background px-8 py-4 text-foreground">
             {/* Bouton minimiser */}
             <button
+                type="button"
                 onClick={toggleMinimized}
                 className="absolute top-2 right-2 rounded-full p-1 transition-colors hover:bg-accent"
                 aria-label="Minimiser le lecteur"
@@ -165,7 +167,7 @@ export default function MusicPlayer() {
                 <div className="flex flex-col flex-1 items-center gap-2">
                     {/* Contrôles */}
                     <div className="flex items-center gap-6">
-                        <button onClick={toggleShuffle}>
+                        <button type="button" onClick={toggleShuffle}>
                             <ShuffleIcon
                                 size={28}
                                 className={
@@ -176,11 +178,12 @@ export default function MusicPlayer() {
                             />
                         </button>
                         
-                        <button 
-    onClick={handleToggleFavorite} 
-    disabled={isTogglingFavorite || !track}
-    className="transition-transform active:scale-90"
->
+                        <button
+                            type="button"
+                            onClick={handleToggleFavorite}
+                            disabled={isTogglingFavorite || !track}
+                            className="transition-transform active:scale-90"
+                        >
     {isTogglingFavorite ? (
         <LoaderIcon size={24} className="animate-spin text-purple-500" />
     ) : (
@@ -192,13 +195,14 @@ export default function MusicPlayer() {
             } 
         />
     )}
-</button>
+                        </button>
 
-                        <button onClick={skipBack}>
+                        <button type="button" onClick={skipBack}>
                             <SkipBackIcon size={32} className="text-foreground" />
                         </button>
 
                         <button
+                            type="button"
                             onClick={togglePlay}
                             disabled={isLoading}
                             className="flex h-14 w-14 items-center justify-center rounded-full bg-inverse text-inverse-foreground disabled:opacity-50"
@@ -212,11 +216,11 @@ export default function MusicPlayer() {
                             )}
                         </button>
 
-                        <button onClick={skipForward}>
+                        <button type="button" onClick={skipForward}>
                             <SkipForwardIcon size={32} className="text-foreground" />
                         </button>
 
-                        <button onClick={cycleRepeatMode}>
+                        <button type="button" onClick={cycleRepeatMode}>
                             {repeatMode === 'one' ? (
                                 <Repeat1Icon size={28} className="text-purple-500 dark:text-purple-400" />
                             ) : (
@@ -254,6 +258,7 @@ export default function MusicPlayer() {
                 {/* Volume */}
                 <div className="flex items-center gap-3 flex-1 justify-end">
                     <button
+                        type="button"
                         onClick={toggleAutoPlayNext}
                         className={`rounded-full border px-3 py-1 text-sm transition-colors ${
                             autoPlayNext
@@ -263,9 +268,9 @@ export default function MusicPlayer() {
                         aria-pressed={autoPlayNext}
                         title="Lecture automatique"
                     >
-                        Lecture automatique
+                        Lecture automatique : {autoPlayNext ? 'activée' : 'désactivée'}
                     </button>
-                    <button onClick={toggleMute} className="cursor-pointer">
+                    <button type="button" onClick={toggleMute} className="cursor-pointer">
                         {volume === 0 ? (
                             <VolumeXIcon size={28} className="text-muted-foreground" />
                         ) : volume < 0.33 ? (
@@ -287,7 +292,7 @@ export default function MusicPlayer() {
                         className="w-40 accent-purple-500"
                     />
                     {/* File d'attente */}
-                    <button onClick={waitingList}>
+                    <button type="button" onClick={waitingList}>
                         <ListMusic size={32} className="cursor-pointer text-foreground duration-200 transition-all" />
                     </button>
                 </div>
