@@ -2,6 +2,7 @@ import { Loader2, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
+    type ReactionState,
     type ReactionType,
     useReactionContext,
 } from '@/contexts/reaction-context';
@@ -61,11 +62,14 @@ export function ReactionButtons({
         seedReaction,
     ]);
 
-    const currentState = getReaction(resource, resourceId) ?? {
+    const fallbackState: ReactionState = {
         reaction: initialReaction,
         likes: initialLikes,
         dislikes: initialDislikes,
+        pending: false,
+        requestVersion: 0,
     };
+    const currentState = getReaction(resource, resourceId) ?? fallbackState;
     const reaction = currentState.reaction;
     const likes = currentState.likes;
     const dislikes = currentState.dislikes;
