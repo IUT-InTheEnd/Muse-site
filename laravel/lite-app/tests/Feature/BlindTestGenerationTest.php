@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Track;
 use App\Models\User;
 use App\Services\RecommendationService;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia as Assert;
 use Mockery;
@@ -17,6 +18,13 @@ class BlindTestGenerationTest extends TestCase
         Mockery::close();
 
         parent::tearDown();
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->withoutMiddleware(ValidateCsrfToken::class);
     }
 
     public function test_generation_page_receives_shared_blind_test_session_state(): void
@@ -75,6 +83,44 @@ class BlindTestGenerationTest extends TestCase
 
         $response->assertRedirect('/blind-tests/play/ephemeral');
         $response->assertSessionHas('blind_test.ephemeral.track_ids', $tracks->pluck('track_id')->all());
+    }
+
+    public function test_blind_test_lecture_requires_authentication(): void
+    {
+        $this->get('/blind-tests/lecture')
+            ->assertRedirect('/login');
+    }
+
+    public function test_authenticated_user_can_fetch_ephemeral_tracks(): void
+    {
+        $user = User::factory()->create();
+        $track = Track::create([
+            'track_title' => 'Track lecture',
+            'track_file' => 'lecture.mp3',
+        ]);
+
+        $this->actingAs($user)
+            ->withSession([
+                'blind_test' => [
+                    'ephemeral' => [
+                        'track_ids' => [$track->track_id],
+                        'track_count' => 1,
+                        'generated_at' => now()->toIso8601String(),
+                        'generation' => [],
+                    ],
+                ],
+            ])
+            ->getJson('/blind-tests/ephemeral-tracks')
+            ->assertOk()
+            ->assertJson([
+                'tracks' => [[
+                    'id' => $track->track_id,
+                    'title' => 'Track lecture',
+                    'artist' => null,
+                    'url' => 'lecture.mp3',
+                    'duration' => null,
+                ]],
+            ]);
     }
 
     public function test_generation_with_save_creates_an_ordered_playlist(): void
