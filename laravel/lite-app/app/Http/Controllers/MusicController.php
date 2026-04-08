@@ -154,7 +154,7 @@ class MusicController extends Controller
 
         $track->track_listens = ($track->track_listens ?? 0) + 1;
         $track->save();
-        $this->recommendationCache->invalidateAndDispatchRefresh($user->id);
+        $this->recommendationCache->invalidateListenDrivenRecommendations($user->id);
 
         return response()->json(['message' => 'Listen added successfully']);
     }

@@ -39,6 +39,19 @@ class RecommendationCacheService
         Cache::forget($keys['refresh_lock']);
     }
 
+    public function invalidateListenDrivenRecommendations(int $userId): void
+    {
+        $keys = $this->userKeys($userId);
+
+        Cache::forget($keys['last_listen']);
+        Cache::forget($keys['recommended']);
+        Cache::forget($keys['refresh_lock']);
+
+        Log::info('Invalidated listen-driven recommendation caches', [
+            'user_id' => $userId,
+        ]);
+    }
+
     public function invalidateAndDispatchRefresh(int $userId): bool
     {
         $this->invalidateUserRecommendations($userId);
