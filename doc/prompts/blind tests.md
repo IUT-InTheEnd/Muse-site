@@ -34,10 +34,10 @@ Flexibilité "for free": pouvoir lire une playlist existante comme un blind test
 - les tites de musique sont pas affichés pendant la lecture. il faut cliquer sur un bouton pour "Révéler" (en grand au centre de l'écran) la carte titre+artiste+album+cover (comme sur les cartes de musiques) et cliquer à nouveau: "Suivant" pour passer à la suivante (le temps que les joueurs décident du gagnant)
 - une fois la dernière musique lue, "Suivant" est remplacé par "Terminer". Au clic, retour à l'état initial avec le bouton "Démarrer"
 
-
 ## Génération d'une playlist bind test
 
 Page dédiée pour Générer une playlist à partir des préférences de l'utilisateur + inputs :
+
 - nombre de musiques
 - sous un volet "génération avancée"
   - année
@@ -45,7 +45,7 @@ Page dédiée pour Générer une playlist à partir des préférences de l'utili
   - artiste
   - popularité
   - instrumental/parlé
-  - langues 
+  - langues
 - \+ inputs de configuration de lecture (difficulté) qui seront forwardé à la page de lecture de blind test
 
 objectif : faire une playliste mixte en piochant dans 2 ensembles flous de manière probabiliste à 50/50 :

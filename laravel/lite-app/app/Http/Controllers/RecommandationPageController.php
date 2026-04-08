@@ -93,7 +93,7 @@ class RecommandationPageController extends Controller
 
             try {
                 if ($lastTrackId) {
-                    $trackIds = $this->recommendations->itemBasedMathieu($user->id, $lastTrackId);
+                    $trackIds = $this->recommendations->itemBasedMathieu($lastTrackId);
                 }
             } catch (\Throwable $e) {
                 Log::warning('Failed hybrid recommendations', [

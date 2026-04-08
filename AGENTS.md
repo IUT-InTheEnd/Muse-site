@@ -4,6 +4,7 @@
 
 - When writing french text, include accents and diacritics properly.
 - Write semantic markdown, avoid uses of bold and decorative styling, avoid lists that aren't actually lists ("lists" with one element, etc)
+- See `doc/prompts/audit.result.md` for a detailed overview of the site's inner workings.
 
 ## Project Structure & Module Organization
 
