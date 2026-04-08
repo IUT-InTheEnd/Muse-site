@@ -28,6 +28,9 @@ type Track = {
     track_image_file?: string;
     track_duration?: number;
     track_listens?: number;
+    track_likes?: number;
+    track_dislikes?: number;
+    viewer_reaction?: 'like' | 'dislike' | null;
     realisers?: {
         artist: {
             artist_id: number;
@@ -79,6 +82,9 @@ export default function PlaylistShow({ playlist }: Props) {
                     track_image_file: track.track_image_file,
                     track_duration: track.track_duration,
                     track_listens: track.track_listens,
+                    track_likes: track.track_likes,
+                    track_dislikes: track.track_dislikes,
+                    viewer_reaction: track.viewer_reaction ?? null,
                 } as TrackData,
                 artist: artist ? ({
                     artist_id: artist.artist_id,

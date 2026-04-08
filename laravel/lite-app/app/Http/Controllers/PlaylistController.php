@@ -6,6 +6,7 @@ use App\Http\Resources\PlaylistResource;
 use App\Models\Playlist;
 use App\Services\PlaylistQueryService;
 use App\Services\PlaylistTrackService;
+use App\Services\ReactionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,6 +16,7 @@ class PlaylistController extends Controller
     public function __construct(
         private PlaylistQueryService $playlists,
         private PlaylistTrackService $playlistTracks,
+        private ReactionService $reactions,
     ) {}
 
     // Récupère toutes les playlists d'un utilisateur (exclut la playlist de favoris)
@@ -293,9 +295,20 @@ class PlaylistController extends Controller
     }
 
     // Affiche une playlist avec tous ses titres et les infos associées
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $playlist = $this->playlists->playlistForShow($id);
+        $trackReactions = $this->reactions->trackReactionsFor(
+            $request,
+            $playlist->tracks->pluck('track_id'),
+        );
+
+        $playlist->tracks->each(function ($track) use ($trackReactions) {
+            $track->setAttribute(
+                'viewer_reaction',
+                $trackReactions[$track->track_id] ?? null,
+            );
+        });
 
         return Inertia::render('playlist/show', [
             'playlist' => $playlist,
