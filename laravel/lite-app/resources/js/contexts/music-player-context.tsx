@@ -31,6 +31,7 @@ export type MusicPlayerState = {
     currentIndex: number;
     hasListenBeenCounted: boolean;
     showWaitingList: boolean;
+    autoPlayNext: boolean;
 };
 
 export type MusicPlayerActions = {
@@ -55,6 +56,7 @@ export type MusicPlayerActions = {
     playNext: () => void;
     playPrevious: () => void;
     waitingList: () => void;
+    toggleAutoPlayNext: () => void;
     dispatch: React.Dispatch<Action>;
 };
 
@@ -78,6 +80,7 @@ const initialState: MusicPlayerState = {
     currentIndex: -1,
     hasListenBeenCounted: false,
     showWaitingList: false,
+    autoPlayNext: false,
 };
 
 function loadPersistedState(): Partial<MusicPlayerState> {
@@ -269,6 +272,7 @@ export function MusicPlayerProvider({
         const audio = new Audio();
         audioRef.current = audio;
         audio.volume = stateRef.current.volume;
+        audio.preload = 'metadata';
 
         const handlers = {
             play: () => dispatch({ type: 'SET_PLAYING', payload: true }),
@@ -322,9 +326,13 @@ export function MusicPlayerProvider({
             ended: () => {
                 if (stateRef.current.repeatMode === 'one') {
                     audio.currentTime = 0;
-                    audio.play();
-                } else {
+                    audio.play().catch(() => {
+                        dispatch({ type: 'SET_PLAYING', payload: false });
+                    });
+                } else if (stateRef.current.autoPlayNext) {
                     skipForward();
+                } else {
+                    dispatch({ type: 'SET_PLAYING', payload: false });
                 }
             },
             error: () => {
@@ -353,7 +361,12 @@ export function MusicPlayerProvider({
 
     // Logic recommendation
     React.useEffect(() => {
-        if (!userId || state.playlist.length === 0 || state.currentIndex < 0)
+        if (
+            !userId ||
+            !state.autoPlayNext ||
+            state.playlist.length === 0 ||
+            state.currentIndex < 0
+        )
             return;
 
         // On déclenche s'il reste moins de 4 morceaux dans la liste
@@ -403,7 +416,7 @@ export function MusicPlayerProvider({
             clearTimeout(timer);
             controller.abort();
         };
-    }, [state.currentIndex, userId, state.track?.id, state.playlist.length]);
+    }, [state.autoPlayNext, state.currentIndex, userId, state.track?.id, state.playlist.length]);
 
     const actions = React.useMemo<MusicPlayerActions>(
         () => ({
@@ -414,14 +427,32 @@ export function MusicPlayerProvider({
                 });
                 if (audioRef.current) {
                     audioRef.current.src = track.src;
-                    audioRef.current.play();
+                    audioRef.current.play().catch(() => {
+                        dispatch({
+                            type: 'UPDATE_STATE',
+                            payload: {
+                                playing: false,
+                                isLoading: false,
+                                error: 'Impossible de démarrer la lecture',
+                            },
+                        });
+                    });
                 }
             },
             play: () => {
                 if (!audioRef.current) return;
                 if (!audioRef.current.src && stateRef.current.track)
                     audioRef.current.src = stateRef.current.track.src;
-                audioRef.current.play();
+                audioRef.current.play().catch(() => {
+                    dispatch({
+                        type: 'UPDATE_STATE',
+                        payload: {
+                            playing: false,
+                            isLoading: false,
+                            error: 'Impossible de démarrer la lecture',
+                        },
+                    });
+                });
             },
             pause: () => audioRef.current?.pause(),
             togglePlay: () =>
@@ -504,6 +535,13 @@ export function MusicPlayerProvider({
             playNext: skipForward,
             playPrevious: skipBack,
             waitingList: waitingList,
+            toggleAutoPlayNext: () =>
+                dispatch({
+                    type: 'UPDATE_STATE',
+                    payload: {
+                        autoPlayNext: !stateRef.current.autoPlayNext,
+                    },
+                }),
             dispatch
         }),
         [skipForward, skipBack, playTrackAtIndex,dispatch],

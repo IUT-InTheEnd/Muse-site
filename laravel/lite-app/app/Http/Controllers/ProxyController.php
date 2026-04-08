@@ -64,6 +64,7 @@ class ProxyController extends Controller
 
             $response = response()->file($file->absolutePath, [
                 'Content-Type' => $file->contentType,
+                'Accept-Ranges' => 'bytes',
                 'Cache-Control' => $file->assetType === 'image'
                     ? 'public, max-age=604800'
                     : 'public, max-age=86400',
@@ -103,7 +104,9 @@ class ProxyController extends Controller
     {
         $path = public_path($type === 'audio' ? 'placeholders/audio-placeholder.mp3' : 'placeholders/image-placeholder.png');
 
-        return response()->file($path);
+        return response()->file($path, [
+            'Accept-Ranges' => 'bytes',
+        ]);
     }
 
     private function guessTypeFromUrl(?string $url): string

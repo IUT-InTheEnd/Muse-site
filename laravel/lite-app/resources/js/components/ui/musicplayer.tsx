@@ -14,7 +14,7 @@ function formatTime(s: number): string {
 }
 
 export default function MusicPlayer() {
-    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError, waitingList, showWaitingList,dispatch } = useMusicPlayer();
+    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, autoPlayNext, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError, waitingList, showWaitingList, toggleAutoPlayNext, dispatch } = useMusicPlayer();
 
     const isFavorite = !!track?.is_favorite;
     const [isTogglingFavorite, setIsTogglingFavorite] = React.useState(false);
@@ -253,6 +253,18 @@ export default function MusicPlayer() {
 
                 {/* Volume */}
                 <div className="flex items-center gap-3 flex-1 justify-end">
+                    <button
+                        onClick={toggleAutoPlayNext}
+                        className={`rounded-full border px-3 py-1 text-sm transition-colors ${
+                            autoPlayNext
+                                ? 'border-purple-500 text-purple-600'
+                                : 'border-border text-muted-foreground'
+                        }`}
+                        aria-pressed={autoPlayNext}
+                        title="Lecture automatique"
+                    >
+                        Lecture automatique
+                    </button>
                     <button onClick={toggleMute} className="cursor-pointer">
                         {volume === 0 ? (
                             <VolumeXIcon size={28} className="text-muted-foreground" />
