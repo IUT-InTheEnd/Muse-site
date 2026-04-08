@@ -121,6 +121,19 @@ class RecommendationCacheService
                         'error' => $e->getMessage(),
                     ]);
                 }
+
+                if ($lastListenRecommendedTracks === []) {
+                    try {
+                        $lastListenRecommendedTracks = $this->getTracksFromIds(
+                            $this->recommendations->itemBasedMathieu($lastTrackId)
+                        );
+                    } catch (\Throwable $e) {
+                        Log::warning('Failed fallback last listen recommendations refresh', [
+                            'user_id' => $userId,
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                }
             }
 
             $popularTracks = [];
@@ -139,7 +152,7 @@ class RecommendationCacheService
             if ($lastTrackId) {
                 try {
                     $recommendedTracks = $this->getTracksFromIds(
-                        $this->recommendations->itemBasedMathieu($lastTrackId)
+                        $this->recommendations->hybrid($userId, $lastTrackId)
                     );
                 } catch (\Throwable $e) {
                     Log::warning('Failed general recommendations refresh', [
@@ -147,6 +160,10 @@ class RecommendationCacheService
                         'error' => $e->getMessage(),
                     ]);
                 }
+            }
+
+            if ($recommendedTracks === []) {
+                $recommendedTracks = $popularTracks;
             }
 
             Cache::put($keys['last_listen'], $lastListenRecommendedTracks, self::CACHE_TTL_SECONDS);

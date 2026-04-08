@@ -39,7 +39,13 @@ class RecommandationPageController extends Controller
         $popularTracks = Cache::get($keys['popular']);
         $recommendedTracks = Cache::get($keys['recommended']);
 
-        if ($lastListenRecommendedTracks === null || $popularTracks === null || $recommendedTracks === null) {
+        $shouldQueueRefresh = $lastListenRecommendedTracks === null
+            || $popularTracks === null
+            || $recommendedTracks === null
+            || $recommendedTracks === []
+            || ($lastListenFormatted !== null && $lastListenRecommendedTracks === []);
+
+        if ($shouldQueueRefresh) {
             if ($this->recommendationCache->markRefreshQueued($user->id)) {
                 RefreshUserRecommendations::dispatch($user->id);
 
@@ -49,6 +55,8 @@ class RecommandationPageController extends Controller
                         'last_listen' => $lastListenRecommendedTracks === null,
                         'popular' => $popularTracks === null,
                         'recommended' => $recommendedTracks === null,
+                        'empty_last_listen' => $lastListenFormatted !== null && $lastListenRecommendedTracks === [],
+                        'empty_recommended' => $recommendedTracks === [],
                     ],
                 ]);
             }

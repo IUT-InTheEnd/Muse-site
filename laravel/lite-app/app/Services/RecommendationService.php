@@ -43,15 +43,34 @@ class RecommendationService
             throw new ProcessFailedException($process);
         }
 
-        $payload = json_decode(trim($process->getOutput()), true);
+        $output = trim($process->getOutput());
+        $payload = json_decode($output, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $lines = preg_split('/\R/', $output) ?: [];
+
+            while ($lines !== []) {
+                $candidate = trim((string) array_pop($lines));
+
+                if ($candidate === '') {
+                    continue;
+                }
+
+                $payload = json_decode($candidate, true);
+
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    break;
+                }
+            }
+        }
 
         if (json_last_error() !== JSON_ERROR_NONE || ! is_array($payload)) {
             Log::warning('Recommendation script returned invalid JSON', [
                 'script' => basename($scriptPath),
-                'output' => $process->getOutput(),
+                'output' => $output,
             ]);
 
-            throw new \RuntimeException("Invalid JSON output from recommendation script: $scriptPath: ".$process->getOutput());
+            throw new \RuntimeException("Invalid JSON output from recommendation script: $scriptPath: ".$output);
         }
 
         return $payload;
