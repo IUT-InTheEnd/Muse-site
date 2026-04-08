@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\RefreshUserRecommendations;
 use App\Models\UserEcoute;
 use App\Services\RecommendationCacheService;
+use App\Services\TrackQueryService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -13,6 +14,7 @@ class RecommandationPageController extends Controller
 {
     public function __construct(
         private RecommendationCacheService $recommendationCache,
+        private TrackQueryService $tracks,
     ) {}
 
     public function index()
@@ -60,6 +62,29 @@ class RecommandationPageController extends Controller
                     ],
                 ]);
             }
+        }
+
+        $fallbackRecommendedTracks = [];
+        $fallbackNewTracks = [];
+
+        if ($recommendedTracks === [] || $recommendedTracks === null) {
+            $fallbackRecommendedTracks = $this->tracks->guestRecommendedTracks();
+            $recommendedTracks = $fallbackRecommendedTracks;
+        }
+
+        if ($popularTracks === [] || $popularTracks === null) {
+            $fallbackNewTracks = $this->tracks->newTracks();
+            $popularTracks = $fallbackNewTracks;
+        }
+
+        if (($fallbackRecommendedTracks !== [] || $fallbackNewTracks !== []) && $user !== null) {
+            Log::info('Using fallback recommendation content on page recommandations', [
+                'user_id' => $user->id,
+                'fallback' => [
+                    'recommended' => $fallbackRecommendedTracks !== [],
+                    'popular' => $fallbackNewTracks !== [],
+                ],
+            ]);
         }
 
         return Inertia::render('recommandation/index', [
