@@ -34,18 +34,10 @@ def hybride_recommendation(track_id, n, compareGenre, target_user_id, get_title=
             # Trier par score décroissant
             scored_recommendations.sort(key=lambda x: x[1], reverse=True)
             recommendations_ub = [(rec[0], rec[1]) for rec in scored_recommendations]
-        except Exception as e:
-            print(f"Scoring p3 non applicable: {e}", file=sys.stderr)
+        except Exception:
+            pass
 
     conn.close()
-
-    print("Recommandations user-based :", file=sys.stderr)
-    for rec in recommendations_ub:
-        print(rec, file=sys.stderr)
-
-    print("Recommandations item-based :", file=sys.stderr)
-    for rec2 in recommendations_ib:
-        print(rec2, file=sys.stderr)
 
     recommendations = []
 
@@ -106,8 +98,6 @@ def hybride_recommendation(track_id, n, compareGenre, target_user_id, get_title=
                         recommendations.append(recommendations_ib[j][0])
                 i += 1
                 j += 1
-
-        print("Pas assez de recommandations disponibles pour atteindre le nombre demandé.", file=sys.stderr)
 
     return recommendations
 

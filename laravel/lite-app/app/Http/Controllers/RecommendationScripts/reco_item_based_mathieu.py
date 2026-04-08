@@ -7,23 +7,10 @@ import random
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import StandardScaler
-import time
-from functools import wraps
-
-def timer_func(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        t1 = time.perf_counter()
-        result = func(*args, **kwargs)
-        t2 = time.perf_counter()
-        print(f'La fonction {func.__name__!r} a pris {(t2-t1):.4f}s pour s\'exécuter')
-        return result
-    return wrapper
 
 tracks = load.load_tracks()
 users = load.load_users()
 
-@timer_func
 def create_vecteur_genre(df):
     mlb = MultiLabelBinarizer()
 
@@ -31,7 +18,6 @@ def create_vecteur_genre(df):
     genre_matrix = mlb.fit_transform(genres)
 
     return pd.DataFrame(genre_matrix, index=df.index, columns=mlb.classes_) 
-@timer_func
 def create_vecteur_popularity(df):
     popularity = [
         'track_listens', 
@@ -41,7 +27,6 @@ def create_vecteur_popularity(df):
     matrix_vectors = df[popularity]
     return matrix_vectors
 
-@timer_func
 def merge_vecteur(vecteur1, vecteur2):
     scaler = StandardScaler()
 
@@ -53,25 +38,17 @@ def merge_vecteur(vecteur1, vecteur2):
 
     return scaled_vecteur
 
-@timer_func
 def create_matrice_similitude(df,vecteur):
     cosine_sim = cosine_similarity(vecteur)
     
     indices = pd.Series(df.index, index=df['track_id']).drop_duplicates()
     return cosine_sim, indices
 
-@timer_func
 def recommendation_id(track_id, df, cosine_sim, indices, sim_ratio, seuil_sim, n):
     try:
         idx = indices.loc[track_id]
     except KeyError:
-        print(f"L'ID {track_id} n'a pas été trouvé.")
         return pd.DataFrame() 
-    
-    print(f"Nombre de morceaux : {n}")
-    print(f"Seuil de similitude : {seuil_sim}")
-    print(f"Ratio de similitude : {sim_ratio} {int(sim_ratio * 10)} morceaux similaires et {int(n - (sim_ratio * 10))} morceaux de découvertes")
-
 
     sim_scores = list(enumerate(cosine_sim[idx]))
     

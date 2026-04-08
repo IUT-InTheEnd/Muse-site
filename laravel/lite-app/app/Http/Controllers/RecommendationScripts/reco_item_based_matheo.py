@@ -228,7 +228,6 @@ def create_vecteurs(df, mode):
 
 def recommandation_artiste_album(df_complet, track_id_cible, mode_choisi):
     if track_id_cible not in df_complet['track_id'].values:
-        print("erreur")
         return
     matrice = create_vecteurs(df_complet, mode_choisi)
     i_cible = df_complet[df_complet['track_id'] == track_id_cible].index[0]
@@ -239,25 +238,6 @@ def recommandation_artiste_album(df_complet, track_id_cible, mode_choisi):
     scores_top = sorted(scores_i, key=lambda x: x[1], reverse=True)
     top_5 = [x for x in scores_top if x[0] != i_cible][:5]
     decouverte = scores_top[-1]
-    afficher_joli_resultat(df_complet, i_cible, top_5, decouverte)
-
-
-def afficher_joli_resultat(df, id_cible, liste_recos, couple_decouverte):
-    tracks_cible = df.iloc[id_cible]
-    print(f"resultats pour : {tracks_cible['track_title']}")
-    print(f"de : {tracks_cible['artist_name']}")
-    print(f"dans l'album : {tracks_cible['album_title']} ({tracks_cible['album_type']})")    
-    print("========= Nos recommandations =========")
-    for i, score in liste_recos:
-        ligne = df.iloc[i]
-        print(f"{score} - {ligne['track_title']} - {ligne['artist_name']}")
-        print("-------------------------------------------")
-
-    print("========= Nouveaux morceaux ========= ")
-    i_decouverte, score_decouverte = couple_decouverte
-    decouverte = df.iloc[i_decouverte]
-    print(f"{score_decouverte} - {decouverte['track_title']} - {decouverte['artist_name']}")
-    print("-------------------------------------------")
 
 
 def get_recommendations_json(track_id, n, mode):
