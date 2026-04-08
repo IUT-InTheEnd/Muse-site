@@ -264,7 +264,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                         disabled={isUpdating}
                                         className="flex cursor-pointer items-center gap-1 rounded-full bg-overlay-surface px-3 py-1 text-sm text-overlay-foreground transition hover:bg-overlay-surface-hover disabled:opacity-50"
                                     >
-                                        {playlist.playlist_public ? <><GlobeIcon size={14} /> Publique</> : <><LockIcon size={14} /> Privee</>}
+                                        {playlist.playlist_public ? <><GlobeIcon size={14} /> Publique</> : <><LockIcon size={14} /> Privée</>}
                                     </button>
                                 )}
                             </div>
