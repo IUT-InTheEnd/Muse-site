@@ -5,14 +5,19 @@ namespace App\Http\Controllers;
 use App\Services\ReactionService;
 use App\Models\Track;
 use App\Models\UserEcoute;
+use App\Services\FavoritesQueryService;
+use App\Services\RecommendationCacheService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Services\FavoritesQueryService;
 
 
 class MusicController extends Controller
 {
-    public function __construct(private ReactionService $reactions,private FavoritesQueryService $favorites) {}
+    public function __construct(
+        private ReactionService $reactions,
+        private FavoritesQueryService $favorites,
+        private RecommendationCacheService $recommendationCache,
+    ) {}
 
     private function buildTrackPayload(Track $track, ?string $viewerReaction = null,bool $isFavorite = false): array
     {
@@ -149,6 +154,7 @@ class MusicController extends Controller
 
         $track->track_listens = ($track->track_listens ?? 0) + 1;
         $track->save();
+        $this->recommendationCache->invalidateAndDispatchRefresh($user->id);
 
         return response()->json(['message' => 'Listen added successfully']);
     }

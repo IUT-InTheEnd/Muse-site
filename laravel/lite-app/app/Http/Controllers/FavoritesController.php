@@ -6,6 +6,7 @@ use App\Models\Album;
 use App\Models\Track;
 use App\Services\FavoritesQueryService;
 use App\Services\PlaylistTrackService;
+use App\Services\RecommendationCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,6 +16,7 @@ class FavoritesController extends Controller
     public function __construct(
         private FavoritesQueryService $favorites,
         private PlaylistTrackService $playlistTracks,
+        private RecommendationCacheService $recommendationCache,
     ) {}
 
     public function index()
@@ -46,6 +48,7 @@ class FavoritesController extends Controller
             $track = Track::find($trackId);
             $track->track_favorites = $track->track_favorites - 1;
             $track->save();
+            $this->recommendationCache->invalidateAndDispatchRefresh($user->id);
 
             return response()->json([
                 'success' => true,
@@ -59,6 +62,7 @@ class FavoritesController extends Controller
             $track = Track::find($trackId);
             $track->track_favorites = $track->track_favorites + 1;
             $track->save();
+            $this->recommendationCache->invalidateAndDispatchRefresh($user->id);
 
             return response()->json([
                 'success' => true,
@@ -100,6 +104,7 @@ class FavoritesController extends Controller
             $album = Album::find($albumId);
             $album->album_favorites = $album->album_favorites - 1;
             $album->save();
+            $this->recommendationCache->invalidateAndDispatchRefresh($user->id);
 
             return response()->json([
                 'success' => true,
@@ -111,6 +116,7 @@ class FavoritesController extends Controller
             $album = Album::find($albumId);
             $album->album_favorites = $album->album_favorites + 1;
             $album->save();
+            $this->recommendationCache->invalidateAndDispatchRefresh($user->id);
 
             return response()->json([
                 'success' => true,

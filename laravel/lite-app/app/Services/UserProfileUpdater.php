@@ -7,6 +7,10 @@ use App\Models\UserProfile;
 
 class UserProfileUpdater
 {
+    public function __construct(
+        private RecommendationCacheService $recommendationCache,
+    ) {}
+
     public function update(User $user, array $validatedData): UserProfile
     {
         foreach (['music_envy_today', 'music_reason', 'listening_context', 'recommanded_artists'] as $field) {
@@ -29,6 +33,8 @@ class UserProfileUpdater
             $user->profile_id = $profile->user_profile_id;
             $user->save();
         }
+
+        $this->recommendationCache->invalidateAndDispatchRefresh($user->id);
 
         return $profile->fresh();
     }

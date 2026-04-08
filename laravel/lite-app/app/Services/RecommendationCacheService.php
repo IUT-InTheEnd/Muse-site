@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\RefreshUserRecommendations;
 use App\Models\Track;
 use App\Models\UserEcoute;
 use Illuminate\Support\Facades\Cache;
@@ -38,6 +39,27 @@ class RecommendationCacheService
         Cache::forget($keys['refresh_lock']);
     }
 
+    public function invalidateAndDispatchRefresh(int $userId): bool
+    {
+        $this->invalidateUserRecommendations($userId);
+
+        if (! $this->markRefreshQueued($userId)) {
+            Log::info('Skipped recommendation refresh dispatch because one is already queued', [
+                'user_id' => $userId,
+            ]);
+
+            return false;
+        }
+
+        RefreshUserRecommendations::dispatch($userId);
+
+        Log::info('Dispatched recommendation refresh job', [
+            'user_id' => $userId,
+        ]);
+
+        return true;
+    }
+
     public function markRefreshQueued(int $userId, int $lockSeconds = 300): bool
     {
         return Cache::add($this->userKeys($userId)['refresh_lock'], true, $lockSeconds);
@@ -59,6 +81,11 @@ class RecommendationCacheService
     public function refreshUserRecommendations(int $userId): array
     {
         $keys = $this->userKeys($userId);
+        $startedAt = microtime(true);
+
+        Log::info('Refreshing user recommendations', [
+            'user_id' => $userId,
+        ]);
 
         try {
             $lastListenTrack = UserEcoute::where('user_id', $userId)
@@ -120,6 +147,16 @@ class RecommendationCacheService
             Cache::put($keys['last_listen'], $lastListenRecommendedTracks, self::CACHE_TTL_SECONDS);
             Cache::put($keys['popular'], $popularTracks, self::CACHE_TTL_SECONDS);
             Cache::put($keys['recommended'], $recommendedTracks, self::CACHE_TTL_SECONDS);
+
+            Log::info('Finished refreshing user recommendations', [
+                'user_id' => $userId,
+                'duration_ms' => (int) round((microtime(true) - $startedAt) * 1000),
+                'counts' => [
+                    'last_listen' => count($lastListenRecommendedTracks),
+                    'popular' => count($popularTracks),
+                    'recommended' => count($recommendedTracks),
+                ],
+            ]);
 
             return [
                 'recommendedTracks' => $recommendedTracks,

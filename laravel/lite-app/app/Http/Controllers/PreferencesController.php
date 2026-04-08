@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Artist;
 use App\Models\Genre;
+use App\Services\RecommendationCacheService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,10 @@ use Inertia\Inertia;
 
 class PreferencesController extends Controller
 {
+    public function __construct(
+        private RecommendationCacheService $recommendationCache,
+    ) {}
+
     public function index()
     {
         $genres = Genre::all()->map(function ($genre) {
@@ -66,6 +71,8 @@ class PreferencesController extends Controller
                 'user_music_contexts' => $momentsFormatted,
             ]);
         });
+
+        $this->recommendationCache->invalidateAndDispatchRefresh($user->id);
 
         return redirect()->route('dashboard')->with('success', 'Préférences enregistrées !');
     }

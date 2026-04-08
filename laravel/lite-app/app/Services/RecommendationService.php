@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -16,15 +17,40 @@ class RecommendationService
         $python = $this->resolvePythonBinary();
         $process = new Process(array_merge([$python, $scriptPath], $arguments));
         $process->setTimeout($timeout);
+        $startedAt = microtime(true);
+
+        Log::info('Starting recommendation script', [
+            'script' => basename($scriptPath),
+            'arguments' => $arguments,
+        ]);
+
         $process->run();
+        $durationMs = (int) round((microtime(true) - $startedAt) * 1000);
+
+        Log::info('Finished recommendation script', [
+            'script' => basename($scriptPath),
+            'duration_ms' => $durationMs,
+            'successful' => $process->isSuccessful(),
+        ]);
 
         if (! $process->isSuccessful()) {
+            Log::warning('Recommendation script failed', [
+                'script' => basename($scriptPath),
+                'duration_ms' => $durationMs,
+                'error_output' => trim($process->getErrorOutput()),
+            ]);
+
             throw new ProcessFailedException($process);
         }
 
         $payload = json_decode(trim($process->getOutput()), true);
 
         if (json_last_error() !== JSON_ERROR_NONE || ! is_array($payload)) {
+            Log::warning('Recommendation script returned invalid JSON', [
+                'script' => basename($scriptPath),
+                'output' => $process->getOutput(),
+            ]);
+
             throw new \RuntimeException("Invalid JSON output from recommendation script: $scriptPath: ".$process->getOutput());
         }
 
