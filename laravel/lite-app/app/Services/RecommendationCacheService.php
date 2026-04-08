@@ -43,6 +43,11 @@ class RecommendationCacheService
     {
         $this->invalidateUserRecommendations($userId);
 
+        return $this->dispatchRefresh($userId);
+    }
+
+    public function dispatchRefresh(int $userId): bool
+    {
         if (! $this->markRefreshQueued($userId)) {
             Log::info('Skipped recommendation refresh dispatch because one is already queued', [
                 'user_id' => $userId,
