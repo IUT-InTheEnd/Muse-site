@@ -42,6 +42,7 @@ export default function BlindTestLecture() {
     const initialPlaybackSettings = blindTest?.playback ?? DEFAULT_BLIND_TEST_PLAYBACK_SETTINGS;
     const [dureeMusique, setDureeMusique] = React.useState<number>(getClipDurationSeconds(initialPlaybackSettings.difficulty));
     const [playbackSettings, setPlaybackSettings] = React.useState<BlindTestPlaybackSettingsValue>(initialPlaybackSettings);
+    const [selectNbMusique, setSelectNbMusique] = React.useState<number | null>(null);
     const [jeuCommence, setJeuCommence] = React.useState(false);
     const [tracks, setTracks] = React.useState<BlindTestTrack[]>([]);
     const [tempsreponsetant, setTempsMusique] = React.useState(dureeMusique);
@@ -63,6 +64,12 @@ export default function BlindTestLecture() {
 
     const nbMusic = tracks.length;
     const clipDurationSeconds = getClipDurationSeconds(playbackSettings.difficulty);
+
+    const vientDePlaylist = typeof window !== 'undefined' && Boolean(
+        window.location.pathname.match(/playlist\/\d+/) || window.location.pathname.match(/blind-tests\/play\/playlist\/\d+/)
+    );
+
+    const nbMusiquePlaylist = selectNbMusique ?? (tracks.length || '');
 
     // Gérer le timer pour la musique
     React.useEffect(() => {
@@ -407,6 +414,26 @@ export default function BlindTestLecture() {
             setTracks(chargement);
         }
 
+        if (isPlaylistPlay && selectNbMusique && tracks && tracks.length) {
+            const melange = [...tracks].sort(() => Math.random() - 0.5);
+            const sousListe = melange.slice(0, Math.max(1, Math.min(selectNbMusique, melange.length)));
+            setTracks(sousListe);
+            try {
+                window.sessionStorage.setItem('blindTestTracks', JSON.stringify(sousListe));
+            } catch (e) {
+                console.error('Impossible de stocker la sous-liste de la playlist', e);
+            }
+        }
+
+        try {
+            window.sessionStorage.setItem('blindTestPlayback', JSON.stringify(playbackSettings));
+            if (selectNbMusique) {
+                window.sessionStorage.setItem('blindTestCount', String(selectNbMusique));
+            }
+        } catch (e) {
+            console.error('Impossible de sauvegarder les paramètres du blind test', e);
+        }
+
         setMusicActuelle(0);
         setTempsMusique(selectedDuration);
         setGo(true);
@@ -557,8 +584,32 @@ export default function BlindTestLecture() {
                         value={playbackSettings}
                         onChange={setPlaybackSettings}
                     />
+                    
+                    {vientDePlaylist && (
+                        <div className="space-y-4 mt-4">
+                            <h2 className="text-lg font-semibold">Lecture depuis une playlist</h2>
+                            <p className="text-sm text-muted-foreground">Choisissez combien de musiques vous voulez jouer depuis cette playlist :</p>
+                            <div className="flex items-center gap-3">
+                                <Input
+                                    id="playlist-count"
+                                    type="number"
+                                    min={1}
+                                    max={tracks.length || 999}
+                                    value={String(nbMusiquePlaylist)}
+                                    onChange={(e: any) => {
+                                        const val = Number.parseInt(e.target.value, 10) || 1;
+                                        const clamped = Math.max(1, Math.min(val, tracks.length || val));
+                                        setSelectNbMusique(clamped);
+                                    }}
+                                    className="w-32"
+                                />
+                                <span className="text-sm text-muted-foreground">/ {tracks.length || '...'} disponibles</span>
+                            </div>
+                            <BlindTestPlaybackSettings value={playbackSettings} onChange={setPlaybackSettings} />
+                        </div>
+                    )}
 
-                    <Button onClick={startBlindTest} className="cursor-pointer">
+                    <Button onClick={startBlindTest} className="cursor-pointer mt-4">
                         {musicIdActuelle > 0 ? 'Reprendre' : 'Commencer'} le blind test
                     </Button>
                 </section>
