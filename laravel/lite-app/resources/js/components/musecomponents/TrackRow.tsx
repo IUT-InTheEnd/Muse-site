@@ -111,7 +111,7 @@ export function TrackRow({
     const canPlayTrack = true; // todo: remove entirely (temporary to avoid conflict)
 
     // Determiner si cette piste est en cours de lecture
-    const isCurrentTrack = currentTrack?.title === track.track_title;
+    const isCurrentTrack = currentTrack?.id === track.track_id;
     const isPlaying = isCurrentTrack && playing;
 
     // Formater la duree

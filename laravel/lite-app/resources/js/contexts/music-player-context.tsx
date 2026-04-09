@@ -203,21 +203,31 @@ export function MusicPlayerProvider({
         return next;
     };
 
-    const playTrackAtIndex = React.useCallback((index: number) => {
-        const { playlist } = stateRef.current;
-        if (index < 0 || index >= playlist.length) return;
+    const playTrackAtIndex = React.useCallback(
+        (index: number, playlistOverride?: Track[]) => {
+            const playlist = playlistOverride ?? stateRef.current.playlist;
+            if (index < 0 || index >= playlist.length) return;
 
-        const nextTrack = playlist[index];
-        dispatch({ type: 'SET_TRACK', payload: { track: nextTrack, index } });
-
-        if (audioRef.current) {
-            audioRef.current.src = nextTrack.src;
-            audioRef.current.play().catch(() => {
-                // Gérer l'erreur de lecture (souvent due aux politiques d'autostart des navigateurs)
-                dispatch({ type: 'SET_PLAYING', payload: false });
+            const nextTrack = playlist[index];
+            dispatch({
+                type: 'SET_TRACK',
+                payload: {
+                    track: nextTrack,
+                    index,
+                    playlist: playlistOverride,
+                },
             });
-        }
-    }, []);
+
+            if (audioRef.current) {
+                audioRef.current.src = nextTrack.src;
+                audioRef.current.play().catch(() => {
+                    // Gérer l'erreur de lecture (souvent due aux politiques d'autostart des navigateurs)
+                    dispatch({ type: 'SET_PLAYING', payload: false });
+                });
+            }
+        },
+        [],
+    );
 
     const skipForward = React.useCallback(() => {
         const { currentIndex, playlist, shuffle, repeatMode } =
@@ -504,8 +514,7 @@ export function MusicPlayerProvider({
             clearError: () =>
                 dispatch({ type: 'UPDATE_STATE', payload: { error: null } }),
             setPlaylist: (tracks, start = 0) => {
-                dispatch({ type: 'SET_PLAYLIST', payload: tracks });
-                playTrackAtIndex(start);
+                playTrackAtIndex(start, tracks);
             },
             addToQueue: (track) =>
                 dispatch({
