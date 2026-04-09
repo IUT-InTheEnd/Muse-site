@@ -58,7 +58,7 @@ function AppWrapper({
                     </footer>
 
                     {/* Player */}
-                    <PersistentMusicPlayer />
+                    <PersistentMusicPlayer canUseLibrary={Boolean(user)} />
                 </MusicPlayerProvider>
             </ReactionProvider>
         </div>

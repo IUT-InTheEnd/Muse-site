@@ -1,7 +1,9 @@
 import { router, usePage } from '@inertiajs/react';
+import { ArrowUpDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, CircleSlash2, Eye, EyeClosed, ListFilter, PencilLine, Search, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { Head } from '@/components/head';
-import AppLayout from '@/layouts/app-layout';
-import type { BreadcrumbItem, SharedData } from '@/types';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
 	Dialog,
 	DialogContent,
@@ -9,12 +11,10 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import AppLayout from '@/layouts/app-layout';
 import { GENDER_OPTIONS, JOB_OPTIONS, ROLE_OPTIONS } from '@/lib/user-options';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, CircleSlash2, Eye, EyeClosed, ListFilter, PencilLine, Search, Trash2 } from 'lucide-react';
+import type { BreadcrumbItem, SharedData } from '@/types';
 
 type AdminUser = {
     id: number;

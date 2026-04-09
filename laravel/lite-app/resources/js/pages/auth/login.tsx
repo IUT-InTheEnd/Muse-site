@@ -1,7 +1,7 @@
 import { Form } from '@inertiajs/react';
-import { Head } from '@/components/head';
 import type { ChangeEvent} from 'react';
 import { useState } from 'react';
+import { Head } from '@/components/head';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';

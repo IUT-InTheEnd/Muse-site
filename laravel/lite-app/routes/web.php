@@ -129,6 +129,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/blind-tests/generate', [BlindTestController::class, 'generate'])->name('blind-tests.generate');
     Route::get('/blind-tests/play/ephemeral', [BlindTestController::class, 'playEphemeral'])->name('blind-tests.play.ephemeral');
     Route::get('/blind-tests/ephemeral-tracks', [BlindTestController::class, 'musiqueGenererEphemeral'])->name('blind-tests.ephemeral-tracks');
+    Route::get('/blind-tests/playlist/{id}/tracks', [BlindTestController::class, 'playlistTracks'])->name('blind-tests.playlist-tracks');
     Route::get('/blind-tests/play/playlist/{id}', [BlindTestController::class, 'playPlaylist'])->name('blind-tests.play.playlist');
     Route::get('/blind-tests/lecture', function () {
         return Inertia::render('blind-tests/lecture');

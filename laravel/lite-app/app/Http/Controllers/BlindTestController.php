@@ -265,27 +265,48 @@ class BlindTestController extends Controller
                 return null;
             }
 
-            $track = $tracksQuery[$id];
-
-            $artist = null;
-            $firstRealiser = $track->realisers->first();
-            if ($firstRealiser && isset($firstRealiser->artist)) {
-                $artistObj = $firstRealiser->artist;
-                $artist = $artistObj->artist_name ?? null;
-            }
-
-            return [
-                'id' => $track->track_id,
-                'title' => $track->track_title,
-                'artist' => $artist,
-                'url' => $track->track_url ?? $track->track_file ?? null,
-                'duration' => $track->track_duration ?? null,
-            ];
+            return $this->formatBlindTestTrackPayload($tracksQuery[$id]);
         }, $musiqueId);
 
         // filter out missing
         $ordered = array_values(array_filter($ordered));
 
         return response()->json(['tracks' => $ordered]);
+    }
+
+    public function playlistTracks(Request $request, int $id): JsonResponse
+    {
+        $playlist = Playlist::with(['tracks.realisers.artist'])->findOrFail($id);
+
+        if (! $playlist->playlist_public && $playlist->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $tracks = $playlist->tracks
+            ->map(fn ($track) => $this->formatBlindTestTrackPayload($track))
+            ->values();
+
+        return response()->json([
+            'tracks' => $tracks,
+        ]);
+    }
+
+    private function formatBlindTestTrackPayload($track): array
+    {
+        $artist = null;
+        $firstRealiser = $track->realisers->first();
+        if ($firstRealiser && isset($firstRealiser->artist)) {
+            $artistObj = $firstRealiser->artist;
+            $artist = $artistObj->artist_name ?? null;
+        }
+
+        return [
+            'id' => $track->track_id,
+            'title' => $track->track_title,
+            'artist' => $artist,
+            'url' => $track->track_url ?? $track->track_file ?? null,
+            'duration' => $track->track_duration ?? null,
+            'cover' => $track->track_image_file ?? null,
+        ];
     }
 }

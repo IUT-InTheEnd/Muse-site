@@ -1,8 +1,7 @@
+import { Loader2, Plus, ArrowLeft } from 'lucide-react';
 import * as React from 'react';
-import { Check, Loader2, Plus, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
 import {
     Dialog,
     DialogContent,
@@ -11,6 +10,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
 type Props = {
     isOpen: boolean;

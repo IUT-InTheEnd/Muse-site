@@ -1,29 +1,17 @@
 import { usePage } from '@inertiajs/react';
 import {
-    Check,
     Heart,
     ListMusic,
-    ListPlus,
     Loader2,
     Music,
     Pause,
     Play,
-    Plus,
 } from 'lucide-react';
 import * as React from 'react';
+import { TrackPlaylistButton } from '@/components/musecomponents/TrackPlaylistButton';
 import { proxyUrl } from '@/components/proxy';
 import { ReactionButtons } from '@/components/reaction-buttons';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { useMusicPlayer } from '@/contexts/music-player-context';
 import { fetchTrack, fetchTracks } from '@/lib/track-api';
 import { cn } from '@/lib/utils';
@@ -78,7 +66,6 @@ export function TrackRow({
     index,
     showIndex = true,
     isFavorite = false,
-    playlists = [],
     className,
     onFavoriteChange,
     onAddToPlaylist,
@@ -101,14 +88,6 @@ export function TrackRow({
 
     const [isAddingFavorite, setIsAddingFavorite] = React.useState(false);
     const [localIsFavorite, setLocalIsFavorite] = React.useState(isFavorite);
-    const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = React.useState(false);
-    const [isCreatingPlaylist, setIsCreatingPlaylist] = React.useState(false);
-    const [newPlaylistName, setNewPlaylistName] = React.useState('');
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
-    const [isLoadingPlaylists, setIsLoadingPlaylists] = React.useState(false);
-    const [playlistsWithStatus, setPlaylistsWithStatus] = React.useState<PlaylistData[]>([]);
-    const [selectedPlaylistIds, setSelectedPlaylistIds] = React.useState<number[]>([]);
-    const [initialSelectedIds, setInitialSelectedIds] = React.useState<number[]>([]);
     const canUseLibrary = Boolean(auth?.user);
     const canPlayTrack = true; // todo: remove entirely (temporary to avoid conflict)
 
@@ -196,159 +175,6 @@ export function TrackRow({
             console.error('Erreur favoris:', err);
         } finally {
             setIsAddingFavorite(false);
-        }
-    };
-
-    // Ouvrir le dialog et charger les playlists avec leur statut
-    const handleOpenPlaylistDialog = async (e: React.MouseEvent) => {
-        e.stopPropagation();
-
-        if (!canUseLibrary) {
-            alert('Connectez-vous pour gérer vos playlists.');
-            return;
-        }
-
-        setIsPlaylistDialogOpen(true);
-        setIsLoadingPlaylists(true);
-        setIsCreatingPlaylist(false);
-
-        try {
-            const response = await fetch(
-                `/playlists/for-track?track_id=${track.track_id}`,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN':
-                            document
-                                .querySelector('meta[name="csrf-token"]')
-                                ?.getAttribute('content') ?? '',
-                    },
-                },
-            );
-
-            if (response.ok) {
-                const data = await response.json();
-                setPlaylistsWithStatus(data.playlists);
-                const selected = data.playlists
-                    .filter((p: PlaylistData) => p.has_track)
-                    .map((p: PlaylistData) => p.playlist_id);
-                setSelectedPlaylistIds(selected);
-                setInitialSelectedIds(selected);
-            }
-        } catch (err) {
-            console.error('Erreur chargement playlists:', err);
-        } finally {
-            setIsLoadingPlaylists(false);
-        }
-    };
-
-    // Toggle une playlist dans la selection
-    const handleTogglePlaylist = (playlistId: number) => {
-        setSelectedPlaylistIds((prev) =>
-            prev.includes(playlistId)
-                ? prev.filter((id) => id !== playlistId)
-                : [...prev, playlistId],
-        );
-    };
-
-    // Sauvegarder les changements de playlists
-    const handleSavePlaylistChanges = async () => {
-        setIsSubmitting(true);
-        try {
-            const response = await fetch('/playlists/sync-track', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN':
-                        document
-                            .querySelector('meta[name="csrf-token"]')
-                            ?.getAttribute('content') ?? '',
-                },
-                body: JSON.stringify({
-                    track_id: track.track_id,
-                    playlist_ids: selectedPlaylistIds,
-                }),
-            });
-
-            if (response.ok) {
-                setIsPlaylistDialogOpen(false);
-                // Notifier les changements
-                selectedPlaylistIds.forEach((playlistId) => {
-                    if (!initialSelectedIds.includes(playlistId)) {
-                        onAddToPlaylist?.(track.track_id, playlistId);
-                    }
-                });
-            }
-        } catch (err) {
-            console.error('Erreur sync playlists:', err);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    // Verifier si des changements ont ete faits
-    const hasChanges = React.useMemo(() => {
-        if (selectedPlaylistIds.length !== initialSelectedIds.length)
-            return true;
-        return !selectedPlaylistIds.every((id) =>
-            initialSelectedIds.includes(id),
-        );
-    }, [selectedPlaylistIds, initialSelectedIds]);
-
-    // Creer une nouvelle playlist et y ajouter la piste
-    const handleCreatePlaylist = async () => {
-        if (!newPlaylistName.trim()) return;
-
-        setIsSubmitting(true);
-        try {
-            const response = await fetch('/playlists/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN':
-                        document
-                            .querySelector('meta[name="csrf-token"]')
-                            ?.getAttribute('content') ?? '',
-                },
-                body: JSON.stringify({
-                    name: newPlaylistName.trim(),
-                    track_id: track.track_id,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                onCreatePlaylist?.(newPlaylistName.trim(), track.track_id);
-                setNewPlaylistName('');
-                setIsCreatingPlaylist(false);
-
-                // Recharger les playlists pour afficher la nouvelle
-                const playlistsResponse = await fetch(
-                    `/playlists/for-track?track_id=${track.track_id}`,
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN':
-                                document
-                                    .querySelector('meta[name="csrf-token"]')
-                                    ?.getAttribute('content') ?? '',
-                        },
-                    },
-                );
-                if (playlistsResponse.ok) {
-                    const playlistsData = await playlistsResponse.json();
-                    setPlaylistsWithStatus(playlistsData.playlists);
-                    const selected = playlistsData.playlists
-                        .filter((p: PlaylistData) => p.has_track)
-                        .map((p: PlaylistData) => p.playlist_id);
-                    setSelectedPlaylistIds(selected);
-                    setInitialSelectedIds(selected);
-                }
-            }
-        } catch (err) {
-            console.error('Erreur creation playlist:', err);
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -524,183 +350,16 @@ export function TrackRow({
 
                     {/* Menu Playlist */}
                     {canUseLibrary && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 cursor-pointer"
-                            onClick={handleOpenPlaylistDialog}
-                            aria-label="Gérer les playlists de ce titre"
-                        >
-                            <ListPlus className="h-4 w-4" />
-                        </Button>
+                        <TrackPlaylistButton
+                            trackId={track.track_id}
+                            canUseLibrary={canUseLibrary}
+                            onAddToPlaylist={onAddToPlaylist}
+                            onCreatePlaylist={onCreatePlaylist}
+                            stopPropagation={true}
+                        />
                     )}
                 </div>
             </div>
-
-            {/* Dialog Gestion Playlists */}
-            <Dialog
-                open={isPlaylistDialogOpen}
-                onOpenChange={setIsPlaylistDialogOpen}
-            >
-                <DialogContent onClick={(e) => e.stopPropagation()}>
-                    <DialogHeader>
-                        <DialogTitle>
-                            {isCreatingPlaylist
-                                ? 'Nouvelle playlist'
-                                : 'Gérer les playlists'}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {isCreatingPlaylist
-                                ? 'Créez une nouvelle playlist et ajoutez-y ce titre.'
-                                : 'Cochez les playlists où vous souhaitez ajouter ce titre.'}
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    {isCreatingPlaylist ? (
-                        <div className="space-y-4 py-4">
-                            <Input
-                                placeholder="Nom de la playlist"
-                                value={newPlaylistName}
-                                onChange={(e) =>
-                                    setNewPlaylistName(e.target.value)
-                                }
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter')
-                                        handleCreatePlaylist();
-                                }}
-                            />
-                        </div>
-                    ) : (
-                        <div className="space-y-3 py-4">
-                            {/* Bouton Nouvelle playlist */}
-                            <Button
-                                variant="outline"
-                                className="w-full justify-start cursor-pointer"
-                                onClick={() => setIsCreatingPlaylist(true)}
-                            >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Nouvelle playlist
-                            </Button>
-
-                            {/* Liste des playlists avec checkboxes */}
-                            {isLoadingPlaylists ? (
-                                <div className="flex items-center justify-center py-8">
-                                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                                </div>
-                            ) : playlistsWithStatus.length > 0 ? (
-                                <div className="max-h-64 space-y-1 overflow-y-auto">
-                                    {playlistsWithStatus.map((playlist) => (
-                                        <div
-                                            key={playlist.playlist_id}
-                                            className="flex cursor-pointer items-center gap-3 rounded-md p-2 hover:bg-accent/50"
-                                            onClick={() =>
-                                                handleTogglePlaylist(
-                                                    playlist.playlist_id,
-                                                )
-                                            }
-                                        >
-                                            <Checkbox
-                                                id={`playlist-${playlist.playlist_id}`}
-                                                checked={selectedPlaylistIds.includes(
-                                                    playlist.playlist_id,
-                                                )}
-                                                onCheckedChange={() =>
-                                                    handleTogglePlaylist(
-                                                        playlist.playlist_id,
-                                                    )
-                                                }
-                                            />
-                                            <label
-                                                htmlFor={`playlist-${playlist.playlist_id}`}
-                                                className="flex-1 cursor-pointer text-sm font-medium"
-                                            >
-                                                {playlist.playlist_name}
-                                            </label>
-                                            {selectedPlaylistIds.includes(
-                                                playlist.playlist_id,
-                                            ) &&
-                                                !initialSelectedIds.includes(
-                                                    playlist.playlist_id,
-                                                ) && (
-                                                    <span className="text-xs text-green-500">
-                                                        + Ajouté
-                                                    </span>
-                                                )}
-                                            {!selectedPlaylistIds.includes(
-                                                playlist.playlist_id,
-                                            ) &&
-                                                initialSelectedIds.includes(
-                                                    playlist.playlist_id,
-                                                ) && (
-                                                    <span className="text-xs text-red-500">
-                                                        - Retiré
-                                                    </span>
-                                                )}
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="py-4 text-center text-sm text-muted-foreground">
-                                    Aucune playlist. Créez-en une !
-                                </p>
-                            )}
-                        </div>
-                    )}
-
-                    <DialogFooter>
-                        {isCreatingPlaylist ? (
-                            <>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => {
-                                        setIsCreatingPlaylist(false);
-                                        setNewPlaylistName('');
-                                    }}
-                                    className="cursor-pointer"
-                                >
-                                    Retour
-                                </Button>
-                                <Button
-                                    onClick={handleCreatePlaylist}
-                                    disabled={
-                                        !newPlaylistName.trim() || isSubmitting
-                                    }
-                                    className="cursor-pointer"
-                                >
-                                    {isSubmitting ? (
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    ) : null}
-                                    Créer
-                                </Button>
-                            </>
-                        ) : (
-                            <>
-                                <Button
-                                    variant="outline"
-                                    onClick={() =>
-                                        setIsPlaylistDialogOpen(false)
-                                    }
-                                    className="cursor-pointer"
-                                >
-                                    Annuler
-                                </Button>
-                                <Button
-                                    onClick={handleSavePlaylistChanges}
-                                    disabled={!hasChanges || isSubmitting}
-                                    className="cursor-pointer"
-                                >
-                                    {isSubmitting ? (
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <Check className="mr-2 h-4 w-4" />
-                                    )}
-                                    Enregistrer
-                                </Button>
-                            </>
-                        )}
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </>
     );
 }

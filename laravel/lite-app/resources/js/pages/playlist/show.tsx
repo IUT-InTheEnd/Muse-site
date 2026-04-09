@@ -1,5 +1,4 @@
-import { Link, router } from '@inertiajs/react';
-import { Head } from '@/components/head';
+import { Link, router, usePage } from '@inertiajs/react';
 import {
     CameraIcon,
     GlobeIcon,
@@ -11,6 +10,7 @@ import {
     XIcon,
 } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
+import { Head } from '@/components/head';
 import { type TrackListItem } from '@/components/musecomponents/TrackList';
 import {
     TrackRow,
@@ -20,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/contexts/music-player-context';
 import { fetchTracks } from '@/lib/track-api';
+import type { SharedData } from '@/types';
 
 type Track = {
     track_id: number;
@@ -61,6 +62,7 @@ type Props = {
 };
 
 export default function PlaylistShow({ playlist }: Props) {
+    const { auth } = usePage<SharedData>().props;
     const { setPlaylist: setPlayerPlaylist } = useMusicPlayer();
     const [isEditingName, setIsEditingName] = useState(false);
     const [editedName, setEditedName] = useState(playlist.playlist_name);
@@ -94,17 +96,20 @@ export default function PlaylistShow({ playlist }: Props) {
         setLocalTracks(items);
     }, [playlist.tracks]);
 
-    const isEditable = playlist.playlist_deletable;
+    const isOwner = auth.user.id === playlist.user_id;
+    const canManagePlaylist = isOwner;
+    const canDeletePlaylist = isOwner && playlist.playlist_deletable;
     const isFavorites = !playlist.playlist_deletable;
 
     // --- LOGIQUE DRAG & DROP ---
     const handleDragStart = (index: number) => {
-        if (!isEditable) return;
+        if (!canManagePlaylist) return;
         setDraggedItemIndex(index);
     };
 
     const handleDragOver = (e: React.DragEvent, index: number) => {
         e.preventDefault();
+        if (!canManagePlaylist) return;
         if (draggedItemIndex === null || draggedItemIndex === index) return;
 
         const items = [...localTracks];
@@ -118,7 +123,7 @@ export default function PlaylistShow({ playlist }: Props) {
 
     const handleDragEnd = async () => {
         setDraggedItemIndex(null);
-        if (!isEditable) return;
+        if (!canManagePlaylist) return;
 
         try {
             await fetch('/playlists/reorder', {
@@ -245,7 +250,7 @@ export default function PlaylistShow({ playlist }: Props) {
                         />
                     )}
                     
-                    {isEditable && (
+                    {canManagePlaylist && (
                         <>
                             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                             <button
@@ -307,7 +312,7 @@ export default function PlaylistShow({ playlist }: Props) {
                             ) : (
                                 <div className="mb-4 flex items-center gap-3">
                                     <h1 className="text-4xl font-bold">{playlist.playlist_name}</h1>
-                                    {isEditable && (
+                                    {canManagePlaylist && (
                                         <button
                                             onClick={() => setIsEditingName(true)}
                                             className={`cursor-pointer rounded-full p-2 transition ${
@@ -339,7 +344,7 @@ export default function PlaylistShow({ playlist }: Props) {
                                         </Link>
                                     </Button>
                                 )}
-                                {isEditable && (
+                                {canDeletePlaylist && (
                                     <Button size="lg" variant="destructive" onClick={handleDelete} disabled={isDeleting} className="gap-2 cursor-pointer">
                                         <TrashIcon size={18} /> Supprimer
                                     </Button>
@@ -360,11 +365,11 @@ export default function PlaylistShow({ playlist }: Props) {
                                 {localTracks.map((item, index) => (
                                     <div
                                         key={item.track.track_id}
-                                        draggable={isEditable}
+                                        draggable={canManagePlaylist}
                                         onDragStart={() => handleDragStart(index)}
                                         onDragOver={(e) => handleDragOver(e, index)}
                                         onDragEnd={handleDragEnd}
-                                        className={`overflow-hidden transition-all duration-150 first:rounded-t-lg last:rounded-b-lg ${isEditable ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedItemIndex === index ? 'bg-overlay-surface-subtle opacity-40' : 'opacity-100 hover:bg-overlay-surface-subtle'}`}
+                                        className={`overflow-hidden transition-all duration-150 first:rounded-t-lg last:rounded-b-lg ${canManagePlaylist ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedItemIndex === index ? 'bg-overlay-surface-subtle opacity-40' : 'opacity-100 hover:bg-overlay-surface-subtle'}`}
                                     >
                                         <TrackRow
                                             track={item.track}

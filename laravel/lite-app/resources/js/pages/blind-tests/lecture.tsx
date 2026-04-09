@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import { Siren, Heart } from 'lucide-react';
+import { Siren } from 'lucide-react';
 import * as React from 'react';
 import {
     BlindTestPlaybackSettings,
@@ -7,8 +7,6 @@ import {
     getClipDurationSeconds,
     type BlindTestPlaybackSettingsValue,
 } from '@/components/blind-tests/playback-settings';
-import { CardCover, CardContent, CardTitle, CardSubtitle } from '@/components/musecomponents/cards/Card';
-import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
 import { TrackRow } from '@/components/musecomponents/TrackRow';
 import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
@@ -116,118 +114,26 @@ export default function BlindTestLecture() {
             // Si blind test d'une playlist
             if (window.location.pathname.match(/playlist\/\d+/)) {
                 try {
-                    const source = window.location.pathname.match(/playlist\/(\d+)/);
+                    const source = window.location.pathname.match(/blind-tests\/play\/playlist\/(\d+)/)
+                        ?? window.location.pathname.match(/playlist\/(\d+)/);
                     const playlistId = source ? source[1] : null;
-                    if (!playlistId){
+                    if (!playlistId) {
                         return;
-                    } 
-
-                    let listeMusique: any[] = [];
-                    try {
-                        const reponse = await fetch(`/playlist/${playlistId}`, {
-                            credentials: 'same-origin',
-                            headers: {
-                                'X-Inertia': 'true',
-                                'Accept': 'application/json',
-                            },
-                        });
-
-                        if (reponse.ok) {
-                            const reponseJSON = await reponse.json();
-                            if (reponseJSON) {
-                                const props = reponseJSON.props ?? {};
-                                const playlist = props.playlist ?? props;
-                                if (Array.isArray(playlist)) {
-                                    listeMusique = playlist;
-                                } else if (playlist && Array.isArray(playlist.tracks)) {
-                                    listeMusique = playlist.tracks;
-                                } else if (playlist && Array.isArray(playlist.data?.tracks)) {
-                                    listeMusique = playlist.data.tracks;
-                                } else {
-                                    listeMusique = [];
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        console.error('Impossible de charger les musiques de la playlist depuis la playlist', e);
                     }
 
-                    if (!listeMusique || listeMusique.length === 0) {
-                        const reponseAPI = await fetch(`/api/playlist/${playlistId}`, { credentials: 'same-origin' });
-                        if (reponseAPI.ok) {
-                            const json = await reponseAPI.json();
-                            listeMusique = json.tracks || json.playlist?.tracks || [];
-                        }
-                    }
-
-                    const ordre: BlindTestTrack[] = (Array.isArray(listeMusique) ? listeMusique : []).map((track: any) => {
-                        let artist: string | null = null;
-                        if (track.realisers && track.realisers.length) {
-                            const first = track.realisers[0];
-                            if (first && first.artist){
-                                    artist = first.artist.artist_name ?? null;
-                                }
-                            }
-
-                            if (!artist) {
-                                if (track.artist) {
-                                    artist = track.artist;
-                                } else if (track.artist_name) {
-                                    artist = track.artist_name;
-                                } else if (track.artist_name?.name) {
-                                    artist = track.artist_name.name;
-                                } else {
-                                    artist = null;
-                                }
-                            }
-                        let track_id: number | undefined;
-                        if (track.track_id !== undefined && track.track_id !== null) {
-                            track_id = Number(track.track_id);
-                        } else if (track.id !== undefined && track.id !== null) {
-                            track_id = Number(track.id);
-                        }
-
-                        let track_title: string | undefined;
-                        if (track.track_title) {
-                            track_title = track.track_title;
-                        } else if (track.title) {
-                            track_title = track.title;
-                        } else if (track.name) {
-                            track_title = track.name;
-                        }
-
-                        let track_url: string | null = null;
-                        if (track.track_url) {
-                            track_url = track.track_url;
-                        } else if (track.track_file) {
-                            track_url = track.track_file;
-                        } else if (track.url) {
-                            track_url = track.url;
-                        }
-
-                        let track_duration: number | null = null;
-                        if (track.track_duration) {
-                            track_duration = Number(track.track_duration);
-                        } else if (track.duration) {
-                            track_duration = Number(track.duration);
-                        }
-
-                        let track_cover: string | null = null;
-                        if (track.track_image_file) {
-                            track_cover = track.track_image_file;
-                        } else if (track.playlist_cover) {
-                            track_cover = track.playlist_cover;
-                        }
-
-                        return {
-                            id: track_id,
-                            title: track_title,
-                            artist: artist,
-                            url: track_url,
-                            duration: track_duration,
-                            cover: track_cover,
-                        };
+                    const reponse = await fetch(`/blind-tests/playlist/${playlistId}/tracks`, {
+                        credentials: 'same-origin',
+                        headers: {
+                            Accept: 'application/json',
+                        },
                     });
+
+                    if (!reponse.ok) {
+                        throw new Error(`Réponse HTTP inattendue (${reponse.status})`);
+                    }
+
+                    const json = await reponse.json();
+                    const ordre: BlindTestTrack[] = Array.isArray(json.tracks) ? json.tracks : [];
 
                     setTracks(ordre);
                     try {
@@ -345,7 +251,7 @@ export default function BlindTestLecture() {
                 let playableUrl: string | undefined = (tracks[index] as any).url;
 
                 if (tracks[index].id) {
-                    const reponse = await fetch(`/test-music-player?id=${encodeURIComponent(tracks[index].id as number)}`);
+                    const reponse = await fetch(`/test-music-player?id=${encodeURIComponent(tracks[index].id)}`);
                     if (reponse.ok) {
                         const data = await reponse.json();
                         playableUrl = data.url ?? playableUrl;
@@ -752,7 +658,7 @@ export default function BlindTestLecture() {
                                     <div>
                                         <div className="space-y-2">
                                             {tracks.map((t, idx) => {
-                                                const id = (t.id ?? idx) as number;
+                                                const id = (t.id ?? idx);
                                                 const trackProp = {
                                                     track_id: id,
                                                     track_title: t.title ?? '',
