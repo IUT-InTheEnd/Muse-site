@@ -24,7 +24,7 @@ const Navbar = ({ user }: NavbarProps) => {
                 {/* Left */}
                 <div className="flex items-center gap-4">
                     <Link href="/">
-                        <img src="/logo.svg" alt="logo" className="h-8" />
+                        <img src="/logo.svg" alt="Logo Muse" className="h-8" />
                     </Link>
 
                     <div className="relative hidden items-center sm:flex">
@@ -36,7 +36,10 @@ const Navbar = ({ user }: NavbarProps) => {
                                 className="w-64 rounded-full border border-gray-300 py-1 pr-3 pl-3 focus:ring-2 focus:ring-primary focus:outline-none"
                             />
                         </form>
-                        <Search className="absolute top-1/2 right-1 -translate-y-1/2 p-1" />
+                        <Search
+                            className="absolute top-1/2 right-1 -translate-y-1/2 p-1"
+                            aria-hidden="true"
+                        />
                     </div>
                     {user && (
                         <>
@@ -95,11 +98,14 @@ const Navbar = ({ user }: NavbarProps) => {
                         </div>
                     ) : (
                         <div className="hidden items-center gap-4 sm:flex">
-                            <a href="/register" className="hover:underline">
+                            <Link
+                                href="/register"
+                                className="inline-flex min-h-9 items-center py-1 hover:underline"
+                            >
                                 Inscription
-                            </a>
-                            <Button>
-                                <Link href="/login" className="cursor-pointer text-primary-foreground">
+                            </Link>
+                            <Button asChild>
+                                <Link href="/login" className="min-h-9 cursor-pointer">
                                     Connexion
                                 </Link>
                             </Button>
@@ -115,8 +121,11 @@ const Navbar = ({ user }: NavbarProps) => {
 
                     {/* bouton menu burger */}
                     <button
+                        type="button"
                         className="rounded-md p-2 hover:bg-gray-200 sm:hidden cursor-pointer"
                         onClick={() => setIsOpen(!isOpen)}
+                        aria-label={isOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+                        aria-expanded={isOpen}
                     >
                         {isOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
@@ -173,11 +182,14 @@ const Navbar = ({ user }: NavbarProps) => {
                     )}
                     {!user && (
                         <>
-                            <a href="/register" className="hover:underline cursor-pointer">
+                            <Link
+                                href="/register"
+                                className="inline-flex min-h-9 items-center py-1 hover:underline cursor-pointer"
+                            >
                                 Inscription
-                            </a>
-                            <Button>
-                                <Link href="/login" className="cursor-pointer text-primary-foreground">
+                            </Link>
+                            <Button asChild>
+                                <Link href="/login" className="min-h-9 cursor-pointer text-primary-foreground">
                                     Connexion
                                 </Link>
                             </Button>
