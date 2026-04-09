@@ -24,7 +24,7 @@ export default function SlideFromBottom({
         <div
             ref={innerRef}
             className={cn(
-                'transition-transform duration-300 ease-in-out',
+                'transition-transform duration-300 ease-in-out motion-reduce:transition-none',
                 show ? openClassName : closedClassName,
                 className,
             )}

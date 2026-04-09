@@ -19,10 +19,42 @@ type MusicPlayerProps = {
     canUseLibrary: boolean;
 };
 
+function usePrefersReducedMotion() {
+    const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
+
+    React.useEffect(() => {
+        if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+            return;
+        }
+
+        const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        setPrefersReducedMotion(mediaQuery.matches);
+
+        const onChange = (event: MediaQueryListEvent) => {
+            setPrefersReducedMotion(event.matches);
+        };
+
+        if (typeof mediaQuery.addEventListener === 'function') {
+            mediaQuery.addEventListener('change', onChange);
+            return () => {
+                mediaQuery.removeEventListener('change', onChange);
+            };
+        }
+
+        mediaQuery.addListener(onChange);
+        return () => {
+            mediaQuery.removeListener(onChange);
+        };
+    }, []);
+
+    return prefersReducedMotion;
+}
+
 export default function MusicPlayer({ canUseLibrary }: MusicPlayerProps) {
     const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, autoPlayNext, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError, waitingList, showWaitingList, toggleAutoPlayNext, dispatch, playlist } = useMusicPlayer();
 
     const [isTogglingFavorite, setIsTogglingFavorite] = React.useState(false);
+    const prefersReducedMotion = usePrefersReducedMotion();
     const canSkipForward = playlist.length > 1;
     const shouldShowWaitingList = !minimized && showWaitingList;
     const playerPanelRef = React.useRef<HTMLDivElement | null>(null);
@@ -33,6 +65,12 @@ export default function MusicPlayer({ canUseLibrary }: MusicPlayerProps) {
         React.useState(shouldShowWaitingList);
 
     React.useEffect(() => {
+        if (prefersReducedMotion) {
+            setIsWaitingListMounted(shouldShowWaitingList);
+            setIsWaitingListVisible(shouldShowWaitingList);
+            return;
+        }
+
         let frameId: number | null = null;
         let nestedFrameId: number | null = null;
         if (shouldShowWaitingList) {
@@ -55,7 +93,7 @@ export default function MusicPlayer({ canUseLibrary }: MusicPlayerProps) {
                 cancelAnimationFrame(nestedFrameId);
             }
         };
-    }, [shouldShowWaitingList]);
+    }, [shouldShowWaitingList, prefersReducedMotion]);
 
     React.useEffect(() => {
         const panel = playerPanelRef.current;
@@ -118,7 +156,7 @@ export default function MusicPlayer({ canUseLibrary }: MusicPlayerProps) {
                     minimized
                         ? 'translate-y-0 pointer-events-auto'
                         : 'translate-y-24 pointer-events-none'
-                }`}
+                } motion-reduce:transition-none`}
                 aria-label="Ouvrir le lecteur"
             >
                 <MusicIcon size={28} />
@@ -136,7 +174,7 @@ export default function MusicPlayer({ canUseLibrary }: MusicPlayerProps) {
             <div className="fixed inset-x-0 bottom-0 z-50 pointer-events-none">
                 {isWaitingListMounted && (
                     <div
-                        className={`absolute right-0 bottom-full z-0 transition-transform duration-300 ease-in-out ${
+                        className={`absolute right-0 bottom-full z-0 transition-transform duration-300 ease-in-out motion-reduce:transition-none ${
                             isWaitingListVisible
                                 ? 'pointer-events-auto translate-y-0'
                                 : minimized
