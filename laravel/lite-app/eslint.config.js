@@ -1,16 +1,29 @@
+import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier/flat';
 import importPlugin from 'eslint-plugin-import';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
+import * as path from 'path';
 import typescript from 'typescript-eslint';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
+    includeIgnoreFile(path.resolve(import.meta.dirname, '.gitignore')),
     js.configs.recommended,
     reactHooks.configs.flat.recommended,
-    ...typescript.configs.recommended,
+    ...typescript.configs.recommendedTypeChecked,
+    { ignores: [path.basename(import.meta.filename)] },
+    {
+        languageOptions: {
+            parserOptions: {
+                sourceType: 'module',
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
+    },
     {
         ...react.configs.flat.recommended,
         ...react.configs.flat['jsx-runtime'], // Required for React 17+
@@ -42,7 +55,14 @@ export default [
             'import/order': [
                 'error',
                 {
-                    groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+                    groups: [
+                        'builtin',
+                        'external',
+                        'internal',
+                        'parent',
+                        'sibling',
+                        'index',
+                    ],
                     alphabetize: {
                         order: 'asc',
                         caseInsensitive: true,
@@ -65,7 +85,14 @@ export default [
         },
     },
     {
-        ignores: ['vendor', 'node_modules', 'public', 'bootstrap/ssr', 'tailwind.config.js', 'vite.config.ts'],
+        ignores: [
+            'vendor',
+            'node_modules',
+            'public',
+            'bootstrap/ssr',
+            'tailwind.config.js',
+            'vite.config.ts',
+        ],
     },
     prettier, // Turn off all rules that might conflict with Prettier
 ];

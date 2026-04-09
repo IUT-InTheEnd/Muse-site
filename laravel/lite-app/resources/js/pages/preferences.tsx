@@ -1,8 +1,6 @@
 import { router } from '@inertiajs/react';
 import { Clock, Languages, MicVocal, Guitar, Smile, SunMoon, Pencil, Check } from 'lucide-react';
-import { BriefcaseBusiness, Car, Dumbbell, Gamepad2, Sofa, BookOpen, PartyPopper, UtensilsCrossed, MoonStar, Waves, AudioLines } from 'lucide-react';
-import { Cpu, Radio, Piano, Globe, Frown, Flame, Moon, Heart, Zap } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input";

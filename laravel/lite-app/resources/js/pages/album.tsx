@@ -255,12 +255,12 @@ export default function Album({
                             tracks={listeMusiques.map(
                                 (element): TrackListItem => ({
                                     track: {
-                                        ...(element.track as TrackData),
+                                        ...(element.track),
                                         viewer_reaction:
                                             trackReactions[element.track.track_id] ??
                                             null,
                                     },
-                                    artist: element.artist as ArtistData,
+                                    artist: element.artist,
                                 }),
                             )}
                             showIndex={true}

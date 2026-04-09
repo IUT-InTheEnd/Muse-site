@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import { Siren, Heart } from 'lucide-react';
+import { Siren } from 'lucide-react';
 import * as React from 'react';
 import {
     BlindTestPlaybackSettings,
@@ -7,8 +7,6 @@ import {
     getClipDurationSeconds,
     type BlindTestPlaybackSettingsValue,
 } from '@/components/blind-tests/playback-settings';
-import { CardCover, CardContent, CardTitle, CardSubtitle } from '@/components/musecomponents/cards/Card';
-import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
 import { TrackRow } from '@/components/musecomponents/TrackRow';
 import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
@@ -345,7 +343,7 @@ export default function BlindTestLecture() {
                 let playableUrl: string | undefined = (tracks[index] as any).url;
 
                 if (tracks[index].id) {
-                    const reponse = await fetch(`/test-music-player?id=${encodeURIComponent(tracks[index].id as number)}`);
+                    const reponse = await fetch(`/test-music-player?id=${encodeURIComponent(tracks[index].id)}`);
                     if (reponse.ok) {
                         const data = await reponse.json();
                         playableUrl = data.url ?? playableUrl;
@@ -752,7 +750,7 @@ export default function BlindTestLecture() {
                                     <div>
                                         <div className="space-y-2">
                                             {tracks.map((t, idx) => {
-                                                const id = (t.id ?? idx) as number;
+                                                const id = (t.id ?? idx);
                                                 const trackProp = {
                                                     track_id: id,
                                                     track_title: t.title ?? '',
