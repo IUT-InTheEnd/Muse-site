@@ -111,13 +111,13 @@ class AdministratorController extends Controller
 
             DB::table('playlist_contient_track')->whereIn('playlist_id', $user->playlists()->select('playlist_id'))->delete();
             $user->playlists()->delete();
-            $user->user_preference_echonest()->delete();
             $user->artists()->detach();
             $user->albums()->detach();
             $user->representes()->delete();
             $user->user_parles()->delete();
             $user->user_ecoutes()->delete();
             DB::table('ajoute_favori')->where('user_id', $user->id)->delete();
+            $user->user_preference_echonest()->delete();
             $user->ajoute_genre_favoris()->delete();
             $user->delete();
         });
