@@ -23,9 +23,6 @@ use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/recommendations/new-user', [RecommendationController::class, 'getNewUserRecommendations'])
-    ->name('recommendations.new-user');
-
 // Music player
 Route::get('/test-music-player', [MusicController::class, 'playMusic'])->name('test-music-player');
 Route::get('/tracks', [MusicController::class, 'playMusicBatch'])->name('tracks.batch');
