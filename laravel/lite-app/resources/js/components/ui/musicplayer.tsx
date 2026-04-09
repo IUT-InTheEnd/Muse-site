@@ -14,10 +14,11 @@ function formatTime(s: number): string {
 }
 
 export default function MusicPlayer() {
-    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, autoPlayNext, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError, waitingList, showWaitingList, toggleAutoPlayNext, dispatch } = useMusicPlayer();
+    const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, autoPlayNext, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError, waitingList, showWaitingList, toggleAutoPlayNext, dispatch, playlist } = useMusicPlayer();
 
     const isFavorite = !!track?.is_favorite;
     const [isTogglingFavorite, setIsTogglingFavorite] = React.useState(false);
+    const canSkipForward = playlist.length > 1;
 
 
     const handleToggleFavorite = async () => {
@@ -246,6 +247,8 @@ export default function MusicPlayer() {
                         <button
                             type="button"
                             onClick={skipForward}
+                            disabled={!canSkipForward}
+                            className="disabled:cursor-not-allowed disabled:opacity-50"
                             aria-label="Lire le titre suivant"
                         >
                             <SkipForwardIcon size={32} className="text-foreground" />
