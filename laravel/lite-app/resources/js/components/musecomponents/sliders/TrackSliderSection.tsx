@@ -62,6 +62,10 @@ export function TrackSliderSection({ title, tracks }: TrackSliderSectionProps) {
                                 artist: data.artist,
                                 artistid: data.artistid,
                                 artwork: proxyUrl(data.artwork),
+                                likes: data.likes ?? 0,
+                                dislikes: data.dislikes ?? 0,
+                                reaction: data.reaction ?? null,
+                                is_favorite: data.is_favorite ?? false,
                             });
                         } catch (err) {
                             console.error(err);

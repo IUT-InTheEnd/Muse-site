@@ -193,6 +193,58 @@ export function MusicPlayerProvider({
         localStorage.setItem(STORAGE_KEY, JSON.stringify(toPersist));
     }, [state]);
 
+    // Au refresh, la piste persistée peut avoir une réaction obsolète ou absente :
+    // on resynchronise son état depuis l'API pour les boutons du player.
+    React.useEffect(() => {
+        const trackId = state.track?.id;
+        if (!userId || !trackId) {
+            return;
+        }
+
+        const controller = new AbortController();
+
+        const syncTrackState = async () => {
+            try {
+                const response = await fetch(
+                    `/test-music-player?id=${encodeURIComponent(trackId)}`,
+                    {
+                        cache: 'no-store',
+                        signal: controller.signal,
+                    },
+                );
+                if (!response.ok) {
+                    return;
+                }
+                const data = await response.json();
+
+                dispatch({
+                    type: 'UPDATE_STATE',
+                    payload: {
+                        track: stateRef.current.track
+                            ? {
+                                  ...stateRef.current.track,
+                                  likes: data.likes ?? 0,
+                                  dislikes: data.dislikes ?? 0,
+                                  reaction: data.reaction ?? null,
+                                  is_favorite: data.is_favorite ?? false,
+                              }
+                            : null,
+                    },
+                });
+            } catch (error: any) {
+                if (error?.name !== 'AbortError') {
+                    console.error(error);
+                }
+            }
+        };
+
+        void syncTrackState();
+
+        return () => {
+            controller.abort();
+        };
+    }, [userId, state.track?.id]);
+
     const getRandomIndex = (exclude: number, length: number) => {
         if (length <= 1) return 0;
         let next;
