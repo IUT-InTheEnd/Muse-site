@@ -137,6 +137,8 @@ export function ReactionButtons({
             ? 'bg-rose-500/15 text-rose-600 hover:bg-rose-500/20 dark:text-rose-400'
             : 'bg-rose-500/15 text-rose-600 hover:bg-rose-500/20';
 
+    const resourceLabel = resource === 'tracks' ? 'titre' : 'album';
+
     return (
         <div
             className={cn('flex items-center gap-1', wrapperClassName, className)}
@@ -157,6 +159,7 @@ export function ReactionButtons({
                 }}
                 disabled={isSubmitting || isPending}
                 aria-pressed={reaction === 'like'}
+                aria-label={`J'aime ce ${resourceLabel}`}
             >
                 {isSubmitting && reaction !== 'dislike' ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -183,6 +186,7 @@ export function ReactionButtons({
                 }}
                 disabled={isSubmitting || isPending}
                 aria-pressed={reaction === 'dislike'}
+                aria-label={`Je n'aime pas ce ${resourceLabel}`}
             >
                 {isSubmitting && reaction !== 'like' ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

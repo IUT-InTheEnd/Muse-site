@@ -3,9 +3,9 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode, useEffect, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../css/app.css';
-import { AuthenticatedMusicPlayer } from './components/authenticated-music-player';
 import Footer from './components/musecomponents/Footer';
 import Navbar from './components/musecomponents/Navbar';
+import { PersistentMusicPlayer } from './components/persistent-music-player';
 import { MusicPlayerProvider } from './contexts/music-player-context';
 import { ReactionProvider } from './contexts/reaction-context';
 import { initializeTheme } from './hooks/use-appearance';
@@ -58,7 +58,7 @@ function AppWrapper({
                     </footer>
 
                     {/* Player */}
-                    <AuthenticatedMusicPlayer initialAuth={!!user} />
+                    <PersistentMusicPlayer />
                 </MusicPlayerProvider>
             </ReactionProvider>
         </div>

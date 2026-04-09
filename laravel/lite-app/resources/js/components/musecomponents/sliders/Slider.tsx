@@ -67,10 +67,22 @@ export function Slider({
         )}
 
         <div className="flex gap-2">
-          <button onClick={prev} disabled={isFirst} className="cursor-pointer">
+          <button
+            type="button"
+            onClick={prev}
+            disabled={isFirst}
+            className="cursor-pointer rounded-full p-2 transition-colors hover:bg-accent disabled:cursor-not-allowed"
+            aria-label={`Voir les cartes précédentes de ${title ?? 'ce carrousel'}`}
+          >
             <ChevronLeft />
           </button>
-          <button onClick={next} disabled={isLast} className="cursor-pointer">
+          <button
+            type="button"
+            onClick={next}
+            disabled={isLast}
+            className="cursor-pointer rounded-full p-2 transition-colors hover:bg-accent disabled:cursor-not-allowed"
+            aria-label={`Voir les cartes suivantes de ${title ?? 'ce carrousel'}`}
+          >
             <ChevronRight />
           </button>
         </div>

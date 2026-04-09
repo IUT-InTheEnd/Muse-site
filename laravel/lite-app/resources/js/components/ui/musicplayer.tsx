@@ -122,13 +122,14 @@ export default function MusicPlayer() {
                                 <div className="flex items-center gap-1 text-sm text-red-500 mt-1">
                                     <AlertCircleIcon size={14} />
                                     <span className="truncate">{error}</span>
-                                    <button
-                                        onClick={clearError}
-                                        className="ml-1 hover:text-red-400"
-                                        aria-label="Fermer l'erreur"
-                                    >
-                                        <XIcon size={14} />
-                                    </button>
+                    <button
+                        onClick={clearError}
+                        className="ml-1 hover:text-red-400"
+                        type="button"
+                        aria-label="Fermer l'erreur"
+                    >
+                        <XIcon size={14} />
+                    </button>
                                 </div>
                             )}
                         </div>
@@ -137,6 +138,7 @@ export default function MusicPlayer() {
                                 <AlertCircleIcon size={14} />
                                 <span className="truncate">{error}</span>
                                 <button
+                                    type="button"
                                     onClick={clearError}
                                     className="ml-1 hover:text-red-400 cursor-pointer"
                                     aria-label="Fermer l'erreur"
@@ -167,7 +169,16 @@ export default function MusicPlayer() {
                 <div className="flex flex-col flex-1 items-center gap-2">
                     {/* Contrôles */}
                     <div className="flex items-center gap-6">
-                        <button type="button" onClick={toggleShuffle}>
+                        <button
+                            type="button"
+                            onClick={toggleShuffle}
+                            aria-label={
+                                shuffle
+                                    ? 'Désactiver la lecture aléatoire'
+                                    : 'Activer la lecture aléatoire'
+                            }
+                            aria-pressed={shuffle}
+                        >
                             <ShuffleIcon
                                 size={28}
                                 className={
@@ -183,6 +194,11 @@ export default function MusicPlayer() {
                             onClick={handleToggleFavorite}
                             disabled={isTogglingFavorite || !track}
                             className="transition-transform active:scale-90"
+                            aria-label={
+                                track?.is_favorite
+                                    ? 'Retirer ce titre des favoris'
+                                    : 'Ajouter ce titre aux favoris'
+                            }
                         >
     {isTogglingFavorite ? (
         <LoaderIcon size={24} className="animate-spin text-purple-500" />
@@ -197,7 +213,11 @@ export default function MusicPlayer() {
     )}
                         </button>
 
-                        <button type="button" onClick={skipBack}>
+                        <button
+                            type="button"
+                            onClick={skipBack}
+                            aria-label="Lire le titre précédent"
+                        >
                             <SkipBackIcon size={32} className="text-foreground" />
                         </button>
 
@@ -206,6 +226,13 @@ export default function MusicPlayer() {
                             onClick={togglePlay}
                             disabled={isLoading}
                             className="flex h-14 w-14 items-center justify-center rounded-full bg-inverse text-inverse-foreground disabled:opacity-50"
+                            aria-label={
+                                isLoading
+                                    ? 'Chargement du titre'
+                                    : playing
+                                      ? 'Mettre la lecture en pause'
+                                      : 'Lancer la lecture'
+                            }
                         >
                             {isLoading ? (
                                 <LoaderIcon size={28} className="animate-spin" />
@@ -216,11 +243,25 @@ export default function MusicPlayer() {
                             )}
                         </button>
 
-                        <button type="button" onClick={skipForward}>
+                        <button
+                            type="button"
+                            onClick={skipForward}
+                            aria-label="Lire le titre suivant"
+                        >
                             <SkipForwardIcon size={32} className="text-foreground" />
                         </button>
 
-                        <button type="button" onClick={cycleRepeatMode}>
+                        <button
+                            type="button"
+                            onClick={cycleRepeatMode}
+                            aria-label={
+                                repeatMode === 'one'
+                                    ? 'Passer à la répétition de toute la file'
+                                    : repeatMode === 'all'
+                                      ? 'Désactiver la répétition'
+                                      : 'Répéter la file de lecture'
+                            }
+                        >
                             {repeatMode === 'one' ? (
                                 <Repeat1Icon size={28} className="text-purple-500 dark:text-purple-400" />
                             ) : (
@@ -247,6 +288,7 @@ export default function MusicPlayer() {
                             max={duration || 0}
                             value={currentTime}
                             onChange={(e) => seek(Number(e.target.value))}
+                            aria-label="Position de lecture"
                             className="flex-1 h-1.5 accent-purple-500"
                         />
                         <span className="w-10 text-sm text-muted-foreground">
@@ -270,7 +312,12 @@ export default function MusicPlayer() {
                     >
                         Lecture automatique : {autoPlayNext ? 'activée' : 'désactivée'}
                     </button>
-                    <button type="button" onClick={toggleMute} className="cursor-pointer">
+                    <button
+                        type="button"
+                        onClick={toggleMute}
+                        className="cursor-pointer"
+                        aria-label={volume === 0 ? 'Réactiver le son' : 'Couper le son'}
+                    >
                         {volume === 0 ? (
                             <VolumeXIcon size={28} className="text-muted-foreground" />
                         ) : volume < 0.33 ? (
@@ -292,7 +339,11 @@ export default function MusicPlayer() {
                         className="w-40 accent-purple-500"
                     />
                     {/* File d'attente */}
-                    <button type="button" onClick={waitingList}>
+                    <button
+                        type="button"
+                        onClick={waitingList}
+                        aria-label="Afficher la file d'attente"
+                    >
                         <ListMusic size={32} className="cursor-pointer text-foreground duration-200 transition-all" />
                     </button>
                 </div>
