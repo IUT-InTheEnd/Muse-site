@@ -89,9 +89,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/add-listen', [MusicController::class, 'addListen'])->name('add-listen');
 
-    // Recommendations
-    Route::get('/recommendations', [RecommendationController::class, 'getRecommendations'])->name('recommendations.get');
-
     Route::post('/artiste/{id}/follow', [ArtistController::class, 'follow'])->name('artist.follow');
     Route::delete('/artiste/{id}/follow', [ArtistController::class, 'unfollow'])->name('artist.unfollow');
 
