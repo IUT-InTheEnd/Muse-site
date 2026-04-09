@@ -81,7 +81,7 @@ class BlindTestController extends Controller
 
     public function generate(Request $request)
     {
-        $validated = $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'count' => 'required|integer|min:1|max:50',
             'save_playlist' => 'required|boolean',
             'playlist_name' => 'nullable|string|max:255',
@@ -89,7 +89,7 @@ class BlindTestController extends Controller
             'playback.difficulty' => 'nullable|string|in:facile,moyen,dur',
             'filters' => 'nullable|array',
             'filters.year_min' => 'nullable|integer',
-            'filters.year_max' => 'nullable|integer|gte:filters.year_min',
+            'filters.year_max' => 'nullable|integer',
             'filters.genre_ids' => 'nullable|array',
             'filters.genre_ids.*' => 'integer|exists:genre,genre_id',
             'filters.artist_ids' => 'nullable|array',
@@ -99,6 +99,20 @@ class BlindTestController extends Controller
             'filters.language_ids' => 'nullable|array',
             'filters.language_ids.*' => 'integer|exists:language,language_id',
         ]);
+
+        $validator->after(function ($validator) use ($request): void {
+            $yearMin = $request->input('filters.year_min');
+            $yearMax = $request->input('filters.year_max');
+
+            if ($yearMin !== null && $yearMin !== '' && $yearMax !== null && $yearMax !== '' && (int) $yearMax < (int) $yearMin) {
+                $validator->errors()->add(
+                    'filters.year_max',
+                    'La valeur de filters.year max doit être supérieure ou égale à filters.year min.'
+                );
+            }
+        });
+
+        $validated = $validator->validate();
 
         $user = $request->user();
         $filters = $validated['filters'] ?? [];
