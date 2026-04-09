@@ -1,5 +1,5 @@
-import { Head } from '@/components/head';
 import AppearanceTabs from '@/components/appearance-tabs';
+import { Head } from '@/components/head';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';

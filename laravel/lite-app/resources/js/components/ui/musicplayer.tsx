@@ -3,6 +3,7 @@ import * as React from "react";
 import { TrackPlaylistButton } from '@/components/musecomponents/TrackPlaylistButton';
 import { ReactionButtons } from '@/components/reaction-buttons';
 import MusicWaitingList from '@/components/ui/music-waiting-list';
+import SlideFromBottom from '@/components/ui/slide-from-bottom';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 
 function formatTime(s: number): string {
@@ -23,6 +24,60 @@ export default function MusicPlayer({ canUseLibrary }: MusicPlayerProps) {
 
     const [isTogglingFavorite, setIsTogglingFavorite] = React.useState(false);
     const canSkipForward = playlist.length > 1;
+    const shouldShowWaitingList = !minimized && showWaitingList;
+    const playerPanelRef = React.useRef<HTMLDivElement | null>(null);
+    const [playerPanelHeight, setPlayerPanelHeight] = React.useState(0);
+    const [isWaitingListMounted, setIsWaitingListMounted] =
+        React.useState(shouldShowWaitingList);
+    const [isWaitingListVisible, setIsWaitingListVisible] =
+        React.useState(shouldShowWaitingList);
+
+    React.useEffect(() => {
+        let frameId: number | null = null;
+        let nestedFrameId: number | null = null;
+        if (shouldShowWaitingList) {
+            setIsWaitingListMounted(true);
+            setIsWaitingListVisible(false);
+            frameId = requestAnimationFrame(() => {
+                nestedFrameId = requestAnimationFrame(() => {
+                    setIsWaitingListVisible(true);
+                });
+            });
+        } else {
+            setIsWaitingListVisible(false);
+        }
+
+        return () => {
+            if (frameId !== null) {
+                cancelAnimationFrame(frameId);
+            }
+            if (nestedFrameId !== null) {
+                cancelAnimationFrame(nestedFrameId);
+            }
+        };
+    }, [shouldShowWaitingList]);
+
+    React.useEffect(() => {
+        const panel = playerPanelRef.current;
+        if (!panel) {
+            return;
+        }
+
+        const updatePlayerPanelHeight = () => {
+            setPlayerPanelHeight(panel.offsetHeight);
+        };
+
+        updatePlayerPanelHeight();
+
+        const observer = new ResizeObserver(() => {
+            updatePlayerPanelHeight();
+        });
+        observer.observe(panel);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 
 
     const handleToggleFavorite = async () => {
@@ -54,13 +109,16 @@ export default function MusicPlayer({ canUseLibrary }: MusicPlayerProps) {
         }
     };
 
-    // État minimisé : afficher un bouton flottant avec l'icône de musique
-    if (minimized) {
-        return (
+    return (
+        <>
             <button
                 type="button"
                 onClick={toggleMinimized}
-                className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-purple-500 text-primary-foreground shadow-lg transition-all duration-200 hover:scale-105 hover:bg-purple-600"
+                className={`fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-purple-500 text-primary-foreground shadow-lg transition-all duration-200 hover:scale-105 hover:bg-purple-600 ${
+                    minimized
+                        ? 'translate-y-0 pointer-events-auto'
+                        : 'translate-y-24 pointer-events-none'
+                }`}
                 aria-label="Ouvrir le lecteur"
             >
                 <MusicIcon size={28} />
@@ -74,23 +132,43 @@ export default function MusicPlayer({ canUseLibrary }: MusicPlayerProps) {
                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full animate-pulse" />
                 )}
             </button>
-        );
-    }
 
-    return (
-        <div className="fixed inset-x-0 bottom-0 z-50 pointer-events-none">
-            <div
-                className={`absolute right-0 bottom-full z-0 transition-transform duration-300 ease-in-out ${
-                    showWaitingList
-                        ? 'pointer-events-auto translate-y-0'
-                        : 'pointer-events-none translate-y-full'
-                }`}
-                aria-hidden={!showWaitingList}
-            >
-                <MusicWaitingList />
-            </div>
+            <div className="fixed inset-x-0 bottom-0 z-50 pointer-events-none">
+                {isWaitingListMounted && (
+                    <div
+                        className={`absolute right-0 bottom-full z-0 transition-transform duration-300 ease-in-out ${
+                            isWaitingListVisible
+                                ? 'pointer-events-auto translate-y-0'
+                                : minimized
+                                  ? 'pointer-events-none translate-y-[calc(100%+var(--player-slide-offset,0px))]'
+                                  : 'pointer-events-none translate-y-full'
+                        }`}
+                        style={
+                            {
+                                '--player-slide-offset': `${playerPanelHeight}px`,
+                            } as React.CSSProperties
+                        }
+                        aria-hidden={!isWaitingListVisible}
+                        onTransitionEnd={(event) => {
+                            if (event.target !== event.currentTarget) {
+                                return;
+                            }
+                            if (!isWaitingListVisible) {
+                                setIsWaitingListMounted(false);
+                            }
+                        }}
+                    >
+                        <MusicWaitingList />
+                    </div>
+                )}
 
-            <div className="pointer-events-auto relative z-10 border-t border-border bg-background px-8 py-4 text-foreground">
+                <SlideFromBottom
+                    show={!minimized}
+                    innerRef={playerPanelRef}
+                    className="pointer-events-auto relative z-10 border-t border-border bg-background px-8 py-4 text-foreground"
+                    openClassName="pointer-events-auto translate-y-0"
+                    closedClassName="pointer-events-none translate-y-full"
+                >
             {/* Bouton minimiser */}
             <button
                 type="button"
@@ -370,7 +448,8 @@ export default function MusicPlayer({ canUseLibrary }: MusicPlayerProps) {
                     </button>
                 </div>
             </div>
+                </SlideFromBottom>
             </div>
-        </div>
+        </>
     );
 }

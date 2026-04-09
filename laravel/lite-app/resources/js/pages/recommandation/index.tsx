@@ -1,6 +1,6 @@
 import { Head } from '@/components/head';
-import AppLayout from '@/layouts/app-layout';
 import { TrackSliderSection } from '@/components/musecomponents/sliders/TrackSliderSection';
+import AppLayout from '@/layouts/app-layout';
 
 type Track = {
   id: number

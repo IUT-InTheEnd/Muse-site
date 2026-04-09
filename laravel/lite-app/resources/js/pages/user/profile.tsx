@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
-import { Head } from '@/components/head';
 import { ListMusic, Lock, Music, Users } from 'lucide-react';
+import { Head } from '@/components/head';
 import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard';
 import {
     CardContent,

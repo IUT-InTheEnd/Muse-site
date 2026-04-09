@@ -1,7 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Head } from '@/components/head';
 import { Separator } from '@radix-ui/react-separator';
 import { ExternalLink } from 'lucide-react';
+import { Head } from '@/components/head';
 import type { SharedData } from '@/types';
 
 interface Props {

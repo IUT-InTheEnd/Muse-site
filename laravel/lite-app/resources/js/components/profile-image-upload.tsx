@@ -3,9 +3,9 @@ import { Camera, Loader2, Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { TYPEIMAGE } from "@/lib/constante_generale"
 import { deleteMethod, upload } from '@/routes/image';
 import type { SharedData } from '@/types';
-import { TYPEIMAGE } from "@/lib/constante_generale"
 
 function getInitials(name: string): string {
     return name

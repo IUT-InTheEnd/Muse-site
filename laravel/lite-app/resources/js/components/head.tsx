@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { Head as InertiaHead } from '@inertiajs/react';
+import * as React from 'react';
 
 type Props = React.ComponentProps<typeof InertiaHead> & {
     description?: string;

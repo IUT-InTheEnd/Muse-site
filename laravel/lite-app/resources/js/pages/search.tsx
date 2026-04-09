@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Head } from '@/components/head';
 import { useEffect, useState } from 'react';
+import { Head } from '@/components/head';
 import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard';
 import { CardCover, CardTitle } from '@/components/musecomponents/cards/Card';
 import { ArtistSlider } from '@/components/musecomponents/sliders/ArtistSlider';
