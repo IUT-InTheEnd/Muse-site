@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { fetchTracks } from '../lib/track-api';
 
 export type Track = {
     id?: number;
@@ -371,65 +370,6 @@ export function MusicPlayerProvider({
             );
         };
     }, [skipForward]);
-
-    // Logic recommendation
-    React.useEffect(() => {
-        if (
-            !userId ||
-            !state.autoPlayNext ||
-            state.playlist.length === 0 ||
-            state.currentIndex < 0
-        )
-            return;
-
-        // On déclenche s'il reste moins de 4 morceaux dans la liste
-        const remaining = state.playlist.length - 1 - state.currentIndex;
-        if (remaining > 3) return;
-
-        const controller = new AbortController();
-        const fetchReco = async () => {
-            try {
-                const trackId = state.track?.id;
-                const type = trackId ? 'hybride' : 'user_based_p2';
-                const res = await fetch(
-                    `/recommendations?recommandation_type=${type}&track_id=${trackId || ''}&n=10`,
-                    {
-                        signal: controller.signal,
-                        headers: { Accept: 'application/json' },
-                    },
-                );
-                const data = await res.json();
-
-                const existingIds = new Set(
-                    stateRef.current.playlist.map((t) => t.id),
-                );
-                const newIds = (data.track_ids || [])
-                    .filter((id: number) => !existingIds.has(id))
-                    .slice(0, 4);
-
-                if (newIds.length > 0) {
-                    const newTracks = await fetchTracks(newIds);
-                    if (newTracks.length > 0) {
-                        dispatch({
-                            type: 'SET_PLAYLIST',
-                            payload: [
-                                ...stateRef.current.playlist,
-                                ...newTracks,
-                            ],
-                        });
-                    }
-                }
-            } catch (e: any) {
-                if (e.name !== 'AbortError') console.error(e);
-            }
-        };
-
-        const timer = setTimeout(fetchReco, 1000);
-        return () => {
-            clearTimeout(timer);
-            controller.abort();
-        };
-    }, [state.autoPlayNext, state.currentIndex, userId, state.track?.id, state.playlist.length]);
 
     const actions = React.useMemo<MusicPlayerActions>(
         () => ({
