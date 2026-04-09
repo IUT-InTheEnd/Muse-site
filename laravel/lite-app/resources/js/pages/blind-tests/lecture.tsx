@@ -402,7 +402,8 @@ export default function BlindTestLecture() {
         setShowQcm(false);
         setShowScore(false);
         setReponseSelectionne(null);
-        if (chargement.length) {
+        const isPlaylistPlay = Boolean(window.location.pathname.match(/blind-tests\/play\/playlist\/\d+/));
+        if (chargement.length && !isPlaylistPlay) {
             setTracks(chargement);
         }
 
@@ -597,7 +598,7 @@ export default function BlindTestLecture() {
                                 {!showQcm ? (
                                     <div className="flex flex-row items-center gap-4">
                                         <span className="text-md">Votre réponse</span>
-                                        <Input value={userAnswer} onChange={(e: any) => setReponseUser(e.target.value)} type="text" placeholder="Votre réponse" className="w-full" />
+                                        <Input value={userAnswer} onChange={(e: any) => setReponseUser(e.target.value)} type="text" placeholder="Votre réponse" className="w-full" disabled={showReponse} />
                                         {showBtnIndice && (
                                             <Button className="cursor-pointer" variant="secondary" onClick={afficherQCM}>
                                                 Un indice ?
@@ -636,6 +637,7 @@ export default function BlindTestLecture() {
                                                         type="button"
                                                         onClick={() => setReponseSelectionne(choice)}
                                                         className={`${baseClass} ${variantClass}`}
+                                                        disabled={showReponse}
                                                     >
                                                         {choice}
                                                     </button>
