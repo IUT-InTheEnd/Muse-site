@@ -42,6 +42,9 @@ class BlindTestGenerationTest extends TestCase
                             'count' => 3,
                         ],
                     ],
+                    'playback' => [
+                        'difficulty' => 'dur',
+                    ],
                 ],
             ])
             ->get('/blind-tests/new')
@@ -49,6 +52,7 @@ class BlindTestGenerationTest extends TestCase
                 ->component('blind-tests/new')
                 ->where('blindTest.has_ephemeral', true)
                 ->where('blindTest.ephemeral.track_count', 3)
+                ->where('blindTest.playback.difficulty', 'dur')
             );
     }
 
@@ -76,6 +80,9 @@ class BlindTestGenerationTest extends TestCase
         $response = $this->actingAs($user)->post('/blind-tests/generate', [
             'count' => 3,
             'save_playlist' => false,
+            'playback' => [
+                'difficulty' => 'facile',
+            ],
             'filters' => [
                 'vocal_type' => 'indifferent',
             ],
@@ -83,6 +90,7 @@ class BlindTestGenerationTest extends TestCase
 
         $response->assertRedirect('/blind-tests/play/ephemeral');
         $response->assertSessionHas('blind_test.ephemeral.track_ids', $tracks->pluck('track_id')->all());
+        $response->assertSessionHas('blind_test.playback.difficulty', 'facile');
     }
 
     public function test_blind_test_lecture_requires_authentication(): void
@@ -149,6 +157,9 @@ class BlindTestGenerationTest extends TestCase
             'count' => 4,
             'save_playlist' => true,
             'playlist_name' => 'Blind test persistant',
+            'playback' => [
+                'difficulty' => 'dur',
+            ],
             'filters' => [
                 'vocal_type' => 'indifferent',
             ],
@@ -160,6 +171,7 @@ class BlindTestGenerationTest extends TestCase
             ->value('playlist_id');
 
         $response->assertRedirect("/playlist/{$playlistId}");
+        $response->assertSessionHas('blind_test.playback.difficulty', 'dur');
 
         foreach ($trackIds as $index => $trackId) {
             $this->assertDatabaseHas('playlist_contient_track', [

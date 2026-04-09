@@ -1,4 +1,10 @@
 import * as React from 'react';
+import {
+    BlindTestPlaybackSettings,
+    DEFAULT_BLIND_TEST_PLAYBACK_SETTINGS,
+    getClipDurationSeconds,
+    type BlindTestPlaybackSettingsValue,
+} from '@/components/blind-tests/playback-settings';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
@@ -8,9 +14,16 @@ import { usePage } from '@inertiajs/react';
 import type { SharedData } from '@/types';
 import { Siren, Heart } from 'lucide-react';
 import { TrackRow } from '@/components/musecomponents/TrackRow';
-import { useMusicPlayer } from '@/hooks/use-music-player';
 
 const nbReponsesQcm = 4;
+type BlindTestTrack = {
+    id?: number;
+    title?: string;
+    artist?: string | null;
+    url?: string | null;
+    duration?: number | null;
+    cover?: string | null;
+};
 
 let nbPointsTotal = 0;
 let nbPointsArtiste = 0;
@@ -25,10 +38,12 @@ function formatTemps(seconds: number): string {
 }
 
 export default function BlindTestLecture() {
-    const [dureeMusique, setDureeMusique] = React.useState<number>(5);
-    const [difficulty, setDifficulty] = React.useState<'facile'|'moyen'|'dur'>('moyen');
+    const { auth, blindTest } = usePage<SharedData>().props;
+    const initialPlaybackSettings = blindTest?.playback ?? DEFAULT_BLIND_TEST_PLAYBACK_SETTINGS;
+    const [dureeMusique, setDureeMusique] = React.useState<number>(getClipDurationSeconds(initialPlaybackSettings.difficulty));
+    const [playbackSettings, setPlaybackSettings] = React.useState<BlindTestPlaybackSettingsValue>(initialPlaybackSettings);
     const [jeuCommence, setJeuCommence] = React.useState(false);
-    const [tracks, setTracks] = React.useState<Array<{id?: number; title?: string; artist?: string; url?: string; duration?: number}>>([]);
+    const [tracks, setTracks] = React.useState<BlindTestTrack[]>([]);
     const [tempsreponsetant, setTempsMusique] = React.useState(dureeMusique);
     const [go, setGo] = React.useState(false);
     const [showQcm, setShowQcm] = React.useState(false);
@@ -47,6 +62,7 @@ export default function BlindTestLecture() {
     const audioTimeoutRef = React.useRef<number | null>(null);
 
     const nbMusic = tracks.length;
+    const clipDurationSeconds = getClipDurationSeconds(playbackSettings.difficulty);
 
     // Gérer le timer pour la musique
     React.useEffect(() => {
@@ -90,7 +106,6 @@ export default function BlindTestLecture() {
     // Charger les musiques au début
     React.useEffect(() => {
         async function chargerMusique() {
-            console.log(window)
             // Si blind test d'une playlist
             if (window.location.pathname.match(/playlist\/\d+/)) {
                 try {
@@ -112,7 +127,6 @@ export default function BlindTestLecture() {
 
                         if (reponse.ok) {
                             const reponseJSON = await reponse.json();
-                            let listeMusique : any[] = [];
                             if (reponseJSON) {
                                 const props = reponseJSON.props ?? {};
                                 const playlist = props.playlist ?? props;
@@ -134,14 +148,13 @@ export default function BlindTestLecture() {
                     if (!listeMusique || listeMusique.length === 0) {
                         const reponseAPI = await fetch(`/api/playlist/${playlistId}`, { credentials: 'same-origin' });
                         if (reponseAPI.ok) {
-                            console.log('api')
                             const json = await reponseAPI.json();
                             listeMusique = json.tracks || json.playlist?.tracks || [];
                         }
                     }
 
-                    const ordre = (Array.isArray(listeMusique) ? listeMusique : []).map((track: any) => {
-                        let artist = null;
+                    const ordre: BlindTestTrack[] = (Array.isArray(listeMusique) ? listeMusique : []).map((track: any) => {
+                        let artist: string | null = null;
                         if (track.realisers && track.realisers.length) {
                             const first = track.realisers[0];
                             if (first && first.artist){
@@ -154,20 +167,20 @@ export default function BlindTestLecture() {
                                     artist = track.artist;
                                 } else if (track.artist_name) {
                                     artist = track.artist_name;
-                                } else if (track.artist_name.name) {
+                                } else if (track.artist_name?.name) {
                                     artist = track.artist_name.name;
                                 } else {
                                     artist = null;
                                 }
                             }
-                        let track_id = '';
-                        if (track.track_id !== undefined) {
-                            track_id = track.track_id;
-                        } else if (track.id !== undefined) {
-                            track_id = track.id;
+                        let track_id: number | undefined;
+                        if (track.track_id !== undefined && track.track_id !== null) {
+                            track_id = Number(track.track_id);
+                        } else if (track.id !== undefined && track.id !== null) {
+                            track_id = Number(track.id);
                         }
 
-                        let track_title = '';
+                        let track_title: string | undefined;
                         if (track.track_title) {
                             track_title = track.track_title;
                         } else if (track.title) {
@@ -176,7 +189,7 @@ export default function BlindTestLecture() {
                             track_title = track.name;
                         }
 
-                        let track_url = null;
+                        let track_url: string | null = null;
                         if (track.track_url) {
                             track_url = track.track_url;
                         } else if (track.track_file) {
@@ -185,14 +198,14 @@ export default function BlindTestLecture() {
                             track_url = track.url;
                         }
 
-                        let track_duration = null;
+                        let track_duration: number | null = null;
                         if (track.track_duration) {
-                            track_duration = track.track_duration;
+                            track_duration = Number(track.track_duration);
                         } else if (track.duration) {
-                            track_duration = track.duration;
+                            track_duration = Number(track.duration);
                         }
 
-                        let track_cover = null;
+                        let track_cover: string | null = null;
                         if (track.track_image_file) {
                             track_cover = track.track_image_file;
                         } else if (track.playlist_cover) {
@@ -259,18 +272,13 @@ export default function BlindTestLecture() {
         playMusique(musicIdActuelle);
     }, [musicIdActuelle, jeuCommence, tracks]);
 
-     // Arrêter la musique si on affiche le score final
+    // Arrêter la musique si on affiche le score final
     React.useEffect(() => {
         if (showScore) {
             try {
                 stopMusique();
             } catch (e) {
                 console.error('Erreur en stoppant la musique locale', e);
-            }
-            try {
-                pause();
-            } catch (e) {
-                // ignore if music player not available
             }
         }
     }, [showScore]);
@@ -387,8 +395,7 @@ export default function BlindTestLecture() {
     // Fonction pour démarrer le blind test
     const startBlindTest = () => {
         const chargement = chargeMusiqueSession();
-        // set duration from selected difficulty (compute locally to avoid state update race)
-        const selectedDuration = difficulty === 'facile' ? 10 : difficulty === 'moyen' ? 5 : 3;
+        const selectedDuration = clipDurationSeconds;
         setDureeMusique(selectedDuration);
 
         setJeuCommence(true);
@@ -493,9 +500,6 @@ export default function BlindTestLecture() {
         setShowReponse(true);
     };
 
-    const { auth } = usePage<SharedData>().props;
-    const { pause } = useMusicPlayer();
-
     const handleToggleFavorite = async (e: React.MouseEvent, trackId?: number) => {
         e.stopPropagation();
         if (!auth?.user) {
@@ -536,7 +540,7 @@ export default function BlindTestLecture() {
                         un indice pour passer en mode QCM à 4 réponses.
                     </p>
                     <ul className="list-disc space-y-2 pl-5 text-md">
-                        <li>Chaque manche dure {dureeMusique} secondes.</li>
+                        <li>Chaque manche dure {clipDurationSeconds} secondes.</li>
                         <li>Le chronomètre démarre lorsque vous cliquez sur "Commencer", et la musique se lance.</li>
                         <li>Si vous trouvez l'artiste, vous gagnez 1 point. Si vous trouvez le titre, vous gagnez également 1 point.</li>
                     </ul>
@@ -548,23 +552,10 @@ export default function BlindTestLecture() {
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <label className="text-md">Difficulté :</label>
-                        <select
-                            value={difficulty}
-                            onChange={(e) => {
-                                const val = e.target.value as 'facile' | 'moyen' | 'dur';
-                                setDifficulty(val);
-                                const selectedDuration = val === 'facile' ? 10 : val === 'moyen' ? 5 : 3;
-                                setDureeMusique(selectedDuration);
-                            }}
-                            className="rounded-md border px-2 py-1"
-                        >
-                            <option value="facile">Facile (10s)</option>
-                            <option value="moyen">Moyen (5s)</option>
-                            <option value="dur">Dur (3s)</option>
-                        </select>
-                    </div>
+                    <BlindTestPlaybackSettings
+                        value={playbackSettings}
+                        onChange={setPlaybackSettings}
+                    />
 
                     <Button onClick={startBlindTest} className="cursor-pointer">
                         {musicIdActuelle > 0 ? 'Reprendre' : 'Commencer'} le blind test

@@ -2,6 +2,10 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { ChevronDown, Save, Sparkles } from 'lucide-react';
 import { useMemo, useState, type FormEvent } from 'react';
 import { ArtistAutocomplete, type BlindTestArtistOption } from '@/components/blind-tests/artist-autocomplete';
+import {
+    BlindTestPlaybackSettings,
+    type BlindTestPlaybackSettingsValue,
+} from '@/components/blind-tests/playback-settings';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -47,6 +51,7 @@ type BlindTestFormData = {
     count: string;
     save_playlist: boolean;
     playlist_name: string;
+    playback: BlindTestPlaybackSettingsValue;
     filters: {
         year_min: string;
         year_max: string;
@@ -75,10 +80,11 @@ export default function BlindTestNew({
     const [languageSearch, setLanguageSearch] = useState('');
     const [selectedArtists, setSelectedArtists] = useState<BlindTestArtistOption[]>([]);
 
-    const { data, setData, post, processing } = useForm<BlindTestFormData>({
+    const { data, setData, post, processing, transform } = useForm<BlindTestFormData>({
         count: '10',
         save_playlist: false,
         playlist_name: '',
+        playback: blindTest?.playback ?? { difficulty: 'moyen' },
         filters: {
             year_min: '',
             year_max: '',
@@ -111,22 +117,24 @@ export default function BlindTestNew({
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
+        transform((currentData) => ({
+            ...currentData,
+            count: Number.parseInt(currentData.count, 10),
+            playlist_name: currentData.playlist_name.trim(),
+            playback: currentData.playback,
+            filters: {
+                year_min: currentData.filters.year_min ? Number.parseInt(currentData.filters.year_min, 10) : null,
+                year_max: currentData.filters.year_max ? Number.parseInt(currentData.filters.year_max, 10) : null,
+                genre_ids: currentData.filters.genre_ids,
+                artist_ids: selectedArtists.map((artist) => artist.id),
+                popularity: currentData.filters.popularity || null,
+                vocal_type: currentData.filters.vocal_type,
+                language_ids: currentData.filters.language_ids,
+            },
+        }));
+
         post('/blind-tests/generate', {
             preserveScroll: true,
-            transform: (currentData) => ({
-                ...currentData,
-                count: Number.parseInt(currentData.count, 10),
-                playlist_name: currentData.playlist_name.trim(),
-                filters: {
-                    year_min: currentData.filters.year_min ? Number.parseInt(currentData.filters.year_min, 10) : null,
-                    year_max: currentData.filters.year_max ? Number.parseInt(currentData.filters.year_max, 10) : null,
-                    genre_ids: currentData.filters.genre_ids,
-                    artist_ids: selectedArtists.map((artist) => artist.id),
-                    popularity: currentData.filters.popularity || null,
-                    vocal_type: currentData.filters.vocal_type,
-                    language_ids: currentData.filters.language_ids,
-                },
-            }),
         });
     };
 
@@ -393,6 +401,12 @@ export default function BlindTestNew({
                                 </div>
                             </CollapsibleContent>
                         </Collapsible>
+
+                        <BlindTestPlaybackSettings
+                            value={data.playback}
+                            onChange={(playback) => setData('playback', playback)}
+                            disabled={processing}
+                        />
                     </section>
 
                     <aside className="space-y-6 rounded-3xl border bg-card p-8">
@@ -427,6 +441,10 @@ export default function BlindTestNew({
                                 <div className="flex items-center justify-between gap-4">
                                     <dt className="text-muted-foreground">Mode de sortie</dt>
                                     <dd>{data.save_playlist ? 'Playlist persistée' : 'Session navigateur'}</dd>
+                                </div>
+                                <div className="flex items-center justify-between gap-4">
+                                    <dt className="text-muted-foreground">Difficulté</dt>
+                                    <dd className="capitalize">{data.playback.difficulty}</dd>
                                 </div>
                                 <div className="flex items-center justify-between gap-4">
                                     <dt className="text-muted-foreground">Genres</dt>

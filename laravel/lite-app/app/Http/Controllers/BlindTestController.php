@@ -85,9 +85,11 @@ class BlindTestController extends Controller
             'count' => 'required|integer|min:1|max:50',
             'save_playlist' => 'required|boolean',
             'playlist_name' => 'nullable|string|max:255',
+            'playback' => 'nullable|array',
+            'playback.difficulty' => 'nullable|string|in:facile,moyen,dur',
             'filters' => 'nullable|array',
-            'filters.year_min' => 'nullable|integer|min:1900|max:2100',
-            'filters.year_max' => 'nullable|integer|min:1900|max:2100|gte:filters.year_min',
+            'filters.year_min' => 'nullable|integer',
+            'filters.year_max' => 'nullable|integer|gte:filters.year_min',
             'filters.genre_ids' => 'nullable|array',
             'filters.genre_ids.*' => 'integer|exists:genre,genre_id',
             'filters.artist_ids' => 'nullable|array',
@@ -100,6 +102,7 @@ class BlindTestController extends Controller
 
         $user = $request->user();
         $filters = $validated['filters'] ?? [];
+        $playback = $this->blindTests->storePlayback($request->session(), $validated['playback'] ?? []);
 
         if ((bool) $validated['save_playlist'] && blank($validated['playlist_name'] ?? null)) {
             throw ValidationException::withMessages([
@@ -155,6 +158,7 @@ class BlindTestController extends Controller
                 'language_ids' => $filters['language_ids'] ?? [],
             ],
             'counts' => $result['counts'] ?? [],
+            'playback' => $playback,
         ];
 
         if ((bool) $validated['save_playlist']) {

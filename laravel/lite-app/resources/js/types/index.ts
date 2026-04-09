@@ -14,6 +14,9 @@ export type SharedData = {
             generated_at?: string | null;
             generation?: Record<string, unknown> | null;
         } | null;
+        playback: {
+            difficulty: 'facile' | 'moyen' | 'dur';
+        };
     };
     sidebarOpen: boolean;
     [key: string]: unknown;
