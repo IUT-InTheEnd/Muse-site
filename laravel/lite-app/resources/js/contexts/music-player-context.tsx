@@ -285,6 +285,13 @@ export function MusicPlayerProvider({
             stateRef.current;
         if (playlist.length === 0) return;
 
+        // Quand la piste courante ne correspond plus à un index valide
+        // mais qu'une playlist existe, on repart de la première piste utile.
+        if (currentIndex < 0) {
+            playTrackAtIndex(playlist.length > 1 ? 1 : 0);
+            return;
+        }
+
         let nextIdx;
         if (shuffle) {
             nextIdx = getRandomIndex(currentIndex, playlist.length);
@@ -394,6 +401,7 @@ export function MusicPlayerProvider({
                         dispatch({ type: 'SET_PLAYING', payload: false });
                     });
                 } else if (stateRef.current.autoPlayNext) {
+                    // La lecture automatique ne fait qu'avancer dans la playlist existante.
                     skipForward();
                 } else {
                     dispatch({ type: 'SET_PLAYING', payload: false });
