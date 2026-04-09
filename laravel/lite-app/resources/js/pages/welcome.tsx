@@ -52,7 +52,7 @@ export default function Welcome({
 
                                 <p className="max-w-md text-sm sm:text-base">
                                     Accédez à des millions de
-                                    titres &mdash; connectez vous pour une meilleure expérience
+                                    titres &mdash; connectez-vous pour une meilleure expérience
                                 </p>
 
                                 <div className="grid w-full max-w-md grid-cols-1 gap-3 sm:grid-cols-2">

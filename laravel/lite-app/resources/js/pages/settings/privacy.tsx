@@ -35,7 +35,7 @@ export default function Privacy() {
                     <Heading
                         variant="small"
                         title="Paramètres de confidentialité"
-                        description="Gérez vos préférences de confidentialité et de visibilité"
+                        description="Gérez vos préférences de confidentialité et de visibilité."
                     />
                     <Form
                         method="patch"

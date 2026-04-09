@@ -140,15 +140,15 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
                 <DialogHeader>
                     <DialogTitle>Modifier vos informations</DialogTitle>
                     <DialogDescription>
-                        Mettez a jour vos informations personnelles et
-                        preferences musicales.
+                        Mettez à jour vos informations personnelles et vos
+                        préférences musicales.
                     </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Age */}
                     <div className="grid gap-2">
-                        <Label htmlFor="user_age">Age</Label>
+                        <Label htmlFor="user_age">Âge</Label>
                         <Input
                             id="user_age"
                             type="number"
@@ -158,7 +158,7 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
                             onChange={(e) =>
                                 setData('user_age', e.target.value)
                             }
-                            placeholder="Votre age"
+                            placeholder="Votre âge"
                         />
                     </div>
 
@@ -172,7 +172,7 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
                             }
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Selectionnez votre genre" />
+                                <SelectValue placeholder="Sélectionnez votre genre" />
                             </SelectTrigger>
                             <SelectContent>
                                 {GENDER_OPTIONS.map((option) => (
@@ -194,7 +194,7 @@ export default function EditUserInfoDialog({ user }: EditUserInfoDialogProps) {
                             }
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Selectionnez votre profession" />
+                                <SelectValue placeholder="Sélectionnez votre profession" />
                             </SelectTrigger>
                             <SelectContent>
                                 {JOB_OPTIONS.map((option) => (

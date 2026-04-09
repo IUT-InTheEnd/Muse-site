@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Head } from '@/components/head';
 import { Separator } from '@radix-ui/react-separator';
+import { Head } from '@/components/head';
 import type { SharedData } from '@/types';
 
 export default function Installation() {
@@ -24,7 +24,7 @@ export default function Installation() {
                         />
                         <div className="flex flex-col gap-4 items-start w-full">
                             <Link href="#preparation-du-workspace" className="link-doc">
-                                <p>1. Préparation du workspace</p>
+                                <p>1. Préparation de l'espace de travail</p>
                             </Link>
 
                             <Link href="#installation" className="link-doc">
@@ -38,7 +38,7 @@ export default function Installation() {
                     </div>
 
                     <article id='preparation-du-workspace' className='gap-2'>
-                        <h3>Préparation du workspace</h3>
+                        <h3>Préparation de l'espace de travail</h3>
                         <p>Avant de commencer l'installation, assurez-vous d'avoir un environnement de développement configuré.</p>
                     </article>
 

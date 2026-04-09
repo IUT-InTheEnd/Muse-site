@@ -18,7 +18,7 @@ const Footer = () => {
                             lg:grid-cols-4 lg:gap-12'>
                 {/* legal */}
                 <div className='flex flex-col gap-2 text-center sm:text-left'>
-                    <a href="/mentionslegales" className="inline-flex min-h-9 items-center font-semibold hover:underline">Légal</a>
+                    <a href="/mentionslegales" className="inline-flex min-h-9 items-center font-semibold hover:underline">Informations légales</a>
                     <div className='flex flex-col text-sm'>
                         <a href="/mentionslegales" className="inline-flex min-h-9 items-center hover:underline">Mentions légales</a>
                     </div>

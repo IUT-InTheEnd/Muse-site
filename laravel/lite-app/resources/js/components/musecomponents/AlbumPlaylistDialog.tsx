@@ -102,7 +102,7 @@ export function AlbumPlaylistDialog({ isOpen, onOpenChange, trackIds }: Props) {
                     <DialogDescription>
                         {isCreatingPlaylist 
                             ? 'Donnez un nom à votre nouvelle playlist.' 
-                            : `Choisissez la destination pour ces ${trackIds.length} titres.`}
+                            : `Choisissez une playlist pour ces ${trackIds.length} titres.`}
                     </DialogDescription>
                 </DialogHeader>
 

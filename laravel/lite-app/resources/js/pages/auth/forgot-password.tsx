@@ -1,7 +1,7 @@
 // Components
 import { Form } from '@inertiajs/react';
-import { Head } from '@/components/head';
 import { LoaderCircle } from 'lucide-react';
+import { Head } from '@/components/head';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
     return (
         <AuthLayout
             title="Mot de passe oublié"
-            description="Entrer votre adresse e-mail et nous vous enverrons un lien de réinitialisation de mot de passe qui vous permettra d'en choisir un nouveau."
+            description="Entrez votre adresse e-mail et nous vous enverrons un lien de réinitialisation de mot de passe qui vous permettra d'en choisir un nouveau."
         >
             <Head
                 title="Mot de passe oublié"
@@ -33,7 +33,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     {({ processing, errors }) => (
                         <>
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Addresse e-mail</Label>
+                                <Label htmlFor="email">Adresse e-mail</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -63,8 +63,8 @@ export default function ForgotPassword({ status }: { status?: string }) {
                 </Form>
 
                 <div className="space-x-1 text-center text-sm text-muted-foreground">
-                    <span>Or, return to</span>
-                    <TextLink href={login()}>log in</TextLink>
+                    <span>Ou revenir à la</span>
+                    <TextLink href={login()}>connexion</TextLink>
                 </div>
             </div>
         </AuthLayout>

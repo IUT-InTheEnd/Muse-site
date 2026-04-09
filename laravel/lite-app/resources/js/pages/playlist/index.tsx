@@ -1,7 +1,7 @@
 import { Link, router } from '@inertiajs/react';
-import { Head } from '@/components/head';
 import { MusicIcon, PlusIcon, TrashIcon, LockIcon } from 'lucide-react';
 import { useState } from 'react';
+import { Head } from '@/components/head';
 import {
     CardContent,
     CardCover,
@@ -55,7 +55,7 @@ export default function PlaylistsPage({ playlists }: PlaylistsPageProps) {
                 router.reload();
             }
         } catch (error) {
-            console.error('Erreur lors de la creation de la playlist:', error);
+            console.error('Erreur lors de la création de la playlist :', error);
         }
     };
 
@@ -124,7 +124,7 @@ export default function PlaylistsPage({ playlists }: PlaylistsPageProps) {
                                 }}
                             />
                             <Button onClick={handleCreatePlaylist} className="cursor-pointer">
-                                Creer
+                                Créer
                             </Button>
                             <Button
                                 variant="ghost"
@@ -145,7 +145,7 @@ export default function PlaylistsPage({ playlists }: PlaylistsPageProps) {
                                 variant="outline"
                                 className="cursor-pointer"
                             >
-                                Creer ma premiere playlist
+                                Créer ma première playlist
                             </Button>
                         </div>
                     ) : (

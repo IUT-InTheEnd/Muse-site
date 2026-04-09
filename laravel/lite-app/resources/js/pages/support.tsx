@@ -1,5 +1,5 @@
-import { Head } from '@/components/head';
 import { useRef, useState } from 'react';
+import { Head } from '@/components/head';
 import { Button } from '@/components/ui/button';
 import { Field, FieldGroup, FieldLabel, FieldDescription } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -41,17 +41,17 @@ export default function Support() {
                 <div>
                     <h1>Contacter le support</h1>
                     <p>
-                        En cas de problème ou pour toute autre demande contactez
+                        En cas de problème ou pour toute autre demande, contactez
                         le support via le formulaire ci-dessous ou à l’adresse
                         <b> in.the.end22300@gmail.com.</b> <br />
-                        Une réponse sera envoyée sous un délais de 48h après
-                        vore demande.
+                        Une réponse sera envoyée sous un délai de 48 h après
+                        votre demande.
                     </p>
                     <form onChange={checkSubmition} className="w-full">
                         <FieldGroup>
                             <Field>
                                 <FieldLabel htmlFor="form-email">
-                                    Adresse mail
+                                    Adresse e-mail
                                 </FieldLabel>
                                 <Input
                                     id="form-email"
@@ -90,7 +90,7 @@ export default function Support() {
                                             disabled
                                         >
                                             Quelle est votre raison de nous
-                                            contacter
+                                            contacter ?
                                         </SelectItem>
                                         <SelectItem value="compte">
                                             J'ai un problème avec mon compte
@@ -100,7 +100,7 @@ export default function Support() {
                                             personnelles
                                         </SelectItem>
                                         <SelectItem value="suppr">
-                                            Je souhaite demander la suppréssion
+                                            Je souhaite demander la suppression
                                             de mes données personnelles
                                         </SelectItem>
                                         <SelectItem value="modif">
@@ -108,7 +108,7 @@ export default function Support() {
                                             personnelles
                                         </SelectItem>
                                         <SelectItem value="uk">
-                                            United Kingdom
+                                            Royaume-Uni
                                         </SelectItem>
                                         <SelectItem value="other">
                                             Autre
@@ -123,7 +123,7 @@ export default function Support() {
                                 </FieldLabel>
                                 <Textarea
                                     id="form-message"
-                                    placeholder="Votre Message"
+                                    placeholder="Votre message"
                                     ref={messageRef}
                                     className="h-50 bg-background text-foreground"
                                 />
@@ -134,13 +134,13 @@ export default function Support() {
                                     className="w-1/2 cursor-pointer bg-[#5E00FF] text-inverse-foreground hover:bg-[#C9B6E9] hover:text-foreground"
                                     disabled={canSubmit}
                                 >
-                                    Submit
+                                    Envoyer
                                 </Button>
                                 <Button
                                     type="button"
                                     className="w-1/2 cursor-pointer bg-[#757575] text-inverse-foreground hover:bg-[#D9D9D9] hover:text-foreground"
                                 >
-                                    Cancel
+                                    Annuler
                                 </Button>
                             </Field>
                         </FieldGroup>

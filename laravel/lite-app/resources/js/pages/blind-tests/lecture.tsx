@@ -1,3 +1,5 @@
+import { usePage } from '@inertiajs/react';
+import { Siren, Heart } from 'lucide-react';
 import * as React from 'react';
 import {
     BlindTestPlaybackSettings,
@@ -5,15 +7,13 @@ import {
     getClipDurationSeconds,
     type BlindTestPlaybackSettingsValue,
 } from '@/components/blind-tests/playback-settings';
+import { CardCover, CardContent, CardTitle, CardSubtitle } from '@/components/musecomponents/cards/Card';
+import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
+import { TrackRow } from '@/components/musecomponents/TrackRow';
+import { proxyUrl } from '@/components/proxy';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MusicCard } from '@/components/musecomponents/cards/MusicCard';
-import { CardCover, CardContent, CardTitle, CardSubtitle } from '@/components/musecomponents/cards/Card';
-import { proxyUrl } from '@/components/proxy';
-import { usePage } from '@inertiajs/react';
 import type { SharedData } from '@/types';
-import { Siren, Heart } from 'lucide-react';
-import { TrackRow } from '@/components/musecomponents/TrackRow';
 
 const nbReponsesQcm = 4;
 type BlindTestTrack = {
@@ -564,7 +564,7 @@ export default function BlindTestLecture() {
                 <section className="space-y-6 rounded-2xl border bg-card p-6">
                     <h1 className="text-3xl font-semibold">Règles du jeu</h1>
                     <p className="text-md">
-                        Tu dois reconnaître le titre et l'auteur de la musique avant la fin du chrono. Tu peux répondre directement, ou demander
+                        Vous devez reconnaître le titre et l'artiste du morceau avant la fin du chrono. Vous pouvez répondre directement ou demander
                         un indice pour passer en mode QCM à 4 réponses.
                     </p>
                     <ul className="list-disc space-y-2 pl-5 text-md">
@@ -588,7 +588,7 @@ export default function BlindTestLecture() {
                     {vientDePlaylist && (
                         <div className="space-y-4 mt-4">
                             <h2 className="text-lg font-semibold">Lecture depuis une playlist</h2>
-                            <p className="text-sm text-muted-foreground">Choisissez combien de musiques vous voulez jouer depuis cette playlist :</p>
+                            <p className="text-sm text-muted-foreground">Choisissez combien de morceaux vous voulez jouer depuis cette playlist :</p>
                             <div className="flex items-center gap-3">
                                 <Input
                                     id="playlist-count"
@@ -658,7 +658,7 @@ export default function BlindTestLecture() {
                                     </div>
                                 ) : (
                                     <div className="space-y-3 rounded-xl border bg-card p-4">
-                                        <p className="text-md">Indice activé : choisis la bonne réponse.</p>
+                                        <p className="text-md">Indice activé : choisissez la bonne réponse.</p>
                                         <div className="grid gap-2">
                                             {qcmChoices.map((choice) => {
                                                 const currentCorrect = tracks && tracks[musicIdActuelle]
@@ -742,13 +742,13 @@ export default function BlindTestLecture() {
                                 <section className="space-y-6 rounded-2xl border bg-card p-6">
                                     <h1 className="text-3xl font-semibold">Score final</h1>
                                     <p className="text-md  ">
-                                        Vous avez terminé le blind test ! Voici votre score final : {nbPointsTotal} points.
+                                        Vous avez terminé le blind test. Voici votre score final : {nbPointsTotal} points.
                                     </p>
                                     <p className="text-md  ">
                                         Détails : {nbPointsArtiste} points pour les artistes, {nbPointsTitre} points pour les titres, et {nbPointsTotal - nbPointsArtiste - nbPointsTitre} points pour le QCM.
                                     </p>
                                     <h2 className="text-xl font-semibold">Voici la liste des musiques</h2>
-                                    <p className="text-md  ">Vous pouvez l'ajouter à vos playlist</p>
+                                    <p className="text-md  ">Vous pouvez les ajouter à vos playlists.</p>
                                     <div>
                                         <div className="space-y-2">
                                             {tracks.map((t, idx) => {

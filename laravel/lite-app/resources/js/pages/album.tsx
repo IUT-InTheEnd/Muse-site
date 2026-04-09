@@ -1,7 +1,7 @@
 import { usePage } from '@inertiajs/react';
-import { Head } from '@/components/head';
 import { Check, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Head } from '@/components/head';
 import { AlbumPlaylistDialog } from '@/components/musecomponents/AlbumPlaylistDialog';
 import {
     TrackList,
@@ -86,7 +86,7 @@ export default function Album({
     const handleToggleLibrary = async () => {
         if (!auth?.user) {
             alert(
-                'Connectez-vous pour ajouter des albums a votre bibliotheque',
+                'Connectez-vous pour ajouter des albums à votre bibliothèque.',
             );
             return;
         }
@@ -205,12 +205,12 @@ export default function Album({
                                 {isInLibrary ? (
                                     <>
                                         <Check className="mr-2 h-4 w-4" />
-                                        Dans ma bibliotheque
+                                        Dans ma bibliothèque
                                     </>
                                 ) : (
                                     <>
                                         <Plus className="mr-2 h-4 w-4" />
-                                        Ajouter à ma bibliotheque
+                                        Ajouter à ma bibliothèque
                                     </>
                                 )}
                             </Button>
@@ -218,7 +218,7 @@ export default function Album({
                                 className="flex-1 cursor-pointer"
                                 variant="default"
                                 onClick={() => {
-                                    if (!auth?.user) return alert('Connectez-vous !');
+                                    if (!auth?.user) return alert('Connectez-vous pour gérer vos playlists.');
                                     setIsAlbumDialogOpen(true);
                                 }}
                             >

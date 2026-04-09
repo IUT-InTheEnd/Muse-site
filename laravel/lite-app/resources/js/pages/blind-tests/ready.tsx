@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
-import { Head } from '@/components/head';
 import { ArrowRight, Disc3, ListMusic } from 'lucide-react';
+import { Head } from '@/components/head';
 import { Button } from '@/components/ui/button';
 
 type Props = {
@@ -28,7 +28,7 @@ export default function BlindTestReady({
     playlist,
     ephemeral,
 }: Props) {
-    const title = source === 'ephemeral' ? 'Session blind test prête' : 'Playlist blind test prête';
+    const title = source === 'ephemeral' ? 'Session de blind test prête' : 'Playlist de blind test prête';
 
     return (
         <>
@@ -44,7 +44,7 @@ export default function BlindTestReady({
                     </div>
                     <h1 className="mt-6 text-3xl font-semibold">{title}</h1>
                     <p className="mt-4 text-sm text-muted-foreground">
-                        La sélection est prête. Cette page confirme que la source de lecture blind test est correctement
+                        La sélection est prête. Cette page confirme que la source de lecture du blind test est correctement
                         résolue, mais le lecteur round par round n’est pas encore branché.
                     </p>
                 </section>
@@ -52,7 +52,7 @@ export default function BlindTestReady({
                 <section className="rounded-3xl border bg-card p-8">
                     <div className="flex items-center gap-2 text-sm font-medium">
                         <ListMusic className="size-4" />
-                        <span>État prêt pour lecture</span>
+                        <span>État prêt pour la lecture</span>
                     </div>
 
                     <dl className="mt-6 space-y-3 text-sm">

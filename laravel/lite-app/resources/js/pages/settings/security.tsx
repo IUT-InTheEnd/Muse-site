@@ -1,9 +1,9 @@
 import { Transition } from '@headlessui/react';
 import { Form } from '@inertiajs/react';
-import { Head } from '@/components/head';
 import { ShieldBan, ShieldCheck } from 'lucide-react';
 import { useRef, useState } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
+import { Head } from '@/components/head';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
@@ -67,7 +67,7 @@ export default function Security({
                         <Heading
                             variant="small"
                             title="Modifier le mot de passe"
-                            description="Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé"
+                            description="Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé."
                         />
 
                         <Form
@@ -184,7 +184,7 @@ export default function Security({
                         <Heading
                             variant="small"
                             title="Authentification à deux facteurs"
-                            description="Gérez vos paramètres d'authentification à deux facteurs"
+                            description="Gérez vos paramètres d'authentification à deux facteurs."
                         />
 
                         {twoFactorEnabled ? (
@@ -286,14 +286,14 @@ export default function Security({
                     />
 
                     <p className="w-1/2 text-muted-foreground">
-                        Votre clé API vous permettent d'accéder à nos services
+                        Votre clé API vous permet d'accéder à nos services
                         de manière sécurisée.
                         <br />
                         Vous pouvez créer ou régénérer votre clé API à tout
                         moment.
                         <br />
                         <span className="text-red-400">
-                            Et n'est affichée qu'une seule fois lors de sa création pour des raisons de sécurité.
+                            Elle n'est affichée qu'une seule fois lors de sa création pour des raisons de sécurité.
                         </span>{' '}
                         <br />
                         La documentation de l'API est disponible à l'adresse

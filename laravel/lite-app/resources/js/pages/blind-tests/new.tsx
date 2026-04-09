@@ -1,5 +1,4 @@
 import { useForm, usePage } from '@inertiajs/react';
-import { Head } from '@/components/head';
 import { ChevronDown, Save, Sparkles } from 'lucide-react';
 import { useMemo, useState, type FormEvent } from 'react';
 import { ArtistAutocomplete, type BlindTestArtistOption } from '@/components/blind-tests/artist-autocomplete';
@@ -7,6 +6,7 @@ import {
     BlindTestPlaybackSettings,
     type BlindTestPlaybackSettingsValue,
 } from '@/components/blind-tests/playback-settings';
+import { Head } from '@/components/head';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -155,10 +155,10 @@ export default function BlindTestNew({
                         </div>
                         <div className="space-y-3">
                             <h1 className="text-3xl font-semibold tracking-tight">
-                                Préparer une sélection prête pour la future lecture blind test
+                                Préparer une sélection pour une future partie de blind test
                             </h1>
                             <p className="max-w-2xl text-sm text-muted-foreground">
-                                Cette page ne gère que la génération des morceaux. La lecture blind test sera branchée sur
+                                Cette page ne gère que la génération des morceaux. La lecture du blind test sera branchée sur
                                 la session navigateur éphémère ou sur la playlist persistée.
                             </p>
                         </div>
@@ -171,7 +171,7 @@ export default function BlindTestNew({
                                 <p>{blindTest.ephemeral.track_count} morceaux déjà prêts dans la session du navigateur.</p>
                                 <p>Nouvelle génération sans enregistrement : la session sera remplacée.</p>
                                 <Button asChild className="mt-2 cursor-pointer">
-                                    <a href="/blind-tests/play/ephemeral">Ouvrir l’état prêt pour lecture</a>
+                                    <a href="/blind-tests/play/ephemeral">Ouvrir l'écran prêt à jouer</a>
                                 </Button>
                             </div>
                         ) : (
@@ -420,9 +420,9 @@ export default function BlindTestNew({
                                 La génération compose une sélection mixte entre morceaux connus et inconnus, puis :
                             </p>
                             <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li>si l’enregistrement est activé, une playlist classique ordonnée est créée</li>
-                                <li>sinon, la sélection remplace la session blind test éphémère du navigateur</li>
-                                <li>la lecture blind test sera branchée ensuite sur cette source unique</li>
+                                <li>si l’enregistrement est activé, une playlist classique ordonnée est créée ;</li>
+                                <li>sinon, la sélection remplace la session blind test éphémère du navigateur ;</li>
+                                <li>la lecture du blind test sera ensuite branchée sur cette source unique.</li>
                             </ul>
                         </div>
 
