@@ -84,8 +84,27 @@ export function ReactionProvider({ children }: { children: ReactNode }) {
         ) => {
             setStore((current) => {
                 const key = reactionKey(resource, resourceId);
+                const existing = current[key];
 
-                if (current[key]) {
+                if (!existing) {
+                    return {
+                        ...current,
+                        [key]: {
+                            ...state,
+                            pending: false,
+                            requestVersion: 0,
+                        },
+                    };
+                }
+
+                if (existing.pending || existing.requestVersion > 0) {
+                    return current;
+                }
+
+                if (
+                    existing.reaction !== null &&
+                    state.reaction === null
+                ) {
                     return current;
                 }
 

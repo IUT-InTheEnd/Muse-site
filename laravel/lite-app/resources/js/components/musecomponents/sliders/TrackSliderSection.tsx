@@ -48,6 +48,7 @@ export function TrackSliderSection({ title, tracks }: TrackSliderSectionProps) {
                         try {
                             const res = await fetch(
                                 `/test-music-player?id=${encodeURIComponent(track.id)}`,
+                                { cache: 'no-store' },
                             );
                             if (!res.ok) {
                                 throw new Error(`HTTP ${res.status}`);

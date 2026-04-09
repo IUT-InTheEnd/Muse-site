@@ -42,7 +42,9 @@ function mapRawTrack(d: RawTrackData): TrackData {
 // Fetch plusieurs pistes par leurs IDs. Renvoie un tableau de TrackData.
 export async function fetchTracks(ids: number[]): Promise<TrackData[]> {
     if (ids.length === 0) return [];
-    const res = await fetch(`/tracks?ids=${ids.join(',')}`);
+    const res = await fetch(`/tracks?ids=${ids.join(',')}`, {
+        cache: 'no-store',
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data: RawTrackData[] = await res.json();
     return data.map(mapRawTrack);

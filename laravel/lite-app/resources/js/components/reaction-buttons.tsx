@@ -1,5 +1,5 @@
 import { Loader2, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     type ReactionState,
@@ -41,24 +41,19 @@ export function ReactionButtons({
         finishRequest,
         failRequest,
     } = useReactionContext();
-    const lastSeededKeyRef = useRef<string | null>(null);
 
     useEffect(() => {
-        const nextSeedKey = `${resource}:${resourceId}`;
-
-        if (lastSeededKeyRef.current === nextSeedKey) {
-            return;
-        }
-
         seedReaction(resource, resourceId, {
             reaction: initialReaction,
             likes: initialLikes,
             dislikes: initialDislikes,
         });
-        lastSeededKeyRef.current = nextSeedKey;
     }, [
         resource,
         resourceId,
+        initialReaction,
+        initialLikes,
+        initialDislikes,
         seedReaction,
     ]);
 
