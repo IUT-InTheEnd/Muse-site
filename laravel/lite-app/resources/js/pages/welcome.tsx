@@ -33,7 +33,7 @@ export default function Welcome({
             <div className="flex flex-col items-center justify-center">
                 <div
                     className="relative flex min-h-[calc(100vh-5rem-11rem)] w-full items-center justify-center bg-cover bg-center bg-no-repeat opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0"
-                    style={{ backgroundImage: "url('/images/guy2.jpg')" }}
+                    style={{ backgroundImage: "url('/images/guy2.webp')" }}
                 >
                     <div className="pointer-events-none absolute inset-0 bg-overlay-strong"></div>
 
