@@ -79,13 +79,18 @@ export default function MusicPlayer({ canUseLibrary }: MusicPlayerProps) {
 
     return (
         <div className="fixed inset-x-0 bottom-0 z-50 pointer-events-none">
-            {showWaitingList && (
-                <div className="pointer-events-auto absolute right-0 bottom-full">
-                    <MusicWaitingList />
-                </div>
-            )}
+            <div
+                className={`absolute right-0 bottom-full z-0 transition-transform duration-300 ease-in-out ${
+                    showWaitingList
+                        ? 'pointer-events-auto translate-y-0'
+                        : 'pointer-events-none translate-y-full'
+                }`}
+                aria-hidden={!showWaitingList}
+            >
+                <MusicWaitingList />
+            </div>
 
-            <div className="pointer-events-auto border-t border-border bg-background px-8 py-4 text-foreground">
+            <div className="pointer-events-auto relative z-10 border-t border-border bg-background px-8 py-4 text-foreground">
             {/* Bouton minimiser */}
             <button
                 type="button"
