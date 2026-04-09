@@ -1,7 +1,7 @@
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Head } from '@/components/head';
 import AppLayout from '@/layouts/app-layout';
-import type { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, SharedData } from '@/types';
 import {
 	Dialog,
 	DialogContent,
@@ -107,9 +107,12 @@ export default function Administrator({ users }: Props) {
 	const [filtreJob, setTrieJob] = useState<filtreJob>('all');
 	const [filtreDateCreationApres, setTrieDateCreationApres] = useState('');
 	const [filtreDateCreationAvant, setTrieDateCreationAvant] = useState('');
-	const [filtreAge, setTrieAge] = useState('');
+	const [filtreAgeA, setTrieAgeA] = useState('');
+	const [filtreAgeB, setTrieAgeB] = useState('');
 	const [trieChamps, settrieChamps] = useState<trieChamps>('name');
 	const [trieSens, sensTrie] = useState<trieSens>('asc');
+	const { auth } = usePage<SharedData>().props;
+	const currentUserId = auth.user.id;
 
 	const formatDateForInput = (dateValue?: string | null) => {
 		if (!dateValue) {
@@ -132,14 +135,23 @@ export default function Administrator({ users }: Props) {
 
 	const filtreUser = useMemo(() => {
 		const rechercheClean = recherche.trim().toLowerCase();
-		const ageValeur = filtreAge.trim();
-		const ageNombre = ageValeur === '' ? null : Number(ageValeur);
+		const ageValeurA = filtreAgeA.trim();
+		const ageValeurB = filtreAgeB.trim();
+		const ageNombreA = ageValeurA === '' ? null : Number(ageValeurA);
+		const ageNombreB = ageValeurB === '' ? null : Number(ageValeurB);
+		const bornesAge = [ageNombreA, ageNombreB].filter(
+			(age): age is number => age !== null && !Number.isNaN(age),
+		);
+		const ageMinimum = bornesAge.length === 2 ? Math.min(...bornesAge) : ageNombreA;
+		const ageMaximum = bornesAge.length === 2 ? Math.max(...bornesAge) : ageNombreB;
 
 		return users.filter((user) => {
 			const userRole = Number(user.id_role ?? 2);
 			const userName = (user.name ?? '').toLowerCase();
 			const userEmail = (user.email ?? '').toLowerCase();
 			const userCreationDate = formatDateForInput(user.created_at);
+			const userAge = user.user_age;
+			const ageManquant = userAge == null;
 
 			const matchesSearch = rechercheClean.length === 0 || userName.includes(rechercheClean) || userEmail.includes(rechercheClean);
 			const matchesIdentifiant = identifiant.length === 0 || (user.id && user.id.toString() === identifiant);
@@ -148,11 +160,29 @@ export default function Administrator({ users }: Props) {
 			const matchesJob = filtreJob === 'all' || (user.user_job ?? '').trim().toLowerCase() === filtreJob.toLowerCase();
 			const matchesCreatedAtAfter = filtreDateCreationApres.length === 0 || (userCreationDate.length > 0 && userCreationDate >= filtreDateCreationApres);
 			const matchesCreatedAtBefore = filtreDateCreationAvant.length === 0 || (userCreationDate.length > 0 && userCreationDate <= filtreDateCreationAvant);
-			const matchesAge = ageNombre === null || Number(user.user_age ?? -1) === ageNombre;
+			const matchesAge = (() => {
+				if (ageMinimum === null && ageMaximum === null) {
+					return true;
+				}
+
+				if (ageManquant) {
+					return ageMinimum === null || ageMaximum === null;
+				}
+
+				if (ageMinimum !== null && userAge < ageMinimum) {
+					return false;
+				}
+
+				if (ageMaximum !== null && userAge > ageMaximum) {
+					return false;
+				}
+
+				return true;
+			})();
 
 			return ( matchesSearch && matchesIdentifiant && matchesRole && matchesGenre && matchesJob && matchesCreatedAtAfter && matchesCreatedAtBefore && matchesAge);
 		});
-	}, [users, recherche, identifiant, filtreRole, filtreGenre, filtreJob, filtreDateCreationApres, filtreDateCreationAvant, filtreAge]);
+	}, [users, recherche, identifiant, filtreRole, filtreGenre, filtreJob, filtreDateCreationApres, filtreDateCreationAvant, filtreAgeA, filtreAgeB]);
 
 	const trieUsers = useMemo(() => {
 		const usersAFiltrer = [...filtreUser];
@@ -197,7 +227,7 @@ export default function Administrator({ users }: Props) {
 
 	useEffect(() => {
 		setPageActuelle(1);
-	}, [recherche, identifiant, filtreRole, filtreGenre, filtreJob, filtreDateCreationApres, filtreDateCreationAvant, filtreAge]);
+	}, [recherche, identifiant, filtreRole, filtreGenre, filtreJob, filtreDateCreationApres, filtreDateCreationAvant, filtreAgeA, filtreAgeB]);
 
 	const openPopupUser = (user: AdminUser, editMode = false) => {
 		setSelectUser(user);
@@ -223,12 +253,21 @@ export default function Administrator({ users }: Props) {
 	};
 
 	const deleteUser = (user: AdminUser) => {
+		if (user.id === currentUserId) {
+			return;
+		}
+
 		setSelectUser(user);
 		setOpenDelete(true)
 	};
 
 	const confirmDeleteUser = () => {
 		if (!selectedUser) {
+			return;
+		}
+
+		if (selectedUser.id === currentUserId) {
+			setOpenDelete(false);
 			return;
 		}
 
@@ -408,7 +447,8 @@ export default function Administrator({ users }: Props) {
 		setTrieJob('all');
 		setTrieDateCreationApres('');
 		setTrieDateCreationAvant('');
-		setTrieAge('');
+		setTrieAgeA('');
+		setTrieAgeB('');
 	};
 
 	const genererMotDePasseTempo = () => {
@@ -576,14 +616,25 @@ export default function Administrator({ users }: Props) {
 						</div>
 
 						<div className="space-y-1">
-							<p className="text-xs text-muted-foreground">Age</p>
-							<Input
-								type="number"
-								min="0"
-								placeholder="Age"
-								value={filtreAge}
-								onChange={(event) => setTrieAge(event.target.value)}
-							/>
+							<p className="text-xs text-muted-foreground">Âge</p>
+							<div className="flex items-center gap-2">
+								<span className="text-xs text-muted-foreground">Entre</span>
+								<Input
+									type="number"
+									min="0"
+									placeholder="0"
+									value={filtreAgeA}
+									onChange={(event) => setTrieAgeA(event.target.value)}
+								/>
+								<span className="text-xs text-muted-foreground">et</span>
+								<Input
+									type="number"
+									min="0"
+									placeholder="100"
+									value={filtreAgeB}
+									onChange={(event) => setTrieAgeB(event.target.value)}
+								/>
+							</div>
 						</div>
 					</div>
 
@@ -632,6 +683,7 @@ export default function Administrator({ users }: Props) {
 						<tbody>
 							{usersPage.map((user) => {
 								const userImageSrc = getUserImageSrc(user);
+								const canDeleteUser = user.id !== currentUserId;
 								return (
 								<tr
 									key={user.id}
@@ -666,10 +718,14 @@ export default function Administrator({ users }: Props) {
 										event.stopPropagation();
 										editUser(user)}
 										} size="icon" className="h-8 w-8 cursor-pointer"><PencilLine className="h-4 w-4" /></Button></td>
-									<td className="px-1 py-2 sm:px-2"> <Button onClick={(event) => {
-										event.stopPropagation();
-										deleteUser(user)}
-										} size="icon" className="h-8 w-8 cursor-pointer bg-destructive hover:bg-destructive/80"><Trash2 className="h-4 w-4" /></Button></td>
+									<td className="px-1 py-2 sm:px-2">
+										{canDeleteUser ? (
+											<Button onClick={(event) => {
+												event.stopPropagation();
+												deleteUser(user)}
+												} size="icon" className="h-8 w-8 cursor-pointer bg-destructive hover:bg-destructive/80"><Trash2 className="h-4 w-4" /></Button>
+										) : null}
+									</td>
 								</tr>
 								);
 							})}
@@ -717,9 +773,11 @@ export default function Administrator({ users }: Props) {
 								{!isEditMode && (
 									<Button size="sm" className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setModeEdition(true)} ><PencilLine /> </Button>
 								)}
-								<Button size="sm" className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/80" onClick={() => setOpenDelete(true)}>
-									<Trash2 />
-								</Button>
+								{selectedUser?.id !== currentUserId ? (
+									<Button size="sm" className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/80" onClick={() => setOpenDelete(true)}>
+										<Trash2 />
+									</Button>
+								) : null}
 							</div>
 						</DialogHeader>
 						<nav className="flex w-full items-center justify-center text-sm">
