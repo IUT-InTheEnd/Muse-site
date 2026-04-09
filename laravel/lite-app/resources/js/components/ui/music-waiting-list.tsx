@@ -68,6 +68,7 @@ export default function MusicWaitingList() {
             <div className="relative">
                 <h4 className="mb-4 text-xl font-semibold">File d'attente</h4>
                 <button
+                    type="button"
                     onClick={waitingList}
                     className="absolute top-2 right-2 cursor-pointer rounded-full p-1 transition-all duration-200 hover:bg-accent"
                     aria-label="Minimiser la file d'attente"

@@ -479,6 +479,11 @@ export function TrackRow({
                             className="h-8 w-8 cursor-pointer"
                             onClick={handleToggleFavorite}
                             disabled={isAddingFavorite}
+                            aria-label={
+                                localIsFavorite
+                                    ? 'Retirer ce titre des favoris'
+                                    : 'Ajouter ce titre aux favoris'
+                            }
                         >
                             {isAddingFavorite ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -511,6 +516,7 @@ export function TrackRow({
                                     console.error(err);
                                 }
                             }}
+                            aria-label="Ajouter ce titre à la file d'attente"
                         >
                             <ListMusic className="h-4 w-4" />
                         </Button>
@@ -523,6 +529,7 @@ export function TrackRow({
                             size="icon"
                             className="h-8 w-8 cursor-pointer"
                             onClick={handleOpenPlaylistDialog}
+                            aria-label="Gérer les playlists de ce titre"
                         >
                             <ListPlus className="h-4 w-4" />
                         </Button>

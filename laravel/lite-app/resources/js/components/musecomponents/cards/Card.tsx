@@ -176,6 +176,7 @@ function CardPlayButton({
 
     return (
         <button
+            type="button"
             onClick={handlePlay}
             disabled={isLoadingThis}
             className={cn(
@@ -187,7 +188,7 @@ function CardPlayButton({
                 sizeClasses[size],
                 className,
             )}
-            aria-label={isPlaying ? 'Pause' : 'Play'}
+            aria-label={isPlaying ? 'Mettre la lecture en pause' : 'Lancer la lecture'}
         >
             {isLoadingThis ? (
                 <LoaderIcon size={iconSizes[size]} className="animate-spin" />
