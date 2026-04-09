@@ -87,9 +87,141 @@ export default function BlindTestLecture() {
         };
     }, []);
 
-    // Charger les musiques éphémèreponse au début
+    // Charger les musiques au début
     React.useEffect(() => {
-        async function chargerMusiqueEphemeral() {
+        async function chargerMusique() {
+            console.log(window)
+            // Si blind test d'une playlist
+            if (window.location.pathname.match(/playlist\/\d+/)) {
+                try {
+                    const source = window.location.pathname.match(/playlist\/(\d+)/);
+                    const playlistId = source ? source[1] : null;
+                    if (!playlistId){
+                        return;
+                    } 
+
+                    let listeMusique: any[] = [];
+                    try {
+                        const reponse = await fetch(`/playlist/${playlistId}`, {
+                            credentials: 'same-origin',
+                            headers: {
+                                'X-Inertia': 'true',
+                                'Accept': 'application/json',
+                            },
+                        });
+
+                        if (reponse.ok) {
+                            const reponseJSON = await reponse.json();
+                            let listeMusique : any[] = [];
+                            if (reponseJSON) {
+                                const props = reponseJSON.props ?? {};
+                                const playlist = props.playlist ?? props;
+                                if (Array.isArray(playlist)) {
+                                    listeMusique = playlist;
+                                } else if (playlist && Array.isArray(playlist.tracks)) {
+                                    listeMusique = playlist.tracks;
+                                } else if (playlist && Array.isArray(playlist.data?.tracks)) {
+                                    listeMusique = playlist.data.tracks;
+                                } else {
+                                    listeMusique = [];
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Impossible de charger les musiques de la playlist depuis la playlist', e);
+                    }
+
+                    if (!listeMusique || listeMusique.length === 0) {
+                        const reponseAPI = await fetch(`/api/playlist/${playlistId}`, { credentials: 'same-origin' });
+                        if (reponseAPI.ok) {
+                            console.log('api')
+                            const json = await reponseAPI.json();
+                            listeMusique = json.tracks || json.playlist?.tracks || [];
+                        }
+                    }
+
+                    const ordre = (Array.isArray(listeMusique) ? listeMusique : []).map((track: any) => {
+                        let artist = null;
+                        if (track.realisers && track.realisers.length) {
+                            const first = track.realisers[0];
+                            if (first && first.artist){
+                                    artist = first.artist.artist_name ?? null;
+                                }
+                            }
+
+                            if (!artist) {
+                                if (track.artist) {
+                                    artist = track.artist;
+                                } else if (track.artist_name) {
+                                    artist = track.artist_name;
+                                } else if (track.artist_name.name) {
+                                    artist = track.artist_name.name;
+                                } else {
+                                    artist = null;
+                                }
+                            }
+                        let track_id = '';
+                        if (track.track_id !== undefined) {
+                            track_id = track.track_id;
+                        } else if (track.id !== undefined) {
+                            track_id = track.id;
+                        }
+
+                        let track_title = '';
+                        if (track.track_title) {
+                            track_title = track.track_title;
+                        } else if (track.title) {
+                            track_title = track.title;
+                        } else if (track.name) {
+                            track_title = track.name;
+                        }
+
+                        let track_url = null;
+                        if (track.track_url) {
+                            track_url = track.track_url;
+                        } else if (track.track_file) {
+                            track_url = track.track_file;
+                        } else if (track.url) {
+                            track_url = track.url;
+                        }
+
+                        let track_duration = null;
+                        if (track.track_duration) {
+                            track_duration = track.track_duration;
+                        } else if (track.duration) {
+                            track_duration = track.duration;
+                        }
+
+                        let track_cover = null;
+                        if (track.track_image_file) {
+                            track_cover = track.track_image_file;
+                        } else if (track.playlist_cover) {
+                            track_cover = track.playlist_cover;
+                        }
+
+                        return {
+                            id: track_id,
+                            title: track_title,
+                            artist: artist,
+                            url: track_url,
+                            duration: track_duration,
+                            cover: track_cover,
+                        };
+                    });
+
+                    setTracks(ordre);
+                    try {
+                        window.sessionStorage.setItem('blindTestTracks', JSON.stringify(ordre));
+                    } catch (e) {
+                        console.error('Impossible de stocker les musiques de la playlist dans sessionStorage', e);
+                    }
+                } catch (e) {
+                    console.error('Impossible de charger les musiques de la playlist', e);
+                }
+                return;
+            }
+
+            // Si blind test ephemere
             try {
                 const reponse = await fetch('/blind-tests/ephemeral-tracks', { credentials: 'same-origin' });
                 if (!reponse.ok){
@@ -101,15 +233,15 @@ export default function BlindTestLecture() {
                     try {
                         window.sessionStorage.setItem('blindTestTracks', JSON.stringify(json.tracks));
                     } catch (e) {
-                        console.error('Impossible de stocker les musiques éphémèreponse dans sessionStorage', e);
+                        console.error('Impossible de stocker les musiques éphémère dans sessionStorage', e);
                     }
                 }
             } catch (e) {
-                console.error('Impossible de charger les musiques éphémèreponse', e);
+                console.error('Impossible de charger les musiques éphémère', e);
             }
         }
 
-        chargerMusiqueEphemeral();
+        chargerMusique();
     }, []);
 
     // Lancer la musique actuelle quand elle change
