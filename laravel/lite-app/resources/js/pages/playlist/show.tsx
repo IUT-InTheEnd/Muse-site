@@ -10,11 +10,9 @@ import {
     XIcon,
 } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
+import { type TrackListItem } from '@/components/musecomponents/TrackList';
 import {
-    TrackList,
-    type TrackListItem,
-} from '@/components/musecomponents/TrackList';
-import {
+    TrackRow,
     type ArtistData,
     type TrackData,
 } from '@/components/musecomponents/TrackRow';
@@ -342,11 +340,17 @@ export default function PlaylistShow({ playlist }: Props) {
                                         onDragEnd={handleDragEnd}
                                         className={`overflow-hidden transition-all duration-150 first:rounded-t-lg last:rounded-b-lg ${isEditable ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedItemIndex === index ? 'bg-overlay-surface-subtle opacity-40' : 'opacity-100 hover:bg-overlay-surface-subtle'}`}
                                     >
-                                        <TrackList
-                                            tracks={[item]}
+                                        <TrackRow
+                                            track={item.track}
+                                            artist={item.artist}
                                             showIndex={true}
-                                            indexOffset={index}
-                                            listClassName="rounded-none bg-card/50"
+                                            index={index}
+                                            siblingTracks={localTracks.map((trackItem) => ({
+                                                track: trackItem.track,
+                                                artist: trackItem.artist,
+                                            }))}
+                                            trackIndexInSiblings={index}
+                                            className="rounded-none bg-card/50"
                                         />
                                     </div>
                                 ))}
