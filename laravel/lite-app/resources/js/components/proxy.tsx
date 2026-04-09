@@ -23,13 +23,5 @@ export function proxyUrl(url: string | null | undefined): string | undefined {
         return url;
     }
 
-    const pathname = parsedUrl.pathname.toLowerCase();
-
-    const isAudioUrl = /\.(mp3|wav|ogg|m4a)$/i.test(pathname);
-
-    if (isAudioUrl || url.includes('freemusicarchive.org')) {
-        return `/proxy?url=${encodeURIComponent(url)}`;
-    }
-
-    return url;
+    return `/proxy?url=${encodeURIComponent(url)}`;
 }

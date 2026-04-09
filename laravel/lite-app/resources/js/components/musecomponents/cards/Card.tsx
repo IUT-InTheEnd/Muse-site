@@ -4,6 +4,7 @@ import { cva } from 'class-variance-authority';
 import { LoaderIcon, PauseIcon, PlayIcon } from 'lucide-react';
 import * as React from 'react';
 
+import { proxyUrl } from '@/components/proxy';
 import { useMusicPlayer } from '@/hooks/use-music-player';
 import { fetchTrack, fetchTracks } from '@/lib/track-api';
 import { cn } from '@/lib/utils';
@@ -98,6 +99,7 @@ function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
 function CardCover({
     className,
     rounded = false,
+    src,
     ...props
 }: React.ComponentProps<'img'> & { rounded?: boolean }) {
     return (
@@ -108,6 +110,7 @@ function CardCover({
                 className,
             )}
             alt="Card Cover"
+            src={typeof src === 'string' ? (proxyUrl(src) ?? src) : src}
             {...props}
         />
     );
