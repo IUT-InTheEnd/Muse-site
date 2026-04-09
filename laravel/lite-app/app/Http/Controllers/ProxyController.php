@@ -66,8 +66,8 @@ class ProxyController extends Controller
                 'Content-Type' => $file->contentType,
                 'Accept-Ranges' => 'bytes',
                 'Cache-Control' => $file->assetType === 'image'
-                    ? 'public, max-age=2592000, stale-while-revalidate=604800'
-                    : 'public, max-age=604800, stale-while-revalidate=86400',
+                    ? 'public, max-age=31536000, stale-while-revalidate=604800'
+                    : 'public, max-age=2592000, stale-while-revalidate=604800',
             ]);
 
             if ($file->deleteAfterSend) {
@@ -107,8 +107,8 @@ class ProxyController extends Controller
         return response()->file($path, [
             'Accept-Ranges' => 'bytes',
             'Cache-Control' => $type === 'audio'
-                ? 'public, max-age=2592000'
-                : 'public, max-age=604800',
+                ? 'public, max-age=31536000'
+                : 'public, max-age=2592000',
         ]);
     }
 
