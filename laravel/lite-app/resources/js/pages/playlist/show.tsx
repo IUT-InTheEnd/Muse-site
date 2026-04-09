@@ -141,6 +141,7 @@ export default function PlaylistShow({ playlist }: Props) {
         return isFavorites ? '/images/default-fav-image.jpg' : null;
     };
     const playlistImage = getPlaylistImage();
+    const hasPlaylistImage = Boolean(playlistImage);
 
     const totalDuration = playlist.tracks.reduce((acc, track) => acc + (track.track_duration || 0), 0);
     const hours = Math.floor(totalDuration / 3600);
@@ -230,13 +231,15 @@ export default function PlaylistShow({ playlist }: Props) {
                     className="relative flex h-80 w-full items-end bg-cover bg-center"
                     style={{ backgroundImage: playlistImage ? `url(${playlistImage})` : undefined }}
                 >
-                    <div
-                        className="pointer-events-none absolute inset-0"
-                        style={{
-                            background:
-                                'linear-gradient(to top, var(--overlay-heavy), var(--overlay), var(--overlay-soft))',
-                        }}
-                    />
+                    {hasPlaylistImage && (
+                        <div
+                            className="pointer-events-none absolute inset-0"
+                            style={{
+                                background:
+                                    'linear-gradient(to top, var(--overlay-heavy), var(--overlay), var(--overlay-soft))',
+                            }}
+                        />
+                    )}
                     
                     {isEditable && (
                         <>
@@ -244,7 +247,11 @@ export default function PlaylistShow({ playlist }: Props) {
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={isUpdating}
-                                className="absolute top-4 right-4 z-20 cursor-pointer rounded-full bg-overlay p-3 text-overlay-foreground transition hover:bg-overlay-strong disabled:opacity-50"
+                                className={`absolute top-4 right-4 z-20 cursor-pointer rounded-full p-3 transition disabled:opacity-50 ${
+                                    hasPlaylistImage
+                                        ? 'bg-overlay text-overlay-foreground hover:bg-overlay-strong'
+                                        : 'border border-border bg-background/90 text-foreground hover:bg-muted'
+                                }`}
                             >
                                 <CameraIcon size={20} />
                             </button>
@@ -257,7 +264,7 @@ export default function PlaylistShow({ playlist }: Props) {
                         </div>
                     )}
 
-                    <div className="relative z-10 w-full p-8 text-overlay-foreground">
+                    <div className={`relative z-10 w-full p-8 ${hasPlaylistImage ? 'text-overlay-foreground' : 'text-foreground'}`}>
                         <div className="mx-auto max-w-5xl">
                             <div className="mb-2 flex items-center gap-2">
                                 {isFavorites ? (
@@ -266,7 +273,11 @@ export default function PlaylistShow({ playlist }: Props) {
                                     <button
                                         onClick={handleToggleVisibility}
                                         disabled={isUpdating}
-                                        className="flex cursor-pointer items-center gap-1 rounded-full bg-overlay-surface px-3 py-1 text-sm text-overlay-foreground transition hover:bg-overlay-surface-hover disabled:opacity-50"
+                                        className={`flex cursor-pointer items-center gap-1 rounded-full px-3 py-1 text-sm transition disabled:opacity-50 ${
+                                            hasPlaylistImage
+                                                ? 'bg-overlay-surface text-overlay-foreground hover:bg-overlay-surface-hover'
+                                                : 'border border-border bg-background/90 text-foreground hover:bg-muted'
+                                        }`}
                                     >
                                         {playlist.playlist_public ? <><GlobeIcon size={14} /> Publique</> : <><LockIcon size={14} /> Privée</>}
                                     </button>
@@ -278,7 +289,11 @@ export default function PlaylistShow({ playlist }: Props) {
                                     <input
                                         type="text" value={editedName}
                                         onChange={(e) => setEditedName(e.target.value)}
-                                        className="border-b-2 border-overlay-border bg-transparent text-4xl font-bold text-overlay-foreground outline-none"
+                                        className={`border-b-2 bg-transparent text-4xl font-bold outline-none ${
+                                            hasPlaylistImage
+                                                ? 'border-overlay-border text-overlay-foreground'
+                                                : 'border-border text-foreground'
+                                        }`}
                                         autoFocus
                                         onKeyDown={(e) => { if (e.key === 'Enter') handleUpdateName(); if (e.key === 'Escape') { setEditedName(playlist.playlist_name); setIsEditingName(false); }}}
                                     />
@@ -289,14 +304,21 @@ export default function PlaylistShow({ playlist }: Props) {
                                 <div className="mb-4 flex items-center gap-3">
                                     <h1 className="text-4xl font-bold">{playlist.playlist_name}</h1>
                                     {isEditable && (
-                                        <button onClick={() => setIsEditingName(true)} className="cursor-pointer rounded-full p-2 text-overlay-muted-foreground transition hover:bg-overlay-surface hover:text-overlay-foreground">
+                                        <button
+                                            onClick={() => setIsEditingName(true)}
+                                            className={`cursor-pointer rounded-full p-2 transition ${
+                                                hasPlaylistImage
+                                                    ? 'text-overlay-muted-foreground hover:bg-overlay-surface hover:text-overlay-foreground'
+                                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                                            }`}
+                                        >
                                             <PencilIcon size={18} />
                                         </button>
                                     )}
                                 </div>
                             )}
 
-                            <p className="mb-6 text-overlay-muted-foreground">
+                            <p className={`mb-6 ${hasPlaylistImage ? 'text-overlay-muted-foreground' : 'text-muted-foreground'}`}>
                                 {playlist.user?.name && `Par ${playlist.user.name} • `}
                                 {localTracks.length} {localTracks.length > 1 ? 'titres' : 'titre'}
                                 {totalDuration > 0 && <> • {hours > 0 && `${hours}h `}{minutes} min</>}
