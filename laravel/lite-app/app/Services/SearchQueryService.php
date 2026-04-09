@@ -13,8 +13,9 @@ use Illuminate\Support\Collection;
 
 class SearchQueryService
 {
-    public function tracks(string $search, array $selectedGenres = [], array $selectedLanguages = []): Collection
+    public function tracks(?string $search, array $selectedGenres = [], array $selectedLanguages = []): Collection
     {
+        $search = trim((string) $search);
         $selectedGenres = array_map('intval', $selectedGenres);
         $selectedLanguages = array_map('intval', $selectedLanguages);
 
@@ -38,8 +39,9 @@ class SearchQueryService
             });
     }
 
-    public function artists(string $search, array $selectedLanguages = []): Collection
+    public function artists(?string $search, array $selectedLanguages = []): Collection
     {
+        $search = trim((string) $search);
         $selectedLanguages = array_map('intval', $selectedLanguages);
         $artistIdsFromLanguage = $this->artistIdsFromLanguages($selectedLanguages);
 
