@@ -24,12 +24,31 @@ export default defineConfig({
         minify: 'esbuild',
         cssCodeSplit: true,
         assetsInlineLimit: 8,
+        sourcemap: true,
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (id.includes('node_modules')) {
-                        return 'vendor';
+                    if (!id.includes('node_modules')) return;
+
+                    const p = id.replace(/\\/g, '/');
+
+                    if (
+                        p.includes('/node_modules/react/') ||
+                        p.includes('/node_modules/react-dom/') ||
+                        p.includes('/node_modules/scheduler/')
+                    ) {
+                        return 'framework';
                     }
+
+                    if (p.includes('/node_modules/@inertiajs/')) {
+                        return 'inertia';
+                    }
+
+                    if (p.includes('/node_modules/@radix-ui/')) {
+                        return 'radix';
+                    }
+
+                    return 'vendor';
                 },
             },
         },
