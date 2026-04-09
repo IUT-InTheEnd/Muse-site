@@ -1,5 +1,6 @@
 import { PlayIcon, PauseIcon, SkipForwardIcon, SkipBackIcon, ShuffleIcon, RepeatIcon, Repeat1Icon, VolumeIcon, Volume1Icon, Volume2Icon, VolumeXIcon, MusicIcon, ChevronDownIcon, LoaderIcon, AlertCircleIcon, XIcon, ListMusic,Heart } from 'lucide-react';
 import * as React from "react";
+import { TrackPlaylistButton } from '@/components/musecomponents/TrackPlaylistButton';
 import { ReactionButtons } from '@/components/reaction-buttons';
 import MusicWaitingList from '@/components/ui/music-waiting-list';
 import { useMusicPlayer } from '@/hooks/use-music-player';
@@ -13,10 +14,13 @@ function formatTime(s: number): string {
     return `${m}:${sec}`;
 }
 
-export default function MusicPlayer() {
+type MusicPlayerProps = {
+    canUseLibrary: boolean;
+};
+
+export default function MusicPlayer({ canUseLibrary }: MusicPlayerProps) {
     const { track, playing, currentTime, duration, volume, shuffle, repeatMode, minimized, error, isLoading, autoPlayNext, togglePlay, seek, setVolume, toggleMute, toggleShuffle, cycleRepeatMode, skipForward, skipBack, toggleMinimized, clearError, waitingList, showWaitingList, toggleAutoPlayNext, dispatch, playlist } = useMusicPlayer();
 
-    const isFavorite = !!track?.is_favorite;
     const [isTogglingFavorite, setIsTogglingFavorite] = React.useState(false);
     const canSkipForward = playlist.length > 1;
 
@@ -170,6 +174,15 @@ export default function MusicPlayer() {
                 <div className="flex flex-col flex-1 items-center gap-2">
                     {/* Contrôles */}
                     <div className="flex items-center gap-6">
+                        
+                        {track?.id && (
+                            <TrackPlaylistButton
+                                trackId={track.id}
+                                canUseLibrary={canUseLibrary}
+                                buttonClassName="transition-transform active:scale-90"
+                                iconClassName="h-6 w-6 text-neutral-500 dark:text-white/70"
+                            />
+                        )}
                         <button
                             type="button"
                             onClick={toggleShuffle}
@@ -213,6 +226,7 @@ export default function MusicPlayer() {
         />
     )}
                         </button>
+
 
                         <button
                             type="button"
