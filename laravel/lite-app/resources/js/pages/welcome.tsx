@@ -52,14 +52,15 @@ export default function Welcome({
                                 </p>
 
                                 <div className="grid w-full max-w-md grid-cols-1 gap-3 sm:grid-cols-2">
-                                    <Button className="w-full cursor-pointer">
+                                    <Button asChild className="w-full cursor-pointer">
                                         <Link href={register()}>
                                             Créer un compte
                                         </Link>
                                     </Button>
                                     <Button
-                                        className="w-full cursor-pointer border-overlay-border text-overlay-foreground hover:bg-overlay-surface"
-                                        variant={'secondary'}
+                                        asChild
+                                        variant="outline"
+                                        className="w-full cursor-pointer border-overlay-border bg-overlay-surface text-overlay-foreground hover:bg-overlay-surface-hover hover:text-overlay-foreground"
                                     >
                                         <Link href={login()}>
                                             Se connecter
