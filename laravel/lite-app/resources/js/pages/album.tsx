@@ -1,4 +1,5 @@
-import { Head, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { Check, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AlbumPlaylistDialog } from '@/components/musecomponents/AlbumPlaylistDialog';
@@ -136,7 +137,10 @@ export default function Album({
 
     return (
         <>
-            <Head title={album.album_title}></Head>
+            <Head
+                title={album.album_title}
+                description={`Consultez l'album ${album.album_title}, explorez ses titres, ses artistes associés et lancez sa lecture sur Lite.`}
+            />
             <div className="flex min-h-screen flex-col items-center lg:justify-center">
                 <div
                     className="relative flex h-80 w-full items-center bg-cover bg-center"

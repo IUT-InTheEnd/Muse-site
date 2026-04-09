@@ -1,6 +1,7 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form } from '@inertiajs/react';
 import type { ChangeEvent } from 'react';
 import { useState, useEffect } from 'react';
+import { Head } from '@/components/head';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -50,7 +51,10 @@ export default function Register() {
 
     return (
         <AuthLayout title="Créer un compte" description="Entrez votre pseudonyme, adresse e-mail et mot de passe pour créer un compte (* obligatoires).">
-            <Head title="S'inscrire" />
+            <Head
+                title="S'inscrire"
+                description="Créez un compte Lite pour accéder à vos playlists, vos favoris et vos recommandations musicales personnalisées."
+            />
             <Form {...store.form()} resetOnSuccess={['password', 'password_confirmation']} disableWhileProcessing className="flex flex-col gap-6">
                 {({ processing, errors }) => (
                     <>

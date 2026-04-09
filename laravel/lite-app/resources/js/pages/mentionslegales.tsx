@@ -1,9 +1,12 @@
-import { Head } from '@inertiajs/react';
+import { Head } from '@/components/head';
 
 export default function MentionsLegales() {
     return (
         <>
-            <Head title="Mentions Legales" />
+            <Head
+                title="Mentions Legales"
+                description="Consultez les mentions légales, les informations d'édition et le cadre juridique de la plateforme Lite."
+            />
             <div className="flex h-full w-full flex-row justify-center pt-20 pb-20">
                 <div className="w-1/2">
                     <h1>Mentions légales</h1>

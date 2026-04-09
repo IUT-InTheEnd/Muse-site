@@ -1,4 +1,5 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { Separator } from '@radix-ui/react-separator';
 import { ExternalLink } from 'lucide-react';
 import type { SharedData } from '@/types';
@@ -15,7 +16,10 @@ export default function Index({ links }: Props) {
 
     return (
         <>
-            <Head title="Documentation" />
+            <Head
+                title="Documentation"
+                description="Consultez la documentation de Lite, les guides d'utilisation et les ressources techniques disponibles sur le site."
+            />
 
             <div className="flex py-12 flex-col items-center lg:justify-center">
                 <main className="flex flex-col w-full max-w-xl sm:max-w-xl lg:max-w-2xl xl:max-w-4xl items-start justify-center gap-6 px-10 py-10 ">

@@ -1,4 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { ListMusic, Lock, Music, Users } from 'lucide-react';
 import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard';
 import {
@@ -96,7 +97,10 @@ export default function Profile({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`${user.name} - Profil`} />
+            <Head
+                title={`${user.name} - Profil`}
+                description={`Consultez le profil de ${user.name}, ses playlists publiques, ses artistes suivis et son activité musicale récente.`}
+            />
 
             <div className="flex flex-col gap-6 pb-8">
                 <div className="relative">

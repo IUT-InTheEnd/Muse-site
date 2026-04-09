@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import AppearanceTabs from '@/components/appearance-tabs';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
@@ -16,7 +16,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Appearance() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Paramètres d'apparence" />
+            <Head
+                title="Paramètres d'apparence"
+                description="Choisissez le thème clair, sombre ou système utilisé par Lite sur ce navigateur."
+            />
 
             <h1 className="sr-only">Paramètres d'apparence</h1>
 

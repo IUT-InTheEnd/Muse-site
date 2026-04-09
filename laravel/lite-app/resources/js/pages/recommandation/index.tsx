@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import AppLayout from '@/layouts/app-layout';
 import { TrackSliderSection } from '@/components/musecomponents/sliders/TrackSliderSection';
 
@@ -22,7 +22,10 @@ type RecoProps = {
 const Recommandation = ({recommendedTracks, popularTracks, lastListenRecommendedTracks, lastListen}: RecoProps) => {
     return (
         <AppLayout>
-            <Head title="Recommandations" />
+            <Head
+                title="Recommandations"
+                description="Découvrez des recommandations musicales personnalisées, des titres populaires et des sélections liées à vos dernières écoutes."
+            />
                 <div className='flex flex-col items-center justify-center '>
                     <div className='flex flex-col lg:justify-center w-full max-w-xl sm:max-w-2xl lg:max-w-4xl gap-6 px-6 py-10'>
                         <h1 className="text-lg font-semibold mb-6">

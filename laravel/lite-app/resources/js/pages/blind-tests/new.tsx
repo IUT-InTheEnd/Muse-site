@@ -1,4 +1,5 @@
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { ChevronDown, Save, Sparkles } from 'lucide-react';
 import { useMemo, useState, type FormEvent } from 'react';
 import { ArtistAutocomplete, type BlindTestArtistOption } from '@/components/blind-tests/artist-autocomplete';
@@ -140,7 +141,10 @@ export default function BlindTestNew({
 
     return (
         <>
-            <Head title="Générer un blind test" />
+            <Head
+                title="Générer un blind test"
+                description="Générez un blind test musical personnalisé à partir de recommandations, de genres, d'artistes et de langues."
+            />
 
             <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10">
                 <section className="grid gap-8 rounded-3xl border bg-card p-8 lg:grid-cols-[1.2fr_0.8fr]">

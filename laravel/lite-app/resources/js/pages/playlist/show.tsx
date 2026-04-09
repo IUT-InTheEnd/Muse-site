@@ -1,4 +1,5 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import {
     CameraIcon,
     GlobeIcon,
@@ -225,7 +226,10 @@ export default function PlaylistShow({ playlist }: Props) {
 
     return (
         <>
-            <Head title={playlist.playlist_name} />
+            <Head
+                title={playlist.playlist_name}
+                description={`Écoutez la playlist ${playlist.playlist_name}, consultez ses titres et lancez-la en lecture classique ou en blind test.`}
+            />
             <div className="flex min-h-screen flex-col items-center">
                 <div
                     className="relative flex h-80 w-full items-end bg-cover bg-center"

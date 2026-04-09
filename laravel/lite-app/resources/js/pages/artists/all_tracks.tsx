@@ -1,7 +1,8 @@
-import { Head, router, usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { LoaderIcon, PauseIcon, PlayIcon } from 'lucide-react';
 import React from 'react';
 import { show } from '@/actions/App/Http/Controllers/ArtistController';
+import { Head } from '@/components/head';
 import {
     TrackList,
 } from '@/components/musecomponents/TrackList';
@@ -71,7 +72,10 @@ export default function AllTracks({ artist, albums, trackReactions = {} }: AllTr
 
     return (
         <>
-            <Head title={artist.artist_name + ' - Discographie'}></Head>
+            <Head
+                title={artist.artist_name + ' - Discographie'}
+                description={`Explorez la discographie de ${artist.artist_name}, album par album, et lancez l'écoute de ses morceaux sur Lite.`}
+            />
             <div className="relative min-h-screen p-4 md:p-10">
                 <h1
                     onClick={() => router.visit(show(artist.artist_id))}

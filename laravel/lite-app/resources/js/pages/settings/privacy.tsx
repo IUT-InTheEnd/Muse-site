@@ -1,4 +1,5 @@
-import { Form, Head, usePage } from '@inertiajs/react';
+import { Form, usePage } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
@@ -22,7 +23,10 @@ export default function Privacy() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Paramètres de confidentialité" />
+            <Head
+                title="Paramètres de confidentialité"
+                description="Définissez la visibilité de votre profil et gérez les paramètres de confidentialité de votre compte Lite."
+            />
 
             <h1 className="sr-only">Paramètres de confidentialité</h1>
 

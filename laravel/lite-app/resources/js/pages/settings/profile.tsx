@@ -1,7 +1,8 @@
 import { Transition } from '@headlessui/react';
-import { Form, Head, Link, usePage } from '@inertiajs/react';
+import { Form, Link, usePage } from '@inertiajs/react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
+import { Head } from '@/components/head';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import ProfileImageUpload from '@/components/profile-image-upload';
@@ -33,7 +34,10 @@ export default function Profile({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Paramètres du profil" />
+            <Head
+                title="Paramètres du profil"
+                description="Mettez à jour votre profil, votre photo, vos informations personnelles et les options liées à votre compte."
+            />
 
             <h1 className="sr-only">Paramètres du profil</h1>
 

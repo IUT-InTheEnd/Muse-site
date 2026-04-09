@@ -1,5 +1,6 @@
 // Components
-import { Form, Head } from '@inertiajs/react';
+import { Form } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -13,7 +14,10 @@ export default function VerifyEmail({ status }: { status?: string }) {
             title="Vérification de l'adresse e-mail"
             description="Veuillez vérifier votre adresse e-mail en cliquant sur le lien que nous venons de vous envoyer."
         >
-            <Head title="Vérification de l'adresse e-mail" />
+            <Head
+                title="Vérification de l'adresse e-mail"
+                description="Vérifiez votre adresse e-mail pour activer pleinement votre compte et sécuriser votre accès à la plateforme."
+            />
 
             {status === 'verification-link-sent' && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">

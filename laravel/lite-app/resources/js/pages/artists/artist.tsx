@@ -1,9 +1,10 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import {
     allTracks,
     follow,
     unfollow,
 } from '@/actions/App/Http/Controllers/ArtistController';
+import { Head } from '@/components/head';
 import { AlbumCard } from '@/components/musecomponents/cards/AlbumCard';
 import {
     CardContent,
@@ -108,7 +109,10 @@ export default function Artist({
 
     return (
         <>
-            <Head title={artist.artist_name}></Head>
+            <Head
+                title={artist.artist_name}
+                description={`Découvrez l'artiste ${artist.artist_name}, ses titres populaires, ses albums et les actions de suivi disponibles sur Lite.`}
+            />
             <div className="relative flex min-h-screen flex-col p-4 md:p-8 lg:p-36">
                 <div className="backgroundimg-container">
                     <div className="gradient"></div>

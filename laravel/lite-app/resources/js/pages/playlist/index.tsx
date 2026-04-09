@@ -1,4 +1,5 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { MusicIcon, PlusIcon, TrashIcon, LockIcon } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -87,7 +88,10 @@ export default function PlaylistsPage({ playlists }: PlaylistsPageProps) {
 
     return (
         <>
-            <Head title="Mes playlists" />
+            <Head
+                title="Mes playlists"
+                description="Créez, consultez et gérez vos playlists personnelles pour organiser votre écoute sur Lite."
+            />
             <div className="flex flex-col items-center justify-center">
                 <div className="flex w-full max-w-xl flex-col gap-6 px-6 py-10 sm:max-w-2xl lg:max-w-4xl lg:justify-center">
                     <div className="flex items-center justify-between">

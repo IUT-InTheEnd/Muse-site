@@ -1,4 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { NewTracksSection } from '@/components/musecomponents/sliders/NewTracksSection';
 import { TrackSliderSection } from '@/components/musecomponents/sliders/TrackSliderSection';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,10 @@ export default function Welcome({
 }: WelcomeProps) {
     return (
         <>
-            <Head title="Welcome"></Head>
+            <Head
+                title="Welcome"
+                description="Découvrez Lite, une plateforme de streaming musical avec recommandations, nouveautés et accès rapide à l'inscription et à la connexion."
+            />
             <div className="flex flex-col items-center justify-center">
                 <div
                     className="relative flex min-h-[calc(100vh-5rem-11rem)] w-full items-center justify-center bg-cover bg-center bg-no-repeat opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0"

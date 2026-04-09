@@ -1,5 +1,6 @@
 // Components
-import { Form, Head } from '@inertiajs/react';
+import { Form } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { LoaderCircle } from 'lucide-react';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
@@ -16,7 +17,10 @@ export default function ForgotPassword({ status }: { status?: string }) {
             title="Mot de passe oublié"
             description="Entrer votre adresse e-mail et nous vous enverrons un lien de réinitialisation de mot de passe qui vous permettra d'en choisir un nouveau."
         >
-            <Head title="Mot de passe oublié" />
+            <Head
+                title="Mot de passe oublié"
+                description="Demandez un lien de réinitialisation pour récupérer l'accès à votre compte Lite."
+            />
 
             {status && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">

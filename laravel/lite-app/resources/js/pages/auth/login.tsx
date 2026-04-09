@@ -1,4 +1,5 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import type { ChangeEvent} from 'react';
 import { useState } from 'react';
 import InputError from '@/components/input-error';
@@ -32,7 +33,10 @@ export default function Login({
             title="Se connecter"
             description="Entrez votre adresse e-mail et votre mot de passe pour vous connecter à votre compte."
         >
-            <Head title="Se connecter" />
+            <Head
+                title="Se connecter"
+                description="Connectez-vous à votre compte Lite pour retrouver vos playlists, vos favoris et vos recommandations musicales."
+            />
 
             <Form
                 {...store.form()}

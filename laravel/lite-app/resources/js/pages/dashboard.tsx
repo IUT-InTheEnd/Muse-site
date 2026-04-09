@@ -1,4 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard';
 import {
     CardCover,
@@ -50,7 +51,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Dashboard({user, recentTracks, recommendedTracks, newTracks, artists}: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Accueil" />
+            <Head
+                title="Accueil"
+                description="Retrouvez l'accueil de Lite avec vos recommandations, les nouveautés et un accès rapide aux contenus musicaux du moment."
+            />
                 <div className='flex flex-col items-center justify-center '>
                     <div className='flex flex-col lg:justify-center w-full max-w-xl sm:max-w-2xl lg:max-w-4xl gap-6 px-6 py-10'>
                         <h1 className="text-lg font-semibold mb-6">

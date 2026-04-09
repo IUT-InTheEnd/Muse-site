@@ -1,4 +1,5 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +14,10 @@ export default function ConfirmPassword() {
             title="Confirmer le mot de passe"
             description="C'est une zone sécurisée de l'application. Veuillez confirmer votre mot de passe avant de continuer."
         >
-            <Head title="Confirmer le mot de passe" />
+            <Head
+                title="Confirmer le mot de passe"
+                description="Confirmez votre mot de passe pour accéder à une action sensible ou à une zone sécurisée de votre compte."
+            />
 
             <Form {...store.form()} resetOnSuccess={['password']}>
                 {({ processing, errors }) => (

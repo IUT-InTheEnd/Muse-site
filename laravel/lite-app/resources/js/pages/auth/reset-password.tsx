@@ -1,4 +1,5 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +19,10 @@ export default function ResetPassword({ token, email }: Props) {
             title="Rénitialiser le mot de passe"
             description="Veuillez entrer votre nouveau mot de passe et confirmer pour réinitialiser votre mot de passe."
         >
-            <Head title="Rénitialiser le mot de passe" />
+            <Head
+                title="Rénitialiser le mot de passe"
+                description="Choisissez un nouveau mot de passe pour sécuriser de nouveau l'accès à votre compte Lite."
+            />
 
             <Form
                 {...update.form()}

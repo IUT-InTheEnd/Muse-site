@@ -1,4 +1,5 @@
-import { Head, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import {
@@ -485,7 +486,10 @@ export default function Administrator({ users }: Props) {
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Administrateur" />
+			<Head
+				title="Administrateur"
+				description="Administrez les utilisateurs de la plateforme, gérez leurs rôles, leurs informations et les actions de modération."
+			/>
 			<div className="mx-auto w-full max-w-5xl px-4 py-10">
 				<h1 className="text-2xl font-bold">Espace administrateur</h1>
 

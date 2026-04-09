@@ -1,4 +1,5 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { Separator } from '@radix-ui/react-separator';
 import type { SharedData } from '@/types';
 
@@ -6,7 +7,10 @@ export default function Installation() {
 
     return (
         <>
-            <Head title="Documentation – Installation" />
+            <Head
+                title="Documentation – API"
+                description="Consultez la documentation API de Lite et les indications techniques liées à l'installation et aux tests."
+            />
 
             <div className="flex flex-col items-center lg:justify-center py-10">
                 <main className="flex flex-col w-full max-w-xl sm:max-w-xl lg:max-w-2xl xl:max-w-4xl items-start justify-center gap-10 px-6 py-10 ">

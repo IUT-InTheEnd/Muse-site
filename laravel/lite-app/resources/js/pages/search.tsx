@@ -1,4 +1,5 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { useEffect, useState } from 'react';
 import { ArtistCard } from '@/components/musecomponents/cards/ArtistCard';
 import { CardCover, CardTitle } from '@/components/musecomponents/cards/Card';
@@ -98,7 +99,10 @@ export default function search({ listeMusiques, listeArtistes, langues, genres, 
 
     return (
         <>
-            <Head title="Recherche"></Head>
+            <Head
+                title="Recherche"
+                description="Recherchez des titres et des artistes, puis affinez les résultats par genres et langues dans le catalogue musical."
+            />
             <div className="flex min-h-screen flex-col items-center lg:justify-center">
                 <form method="get" action="/search" className="w-full flex flex-col items-center mt-20">
                     {/* Ligne principale : icône + champ + bouton */}

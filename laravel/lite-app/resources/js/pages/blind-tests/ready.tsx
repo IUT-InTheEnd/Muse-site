@@ -1,4 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { ArrowRight, Disc3, ListMusic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -31,7 +32,10 @@ export default function BlindTestReady({
 
     return (
         <>
-            <Head title={title} />
+            <Head
+                title={title}
+                description="Préparez la lecture du blind test à partir d'une sélection temporaire ou d'une playlist persistée avant de lancer la partie."
+            />
 
             <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-16">
                 <section className="rounded-3xl border bg-card p-8 text-center">

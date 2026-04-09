@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field, FieldGroup, FieldLabel, FieldDescription } from '@/components/ui/field';
@@ -33,7 +33,10 @@ export default function Support() {
 
     return (
         <>
-            <Head title="Support" />
+            <Head
+                title="Support"
+                description="Contactez le support de Lite pour toute question, problème technique ou demande liée à votre compte et à l'application."
+            />
             <div className="flex h-screen items-center justify-center">
                 <div>
                     <h1>Contacter le support</h1>

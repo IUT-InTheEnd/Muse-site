@@ -1,5 +1,6 @@
 import { Transition } from '@headlessui/react';
-import { Form, Head } from '@inertiajs/react';
+import { Form } from '@inertiajs/react';
+import { Head } from '@/components/head';
 import { ShieldBan, ShieldCheck } from 'lucide-react';
 import { useRef, useState } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
@@ -52,7 +53,10 @@ export default function Security({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Paramètres de sécurité" />
+            <Head
+                title="Paramètres de sécurité"
+                description="Gérez le mot de passe, l'authentification à deux facteurs et les réglages de sécurité de votre compte."
+            />
 
             <h1 className="sr-only">Paramètres de sécurité</h1>
 
