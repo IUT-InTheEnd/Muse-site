@@ -69,6 +69,7 @@ type TrackRowProps = {
     trackIndexInSiblings?: number;
     showListens?: boolean;
     coverSize?: 'sm' | 'md' | 'lg';
+    showFavoriteCount?: boolean;
 };
 
 export function TrackRow({
@@ -85,6 +86,7 @@ export function TrackRow({
     siblingTracks,
     trackIndexInSiblings,
     showListens = true,
+    showFavoriteCount = true,
     coverSize = 'md',
 }: TrackRowProps) {
     const { auth } = usePage<SharedData>().props;
@@ -445,7 +447,7 @@ export function TrackRow({
                     </span>
                 )}
 
-                {track.track_favorites !== undefined && (
+                {showFavoriteCount && track.track_favorites !== undefined && (
                     <span className="hidden font-mono text-sm text-muted-foreground md:block w-30 text-right">
                         {track.track_favorites?.toLocaleString('fr-FR')}
                     </span>
