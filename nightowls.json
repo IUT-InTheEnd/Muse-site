@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/5cover/nightowls/main/src/nightowls/schemas/nightowls.schema.json",
+  "members": [
+    [ "Luc",      {"email": "73853221+Arcthuruss@users.noreply.github.com",     "name": "Arcthuruss"        } ],
+    [ "Cyprien",  {"email": "cpe.albert2@gmail.com",                            "name": "CyprienIUT"        } ],
+    [ "Juline",   {"email": "152189708+LaSyCa@users.noreply.github.com",        "name": "Juline GUYOMARD"   } ],
+    [ "Juline",   {"email": "juline.guyomard2005@gmail.com",                    "name": "LaSyCa"            } ],
+    [ "Luc",      {"email": "73853221+Arcthuruss@users.noreply.github.com",     "name": "Luc Donnard"       } ],
+    [ "Mathéo",   {"email": "babouin.panda@gmail.com",                          "name": "Matheo-Cortez"     } ],
+    [ "Mathéo",   {"email": "125517429+Matheo-Cortez@users.noreply.github.com", "name": "Math\u00e9o Cortez"} ],
+    [ "Mathieu",  {"email": "mathieu.dekergariou@gmail.com",                    "name": "mdekerga"          } ],
+    [ "Pierre",   {"email": "24657574+Pilou26021@users.noreply.github.com",     "name": "PIlouFace"         } ],
+    [ "Pierre",   {"email": "24657574+Pilou26021@users.noreply.github.com",     "name": "PilouFace_"        } ],
+    [ "Raphaël",  {"email": "",                                                 "name": "Scover"            } ],
+    [ "Stéphane", {"email": "stephouille1022@gmail.com",                        "name": "stephantoine"      } ]
+  ]
+}
